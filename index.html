@@ -56,13 +56,13 @@
   .sidebar-toggle.collapsed { left: 10px; }
   .sidebar .brand { font-family:'Barlow Semi Condensed',sans-serif; font-weight:700; font-size:20px; color:var(--primary-dark); margin-bottom:2px; }
   .sidebar .brand-sub { font-size:11px; color:var(--gray); margin-bottom:18px; }
-  .navbtn, .qual-navbtn, .eng-navbtn, .exp-navbtn {
+  .navbtn, .qual-navbtn, .eng-navbtn, .exp-navbtn, .gestao-navbtn, .admin-navbtn, .ph-navbtn {
     display:flex; align-items:center; gap:8px; width:100%; text-align:left; border:none; background:transparent;
     padding:10px 12px; border-radius:8px; font-size:14px; font-weight:600; color:var(--text); cursor:pointer;
     margin-bottom:4px;
   }
-  .navbtn:hover, .qual-navbtn:hover, .eng-navbtn:hover, .exp-navbtn:hover { background:#E3EEDD; }
-  .navbtn.active, .qual-navbtn.active, .eng-navbtn.active, .exp-navbtn.active { background:var(--primary); color:#fff; }
+  .navbtn:hover, .qual-navbtn:hover, .eng-navbtn:hover, .exp-navbtn:hover, .gestao-navbtn:hover, .admin-navbtn:hover, .ph-navbtn:hover { background:#E3EEDD; }
+  .navbtn.active, .qual-navbtn.active, .eng-navbtn.active, .exp-navbtn.active, .gestao-navbtn.active, .admin-navbtn.active, .ph-navbtn.active { background:var(--primary); color:#fff; }
   .sidebar .param { margin-top:20px; padding-top:14px; border-top:1px solid var(--border); }
   .nav-section-title { font-size:10.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--gray); margin:16px 4px 6px; padding-top:12px; border-top:1px solid var(--border); }
   .sidebar label { font-size:12px; font-weight:600; color:var(--primary-dark); display:block; margin-bottom:4px; }
@@ -218,6 +218,12 @@
     font-size: 12px; padding: 3px 5px;
   }
 
+  /* --------------------------- modo somente leitura (visualizador) --------------------------- */
+  .faixa-leitura { position:fixed; bottom:14px; left:50%; transform:translateX(-50%); z-index:480; background:#E8F1FB; color:#1F4E79; border:1px solid #B7D1EE; border-radius:20px; padding:5px 16px; font-size:12px; font-weight:700; box-shadow:0 2px 8px rgba(0,0,0,.10); white-space:nowrap; }
+  .somente-leitura .btn:not(.btn-leitura), .somente-leitura .acao-icon:not(.btn-leitura) { opacity:.4; pointer-events:none; filter:grayscale(.6); }
+  .somente-leitura input:not(.input-leitura):not([type=hidden]), .somente-leitura textarea:not(.input-leitura) { pointer-events:none; background:#F4F7F2; }
+  .somente-leitura [data-edicao] { display:none !important; }
+
   /* --------------------------- responsivo (celular/tablet) --------------------------- */
   @media (max-width: 768px) {
     .main { padding: 54px 14px 40px; }
@@ -295,36 +301,51 @@
   </div>
 </div>
 
-<div id="placeholderRoot" class="hidden" style="min-height:100vh; background:#fff; display:flex; align-items:center; justify-content:center; font-family:'Inter',sans-serif;">
-  <div style="text-align:center; color:#8A8F87;">
-    <div style="font-size:42px; margin-bottom:12px;">&#128736;</div>
-    <h2 id="placeholderTitulo" style="font-family:'Barlow Semi Condensed',sans-serif; color:#14462E; margin:0 0 6px 0;">-</h2>
-    <p id="placeholderTexto">Este setor ainda esta em desenvolvimento.</p>
-  </div>
+<div id="placeholderRoot" class="app hidden">
+  <button id="phSidebarToggle" class="sidebar-toggle" title="Mostrar/ocultar menu" aria-label="Mostrar/ocultar menu">&#9664;</button>
+  <nav class="sidebar" id="phSidebarNav">
+    <img class="logo-sidebar" alt="BRS Equipamentos Agricolas" style="width:110px; height:auto; display:block; margin:0 auto 14px auto;">
+    <div class="brand-sub">Setor</div>
+    <div class="sb-usuario hidden" style="font-size:10.5px; color:var(--gray); margin-bottom:14px;"><span class="sb-usuario-email"></span> &middot; <a href="#" class="sb-logout" style="color:var(--primary);">Sair</a></div>
+    <button type="button" class="ph-navbtn active">Visao geral</button>
+  </nav>
+  <main class="main">
+    <section class="page active">
+      <div class="banner"><h1 id="placeholderTitulo">-</h1><p>Tela do setor</p></div>
+      <div class="card" style="text-align:center; padding:36px 16px; color:#8A8F87;">
+        <div style="font-size:42px; margin-bottom:12px;">&#128736;</div>
+        <p id="placeholderTexto" style="margin:0;">Este setor ainda esta em desenvolvimento.</p>
+      </div>
+    </section>
+  </main>
 </div>
 
-<div id="gestaoRoot" class="hidden" style="min-height:100vh; background:#fff; font-family:'Inter',sans-serif; padding:24px 32px; max-width:1200px; margin:0 auto;">
-  <div class="banner"><h1>Gestao</h1><p>Indicadores e acompanhamento de pedidos entre reunioes</p></div>
+<div id="gestaoRoot" class="app hidden">
+  <button id="gestaoSidebarToggle" class="sidebar-toggle" title="Mostrar/ocultar menu" aria-label="Mostrar/ocultar menu">&#9664;</button>
+  <nav class="sidebar" id="gestaoSidebarNav">
+    <img class="logo-sidebar" alt="BRS Equipamentos Agricolas" style="width:110px; height:auto; display:block; margin:0 auto 14px auto;">
+    <div class="brand-sub">Gestao - Indicadores</div>
+    <div class="sb-usuario hidden" style="font-size:10.5px; color:var(--gray); margin-bottom:14px;"><span class="sb-usuario-email"></span> &middot; <a href="#" class="sb-logout" style="color:var(--primary);">Sair</a></div>
+    <button class="gestao-navbtn active" data-gestaopage="indicadores">Indicadores (PPCP)</button>
+    <button class="gestao-navbtn" data-gestaopage="acompanhamento">Acompanhamento de Pedido</button>
+  </nav>
+  <main class="main">
+    <section id="gestaopage-indicadores" class="page active">
+      <div class="banner"><h1>Indicadores (PPCP)</h1><p>Panorama dos lotes, itens e custos entre reunioes</p></div>
+      <div class="card">
+        <div id="gestaoIndicadores"></div>
+      </div>
+    </section>
 
-  <div class="tabbar">
-    <button class="tabbtn active" data-tab="gestao-indicadores">Indicadores (PPCP)</button>
-    <button class="tabbtn" data-tab="gestao-acompanhamento">Acompanhamento de Pedido</button>
-  </div>
-
-  <div class="tabpage active" id="tab-gestao-indicadores">
-    <div class="card">
-      <div id="gestaoIndicadores"></div>
-    </div>
-  </div>
-
-  <div class="tabpage" id="tab-gestao-acompanhamento">
+    <section id="gestaopage-acompanhamento" class="page">
+      <div class="banner"><h1>Acompanhamento de Pedido</h1><p>Registros de status por pedido e relatorio para reuniao</p></div>
     <div class="card">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
         <h3 style="margin:0;">Acompanhamento de Pedido</h3>
         <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-          <label style="display:flex; align-items:center; gap:6px; font-size:13px; font-weight:400;"><input type="checkbox" id="gestaoRelatorioTodosPedidos" style="width:auto;"> Incluir todos os Pedidos</label>
-          <button type="button" class="btn secondary btn-sm" id="gestaoGerarRelatorioBtn">&#128231; Relatorio para e-mail</button>
-          <button type="button" class="btn secondary btn-sm" id="gestaoGerarPdfBtn">&#128196; Gerar PDF</button>
+          <label style="display:flex; align-items:center; gap:6px; font-size:13px; font-weight:400;"><input type="checkbox" class="input-leitura" id="gestaoRelatorioTodosPedidos" style="width:auto;"> Incluir todos os Pedidos</label>
+          <button type="button" class="btn secondary btn-sm btn-leitura" id="gestaoGerarRelatorioBtn">&#128231; Relatorio para e-mail</button>
+          <button type="button" class="btn secondary btn-sm btn-leitura" id="gestaoGerarPdfBtn">&#128196; Gerar PDF</button>
         </div>
       </div>
       <div class="grid grid-2">
@@ -334,7 +355,7 @@
 
       <div id="gestaoLotesWrap" style="margin-top:10px;"></div>
 
-      <div style="margin-top:20px; border-top:1px solid var(--border); padding-top:16px;">
+      <div data-edicao style="margin-top:20px; border-top:1px solid var(--border); padding-top:16px;">
         <label class="field-label">Novo registro de status (reuniao)</label>
         <textarea id="gestaoStatusTexto" rows="3" placeholder="Ex: Aguardando compra do motorredutor. @Correia transportadora blindada esta atrasada."></textarea>
         <div style="display:flex; gap:8px; align-items:center; margin-top:8px;">
@@ -359,7 +380,9 @@
         <div id="gestaoHistoricoWrap"></div>
       </div>
     </div>
-  </div>
+
+    </section>
+  </main>
 </div>
 
 <div id="relatorioModalOverlay" class="hidden" style="position:fixed; inset:0; background:rgba(20,70,46,.5); z-index:800; display:flex; align-items:center; justify-content:center;">
@@ -375,36 +398,48 @@
   </div>
 </div>
 
-<div id="adminRoot" class="hidden" style="min-height:100vh; background:#fff; font-family:'Inter',sans-serif; padding:24px 32px; max-width:900px; margin:0 auto;">
-  <div class="banner"><h1>Administracao</h1><p>Gerenciar quem tem acesso ao PPCP-BRS</p></div>
+<div id="adminRoot" class="app hidden">
+  <button id="adminSidebarToggle" class="sidebar-toggle" title="Mostrar/ocultar menu" aria-label="Mostrar/ocultar menu">&#9664;</button>
+  <nav class="sidebar" id="adminSidebarNav">
+    <img class="logo-sidebar" alt="BRS Equipamentos Agricolas" style="width:110px; height:auto; display:block; margin:0 auto 14px auto;">
+    <div class="brand-sub">Administracao - Usuarios</div>
+    <div class="sb-usuario hidden" style="font-size:10.5px; color:var(--gray); margin-bottom:14px;"><span class="sb-usuario-email"></span> &middot; <a href="#" class="sb-logout" style="color:var(--primary);">Sair</a></div>
+    <button class="admin-navbtn active" id="adminNavCadastros" data-adminpage="cadastros">Cadastros pendentes</button>
+    <button class="admin-navbtn" id="adminNavAcessos" data-adminpage="acessos">Acessos por pasta</button>
+    <button class="admin-navbtn" data-adminpage="usuarios">Usuarios</button>
+  </nav>
+  <main class="main">
+    <section id="adminpage-cadastros" class="page active">
+      <div class="banner"><h1>Cadastros pendentes</h1><p>Nome, foto e setor informados pelos usuarios so passam a valer depois da sua aprovacao</p></div>
+      <div class="card">
+        <div id="adminPerfisPendentes"></div>
+      </div>
+    </section>
 
-  <div class="card">
-    <h3>Cadastros pendentes de aprovacao</h3>
-    <p class="muted">Nome, foto e setor informados pelos usuarios so passam a valer depois da sua aprovacao.</p>
-    <div id="adminPerfisPendentes"></div>
-  </div>
+    <section id="adminpage-usuarios" class="page">
+      <div class="banner"><h1>Usuarios</h1><p>Gerenciar quem tem acesso ao PPCP-BRS</p></div>
+      <div class="card">
+        <p class="muted" id="adminAvisoConfig">Verificando conexao com a funcao de administracao...</p>
+        <table id="adminTabelaUsuarios" style="display:none;"><tr><th>E-mail</th><th>Nome / Setor</th><th>Criado em</th><th>Status</th><th>Acoes</th></tr></table>
+      </div>
+    </section>
 
-  <div class="card">
-    <p class="muted" id="adminAvisoConfig">Verificando conexao com a funcao de administracao...</p>
-    <table id="adminTabelaUsuarios" style="display:none;"><tr><th>E-mail</th><th>Nome / Setor</th><th>Criado em</th><th>Status</th><th>Acoes</th></tr></table>
-  </div>
-
-  <div class="card">
-    <h3>Acesso ao setor Gestao</h3>
-    <p class="muted">Por padrao, so o usuario master ve e acessa o setor Gestao. Adicione abaixo os e-mails de quem mais pode acessar.</p>
-    <div style="display:flex; gap:8px;">
-      <input type="email" id="adminGestaoEmailInput" placeholder="email@brsequipamentos.com.br" style="flex:1;">
-      <button type="button" class="btn secondary btn-sm" id="adminGestaoAddBtn">+ Permitir acesso</button>
-    </div>
-    <div id="adminGestaoLista" style="margin-top:12px;"></div>
-  </div>
+    <section id="adminpage-acessos" class="page">
+      <div class="banner"><h1>Acessos por pasta</h1><p>Voce libera, usuario por usuario, quais pastas cada um enxerga e se pode so visualizar ou tambem editar</p></div>
+      <div class="card">
+        <p class="muted">Ninguem acessa uma pasta enquanto voce nao liberar. <strong>Visualizador</strong> so consulta os dados; <strong>Editor</strong> tambem altera. Cada pasta tem o seu nivel, e nenhum usuario pode ficar com acesso a todas.</p>
+        <div id="adminAcessosLista"></div>
+      </div>
+    </section>
+  </main>
 </div>
 
 <div id="expedicaoRoot" class="app hidden">
   <button id="expSidebarToggle" class="sidebar-toggle" title="Mostrar/ocultar menu" aria-label="Mostrar/ocultar menu">&#9664;</button>
   <nav class="sidebar" id="expSidebarNav">
-    <div class="brand">Expedicao</div>
-    <div class="brand-sub">Cargas e percentual expedido</div>
+    <img class="logo-sidebar" alt="BRS Equipamentos Agricolas" style="width:110px; height:auto; display:block; margin:0 auto 14px auto;">
+    <div class="brand-sub">Expedicao - Cargas</div>
+    <div class="sb-usuario hidden" style="font-size:10.5px; color:var(--gray); margin-bottom:14px;"><span class="sb-usuario-email"></span> &middot; <a href="#" class="sb-logout" style="color:var(--primary);">Sair</a></div>
     <button class="exp-navbtn active" data-exppage="resumo">Resumo do Pedido</button>
     <button class="exp-navbtn" data-exppage="cargas">Cargas de Expedicao</button>
   </nav>
@@ -434,12 +469,13 @@
 <div id="qualidadeRoot" class="app hidden">
   <button id="qualSidebarToggle" class="sidebar-toggle" title="Mostrar/ocultar menu" aria-label="Mostrar/ocultar menu">&#9664;</button>
   <nav class="sidebar" id="qualSidebarNav">
-    <div class="brand">Qualidade</div>
-    <div class="brand-sub">Checklists e liberacao</div>
+    <img class="logo-sidebar" alt="BRS Equipamentos Agricolas" style="width:110px; height:auto; display:block; margin:0 auto 14px auto;">
+    <div class="brand-sub">Qualidade - Checklists</div>
+    <div class="sb-usuario hidden" style="font-size:10.5px; color:var(--gray); margin-bottom:14px;"><span class="sb-usuario-email"></span> &middot; <a href="#" class="sb-logout" style="color:var(--primary);">Sair</a></div>
     <button class="qual-navbtn active" data-qualpage="gerados">Checklists Gerados</button>
-    <button class="qual-navbtn" data-qualpage="gerar">Gerar Novo</button>
+    <button class="qual-navbtn" data-qualpage="gerar" data-edicao>Gerar Novo</button>
     <button class="qual-navbtn" data-qualpage="modelos">Modelos de Checklist</button>
-    <button class="qual-navbtn" data-qualpage="vinculos">Vinculos por Equipamento</button>
+    <button class="qual-navbtn" data-qualpage="vinculos" data-edicao>Vinculos por Equipamento</button>
   </nav>
   <main class="main">
     <section id="qualpage-gerados" class="page active">
@@ -449,7 +485,7 @@
       </div>
     </section>
 
-    <section id="qualpage-gerar" class="page">
+    <section id="qualpage-gerar" class="page" data-edicao>
       <div class="banner"><h1>Gerar Novo Checklist</h1><p>Selecione o Pedido, Lote e Equipamento</p></div>
       <div class="card">
         <div class="grid grid-3">
@@ -469,7 +505,7 @@
       </div>
     </section>
 
-    <section id="qualpage-vinculos" class="page">
+    <section id="qualpage-vinculos" class="page" data-edicao>
       <div class="banner"><h1>Equipamentos que exigem Checklist</h1><p>Nem todo equipamento precisa de checklist - marque aqui so os que exigem, e qual modelo usar</p></div>
       <div class="card">
         <div id="qualidadeVinculosWrap"></div>
@@ -481,10 +517,11 @@
 <div id="engenhariaRoot" class="app hidden">
   <button id="engSidebarToggle" class="sidebar-toggle" title="Mostrar/ocultar menu" aria-label="Mostrar/ocultar menu">&#9664;</button>
   <nav class="sidebar" id="engSidebarNav">
-    <div class="brand">Engenharia</div>
-    <div class="brand-sub">Kanban de projeto e detalhamento</div>
+    <img class="logo-sidebar" alt="BRS Equipamentos Agricolas" style="width:110px; height:auto; display:block; margin:0 auto 14px auto;">
+    <div class="brand-sub">Engenharia - Projetos</div>
+    <div class="sb-usuario hidden" style="font-size:10.5px; color:var(--gray); margin-bottom:14px;"><span class="sb-usuario-email"></span> &middot; <a href="#" class="sb-logout" style="color:var(--primary);">Sair</a></div>
     <button class="eng-navbtn active" data-engpage="kanban">Kanban</button>
-    <button class="eng-navbtn" data-engpage="nova">Nova Tarefa</button>
+    <button class="eng-navbtn" data-engpage="nova" data-edicao>Nova Tarefa</button>
     <button class="eng-navbtn hidden" id="engNavPendencias" data-engpage="pendencias">Pendencias de Aprovacao</button>
     <button class="eng-navbtn hidden" id="engNavConfig" data-engpage="config">Configuracao de Horarios</button>
   </nav>
@@ -494,7 +531,7 @@
       <div id="engKanbanBoard" style="display:flex; gap:14px; overflow-x:auto; max-width:100%; padding-bottom:10px;"></div>
     </section>
 
-    <section id="engpage-nova" class="page">
+    <section id="engpage-nova" class="page" data-edicao>
       <div class="banner"><h1>Nova Tarefa</h1><p>Cria uma tarefa e vincula a um Pedido/Lote se quiser</p></div>
       <div class="card">
         <div class="grid grid-4">
@@ -512,11 +549,21 @@
     </section>
 
     <section id="engpage-pendencias" class="page">
-      <div class="banner"><h1>Pendencias de Aprovacao</h1><p>Atribuicoes de tarefas e checklists que aguardam a sua aprovacao</p></div>
+      <div class="banner"><h1>Pendencias de Aprovacao</h1><p>Atribuicoes, dispensas de revisao, responsaveis adicionais e checklists que aguardam a sua aprovacao</p></div>
       <div class="card">
         <h3>Atribuicoes de tarefas</h3>
         <p class="muted">Pedidos de funcionarios da Engenharia pra passar uma tarefa a outro colega.</p>
         <div id="engAtribuicoesWrap"></div>
+      </div>
+      <div class="card">
+        <h3>Dispensas de revisao</h3>
+        <p class="muted">Pedidos pra seguir sem passar pela Revisao - Projeto ou Revisao - Detalhamento.</p>
+        <div id="engDispensasWrap"></div>
+      </div>
+      <div class="card">
+        <h3>Responsaveis adicionais</h3>
+        <p class="muted">Pedidos pra incluir outro integrante da Engenharia numa tarefa (tarefa compartilhada).</p>
+        <div id="engCompartilhamentosWrap"></div>
       </div>
       <div class="card" id="engPendenciasCard">
         <h3>Checklists</h3>
@@ -551,8 +598,26 @@
     <div style="margin-top:14px; border-top:1px solid var(--border); padding-top:12px;">
       <button type="button" class="btn" id="engEnviarChecklistBtn">Enviar para aprovacao</button>
       <button type="button" class="btn hidden" id="engAprovarChecklistBtn">Aprovar</button>
+      <button type="button" class="btn secondary hidden" id="engDevolverChecklistBtn">Devolver para ajustes</button>
       <span id="engChecklistMsg" style="margin-left:10px; font-size:12.5px;"></span>
     </div>
+  </div>
+</div>
+
+<div id="faixaLeitura" class="faixa-leitura hidden"></div>
+<div id="toastAviso" class="hidden" style="position:fixed; bottom:56px; left:50%; transform:translateX(-50%); z-index:990; background:#14462E; color:#fff; padding:10px 18px; border-radius:8px; font-size:13px; max-width:90vw; text-align:center; box-shadow:0 4px 14px rgba(0,0,0,.25);"></div>
+
+<div id="adminAcessosOverlay" class="hidden" style="position:fixed; inset:0; background:rgba(20,70,46,.5); z-index:950; display:flex; align-items:center; justify-content:center;">
+  <div style="background:#fff; border-radius:10px; padding:20px; width:460px; max-width:94vw; max-height:92vh; overflow-y:auto;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+      <h3 id="adminAcessosTitulo" style="margin:0;">Acessos</h3>
+      <button type="button" class="acao-icon" id="adminAcessosFecharBtn" title="Fechar">&#10005;</button>
+    </div>
+    <p id="adminAcessosSugestao" class="muted" style="font-size:11.5px; margin:0 0 8px;"></p>
+    <div id="adminAcessosLinhas"></div>
+    <p class="muted" style="font-size:11px; margin:10px 0 0;">Visualizador so consulta os dados. Editor tambem pode alterar. Nenhum usuario pode ficar com acesso a todas as pastas.</p>
+    <div id="adminAcessosMsg" style="margin-top:8px; font-size:12.5px;"></div>
+    <button type="button" class="btn" id="adminAcessosSalvarBtn" style="margin-top:8px;">Salvar acessos</button>
   </div>
 </div>
 
@@ -577,6 +642,26 @@
     <div class="field"><label class="field-label">Setor</label><select id="perfilSetorSelect"></select></div>
     <button type="button" class="btn" id="perfilSalvarBtn" style="margin-top:6px;">Enviar para aprovacao</button>
     <div id="perfilMsg" style="margin-top:8px; font-size:12.5px;"></div>
+  </div>
+</div>
+
+<div id="engResponsaveisOverlay" class="hidden" style="position:fixed; inset:0; background:rgba(20,70,46,.5); z-index:900; display:flex; align-items:center; justify-content:center;">
+  <div style="background:#fff; border-radius:10px; padding:20px; width:480px; max-width:94vw; max-height:90vh; overflow-y:auto;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+      <h3 id="engRespTitulo" style="margin:0;">Responsaveis</h3>
+      <button type="button" class="acao-icon" id="engRespFecharBtn" title="Fechar">&#10005;</button>
+    </div>
+    <div id="engRespLista"></div>
+    <div id="engRespAdicionarWrap" style="margin-top:14px; border-top:1px solid var(--border); padding-top:12px;">
+      <label class="field-label">Adicionar responsavel (compartilhar a tarefa)</label>
+      <div style="display:flex; gap:6px; flex-wrap:wrap;">
+        <select id="engRespNovoSelect" style="flex:2; min-width:160px;"></select>
+        <select id="engRespPapelSelect" style="flex:1; min-width:110px;"></select>
+        <button type="button" class="btn btn-sm" id="engRespAdicionarBtn">Adicionar</button>
+      </div>
+      <div id="engRespAviso" class="hidden" style="font-size:10.5px; color:#B7791F; margin-top:4px;">Essa inclusao precisa da aprovacao do gestor.</div>
+    </div>
+    <div id="engRespMsg" style="margin-top:8px; font-size:12.5px;"></div>
   </div>
 </div>
 
@@ -665,6 +750,7 @@
         <div class="card"><h3>Lotes por status</h3><div id="chartLoteStatus"></div></div>
         <div class="card"><h3>Itens por status</h3><div id="chartItemStatus"></div></div>
       </div>
+      <div class="card"><h3>Lotes - proximo vencimento critico</h3><p class="muted">So os lotes urgentes ou com vencimento proximo (dentro da antecedencia de alerta), os mais criticos primeiro. Clique numa linha para ir direto aos Itens do Lote.</p><div id="tabelaLotes"></div></div>
       <div class="card"><h3>Lotes por equipamento</h3><p class="muted">Quantos Lotes usam cada Equipamento (um Lote com mais de um Equipamento conta em cada barra).</p><div id="chartEquip"></div></div>
     </section>
 
@@ -683,10 +769,10 @@
       <div class="tabbar">
         <button class="tabbtn active" data-tab="lista-pedidos">Pedidos Cadastrados</button>
         <button class="tabbtn" data-tab="finalizados-pedidos">Pedidos Finalizados</button>
-        <button class="tabbtn" data-tab="novo-pedido">+ Novo Pedido</button>
+        <button class="tabbtn" data-tab="novo-pedido" data-edicao>+ Novo Pedido</button>
       </div>
 
-      <div class="tabpage" id="tab-novo-pedido">
+      <div class="tabpage" id="tab-novo-pedido" data-edicao>
         <div class="card">
           <div class="grid grid-4">
             <div class="field"><label class="field-label">No Pedido (ate 4 digitos)</label><input type="number" id="pedNoPedido" min="0" max="9999" autocomplete="off"></div>
@@ -728,11 +814,11 @@
       <div class="banner"><h1>Lotes</h1><p>No do Lote informado manualmente pelo operador</p></div>
       <div class="tabbar">
         <button class="tabbtn active" data-tab="lista">Lista de Lotes</button>
-        <button class="tabbtn" data-tab="gerenciar">Gerenciar Lote</button>
-        <button class="tabbtn" data-tab="novo">+ Novo Lote</button>
+        <button class="tabbtn" data-tab="gerenciar" data-edicao>Gerenciar Lote</button>
+        <button class="tabbtn" data-tab="novo" data-edicao>+ Novo Lote</button>
       </div>
 
-      <div class="tabpage" id="tab-novo">
+      <div class="tabpage" id="tab-novo" data-edicao>
         <div class="card">
           <div class="grid grid-2">
             <div class="field"><label class="field-label">Pedido</label><select id="loteePedidoSelect"></select></div>
@@ -764,7 +850,7 @@
         </div>
       </div>
 
-      <div class="tabpage" id="tab-gerenciar">
+      <div class="tabpage" id="tab-gerenciar" data-edicao>
         <div class="card">
           <h3>Gerenciar equipamentos, pecas e itens de um Lote existente</h3>
           <p class="muted">Clique no lapis de um equipamento ou peca pra editar tudo de uma vez (Item do Pedido, Descricao, Quantidade, Custo, itens rastreados, prazos e pre-requisitos). Sem clicar em editar, nada pode ser alterado.</p>
@@ -843,7 +929,7 @@
       <div class="tabbar">
         <button class="tabbtn active" data-tab="eq">Equipamentos</button>
         <button class="tabbtn" data-tab="itensEq">Itens por equipamento</button>
-        <button class="tabbtn" data-tab="novoEq">+ Novo equipamento</button>
+        <button class="tabbtn" data-tab="novoEq" data-edicao>+ Novo equipamento</button>
       </div>
 
       <div class="tabpage active" id="tab-eq">
@@ -863,7 +949,7 @@
         </div>
       </div>
 
-      <div class="tabpage" id="tab-novoEq">
+      <div class="tabpage" id="tab-novoEq" data-edicao>
         <div class="card">
           <p class="muted">Escolha, entre os itens ja existentes em outros equipamentos, quais tambem se aplicam a este
              (pre-requisitos so sao copiados se o item-pre-requisito TAMBEM for marcado).</p>
@@ -1116,7 +1202,7 @@ function seedData(){
                acessoGestao:[],
                cargasExpedicao:[],
                checklistsVinculados:{}, checklistInstancias:[], checklistsTemplates: JSON.parse(JSON.stringify(CHECKLISTS_QUALIDADE)),
-               funcionariosEngenharia:[], tarefasEngenharia:[], perfis:{},
+               funcionariosEngenharia:[], tarefasEngenharia:[], perfis:{}, acessosUsuarios:{}, acessosMigrados:true,
                configEngenharia: { horaInicio:null, horaSaidaIntervalo:null, horaRetornoIntervalo:null, horaEncerramento:null },
                settings:{alertaDias:5},
                seq:{equipamento:1,item:1,pedido:1,lote:1,itemLote:1,pecaAvulsa:1,itemAvulso:1,statusPedido:1,cargaExpedicao:1,checklistInstancia:1,tarefaEngenharia:1} };
@@ -1200,6 +1286,12 @@ function migrarSeNecessario(db){
   return db;
 }
 
+// colunas de revisao: cada uma tem seu checklist, que o gestor precisa aprovar pra tarefa seguir adiante
+const COLUNAS_REVISAO = {
+  revisao_projeto: { campo:"checklistProjeto", tipo:"projeto", nome:"Revisao - Projeto", colunaTrabalho:"desenvolvimento" },
+  revisao_detalhamento: { campo:"checklistDetalhamento", tipo:"detalhamento", nome:"Revisao - Detalhamento", colunaTrabalho:"detalhamento" },
+};
+
 function normalizarDB(db){
   db = migrarSeNecessario(db);
   if (!db.cores) db.cores = ["Verde","Cinza","Aluminio","Preto","Laranja","Amarelo","Galvanizado"];
@@ -1264,8 +1356,38 @@ function normalizarDB(db){
   if (!db.funcionariosEngenharia) db.funcionariosEngenharia = [];
   if (!db.tarefasEngenharia) db.tarefasEngenharia = [];
   if (!db.perfis) db.perfis = {};
+  if (!db.acessosUsuarios) db.acessosUsuarios = {};
+  if (!db.acessosMigrados) {
+    // quem ja tinha acesso a Gestao continua com ele (como Editor) - o resto o gestor libera pela Administracao
+    for (const email of (db.acessoGestao||[])) {
+      const k = String(email).trim().toLowerCase();
+      if (!k) continue;
+      const a = db.acessosUsuarios[k] || (db.acessosUsuarios[k] = { setores:{}, criadoEm:new Date().toISOString(), atualizadoPor:null, atualizadoEm:null });
+      if (!a.setores) a.setores = {};
+      if (!a.setores.gestao) a.setores.gestao = "editor";
+    }
+    db.acessosMigrados = true;
+  }
   if (!db.configEngenharia) db.configEngenharia = { horaInicio:null, horaSaidaIntervalo:null, horaRetornoIntervalo:null, horaEncerramento:null };
   for (const t of db.tarefasEngenharia) {
+    if (t.colunaAntesSuspensa === undefined) t.colunaAntesSuspensa = null;
+    if (!t.dispensasPendentes) t.dispensasPendentes = [];
+    if (t.dispensaRejeitada === undefined) t.dispensaRejeitada = null;
+    if (!t.coResponsaveis) t.coResponsaveis = [];
+    if (!t.compartilhamentosPendentes) t.compartilhamentosPendentes = [];
+    if (t.compartilhamentoRejeitado === undefined) t.compartilhamentoRejeitado = null;
+    if (!t.revisoesAnteriores) t.revisoesAnteriores = [];
+    {
+      // checklist enviado de uma tarefa que nao esta mais na coluna de revisao (ficava preso na fila do gestor)
+      const baseCol = t.coluna === "suspensa" ? (t.colunaAntesSuspensa || "coleta") : t.coluna;
+      for (const [colId, def] of Object.entries(COLUNAS_REVISAO)) {
+        const e = t[def.campo];
+        if (e && e.enviado && !e.aprovado && baseCol !== colId) {
+          t.revisoesAnteriores.push({ tipo: def.tipo, checklist: e, motivo: "tarefa estava fora da coluna de revisao (ajuste automatico)", arquivadoEm: new Date().toISOString() });
+          t[def.campo] = null;
+        }
+      }
+    }
     if (t.prazo === undefined) t.prazo = null;
     if (t.atribuicaoPendente === undefined) t.atribuicaoPendente = null;
     if (t.atribuicaoRejeitada === undefined) t.atribuicaoRejeitada = null;
@@ -1293,6 +1415,7 @@ function loadDB(){
   return seedData();
 }
 function saveDB(){
+  if (setorAtualId && nivelAcessoSetor(setorAtualId) === "visualizador") { bloquearAlteracaoSomenteLeitura(); return; }
   localStorage.setItem(STORAGE_KEY, JSON.stringify(DB));
   agendarSyncNuvem();
 }
@@ -1443,6 +1566,15 @@ function iniciarPollingNuvem(){
 }
 
 function rerenderizarTelaAtual(){
+  // o gestor pode ter mudado o acesso enquanto a pessoa estava na pasta
+  if (setorAtualId) {
+    if (nivelAcessoSetor(setorAtualId) === null) {
+      mostrarAviso("O gestor retirou o seu acesso a essa pasta.");
+      abrirSetorInterno("painelPastas");
+      return;
+    }
+    aplicarModoLeitura(setorAtualId);
+  }
   if (!document.getElementById("appRoot").classList.contains("hidden")) {
     const navbtn = document.querySelector(".navbtn.active");
     if (navbtn) renderPage(navbtn.dataset.page);
@@ -1469,6 +1601,13 @@ function getItem(id){ return DB.itens.find(i=>i.id===id); }
 function getEquipamento(id){ return DB.equipamentos.find(e=>e.id===id); }
 function equipamentosOrdenados(){ return [...DB.equipamentos].sort((a,b)=>a.nome.localeCompare(b.nome, 'pt-BR')); }
 function getEquipamentosDoLote(lote){ return (lote.equipamentoIds||[]).map(id=>getEquipamento(id)).filter(Boolean); }
+// equipamentos E pecas avulsas do lote (o lote pode ter so pecas avulsas)
+function nomesEquipEPecasLote(lote){
+  const eqs = getEquipamentosDoLote(lote).map(e=>e.nome);
+  const pecas = DB.pecasAvulsas.filter(p=>p.loteId===lote.id).map(p=>`${p.nome} (peca avulsa)`);
+  const todos = eqs.concat(pecas);
+  return todos.length ? todos.join(", ") : "-";
+}
 function nomesEquipamentosLote(lote){ const eqs = getEquipamentosDoLote(lote); return eqs.length ? eqs.map(e=>e.nome).join(", ") : "-"; }
 function custoEstimadoTotalDoLote(lote){
   const somaEquip = Object.values(lote.custosEstimadosPorEquip||{}).reduce((s,v)=>s+(v||0),0);
@@ -1780,6 +1919,29 @@ const setSidebarCollapsed = criarAlternadorSidebar("sidebarNav", "sidebarToggle"
 criarAlternadorSidebar("qualSidebarNav", "qualSidebarToggle", "qual_sidebar_collapsed");
 criarAlternadorSidebar("engSidebarNav", "engSidebarToggle", "eng_sidebar_collapsed");
 criarAlternadorSidebar("expSidebarNav", "expSidebarToggle", "exp_sidebar_collapsed");
+criarAlternadorSidebar("gestaoSidebarNav", "gestaoSidebarToggle", "gestao_sidebar_collapsed");
+criarAlternadorSidebar("adminSidebarNav", "adminSidebarToggle", "admin_sidebar_collapsed");
+criarAlternadorSidebar("phSidebarNav", "phSidebarToggle", "ph_sidebar_collapsed");
+
+// cabecalho padrao das barras laterais (logo, usuario e Sair) - igual ao do PPCP
+function preencherCabecalhosSidebars(){
+  const logo = document.querySelector("#appRoot img[alt='BRS Equipamentos Agricolas']");
+  document.querySelectorAll(".logo-sidebar").forEach(img=>{ if (logo && img.getAttribute("src") !== logo.src) img.src = logo.src; });
+  document.querySelectorAll(".sb-usuario-email").forEach(el=>{ el.textContent = emailUsuarioAtual || ""; });
+  document.querySelectorAll(".sb-usuario").forEach(el=>el.classList.toggle("hidden", !emailUsuarioAtual));
+}
+document.querySelectorAll(".sb-logout").forEach(a=>a.addEventListener("click", (e)=>{ e.preventDefault(); fazerLogout(); }));
+
+function ativarPaginaSetor(rootId, prefixo, classeBtn, chaveDataset, nome){
+  document.querySelectorAll("#"+rootId+" .page").forEach(p=>p.classList.remove("active"));
+  const pagina = document.getElementById(prefixo+nome);
+  if (pagina) pagina.classList.add("active");
+  document.querySelectorAll("."+classeBtn).forEach(b=>b.classList.toggle("active", b.dataset[chaveDataset]===nome));
+}
+function showGestaoPage(nome){ ativarPaginaSetor("gestaoRoot", "gestaopage-", "gestao-navbtn", "gestaopage", nome); }
+function showAdminPage(nome){ ativarPaginaSetor("adminRoot", "adminpage-", "admin-navbtn", "adminpage", nome); }
+document.querySelectorAll(".gestao-navbtn").forEach(b=>b.addEventListener("click", ()=>showGestaoPage(b.dataset.gestaopage)));
+document.querySelectorAll(".admin-navbtn").forEach(b=>b.addEventListener("click", ()=>showAdminPage(b.dataset.adminpage)));
 
 /* =====================================================================
    NAVEGACAO
@@ -1973,6 +2135,33 @@ function renderPainel(){
     return `<div class="gantt-row"><div class="gantt-label">${s}</div><div class="gantt-track"><div class="gantt-bar" style="width:${w}%;background:${STATUS_COLORS[s]}"></div></div><div style="width:30px;text-align:right;">${v}</div></div>`;
   }).join("");
   document.getElementById("chartItemStatus").innerHTML = itemStatusHtml || '<p class="muted">Nenhum item cadastrado.</p>';
+
+  // ---- lotes por proximo vencimento critico (urgentes primeiro; lotes ja expedidos por completo ficam de fora) ----
+  const ordemStatusLote = { "URGENTE":0, "ATENCAO":1, "OK":2, "SEM ITENS CADASTRADOS":3, "CONCLUIDO":4 };
+  const lotesAbertos = rows.filter(r=>!loteEstaEncerrado(r.lote) && (r.status==="URGENTE" || r.status==="ATENCAO"));
+  lotesAbertos.sort((a,b)=>{
+    const sa = ordemStatusLote[a.status]!==undefined ? ordemStatusLote[a.status] : 9;
+    const sb = ordemStatusLote[b.status]!==undefined ? ordemStatusLote[b.status] : 9;
+    const da = (a.dias===null||a.dias===undefined) ? 1e9 : a.dias;
+    const db_ = (b.dias===null||b.dias===undefined) ? 1e9 : b.dias;
+    return (sa-sb) || (da-db_);
+  });
+  const tabelaLotesEl = document.getElementById("tabelaLotes");
+  if (!lotesAbertos.length) {
+    tabelaLotesEl.innerHTML = '<p class="muted">Nenhum lote urgente ou proximo do vencimento no momento.</p>';
+  } else {
+    let htmlTab = "<table><tr><th>No Lote</th><th>No Pedido</th><th>Equipamento / Peca avulsa</th><th>Status</th><th>Proximo Vencimento</th><th>Dias Restantes</th></tr>";
+    for (const r of lotesAbertos) {
+      const pedido = getPedido(r.lote.pedidoId);
+      const diasTxt = (r.dias!==null && r.dias!==undefined) ? (r.dias<0 ? `<span style="color:var(--danger); font-weight:700;">${r.dias}</span>` : r.dias) : "-";
+      htmlTab += `<tr class="linha-clicavel" data-goto-lote="${r.lote.id}"><td>${escaparHtmlPerfil(r.lote.noLote)}</td><td>${pedido?escaparHtmlPerfil(String(pedido.noPedido)):"-"}</td><td>${escaparHtmlPerfil(nomesEquipEPecasLote(r.lote))}</td><td>${pill(r.status,LOTE_STATUS_COLORS)}</td><td>${r.proxima?fmtBR(r.proxima):"-"}</td><td>${diasTxt}</td></tr>`;
+    }
+    htmlTab += "</table>";
+    tabelaLotesEl.innerHTML = htmlTab;
+    tabelaLotesEl.querySelectorAll("[data-goto-lote]").forEach(tr=>{
+      tr.addEventListener("click", ()=> irParaItensDoLote(parseInt(tr.dataset.gotoLote)));
+    });
+  }
 
   const eqCounts = {};
   for (const lote of DB.lotes) { for (const eq of getEquipamentosDoLote(lote)) eqCounts[eq.nome]=(eqCounts[eq.nome]||0)+1; }
@@ -3852,13 +4041,100 @@ function iniciarApp(){
   });
   document.getElementById("loginOverlay").style.display = "none";
   document.getElementById("sairGlobalBtn").classList.remove("hidden");
+  registrarUsuarioParaLiberacao();
   renderPainelPastas();
   mostrarTelaPrincipal("painelPastas");
   try { history.replaceState({ tela: "painelPastas" }, ""); } catch(e) {}
 }
 
-function temAcessoGestao(){
-  return emailUsuarioAtual === USUARIO_MASTER || (DB.acessoGestao||[]).includes(emailUsuarioAtual);
+/* =====================================================================
+   ACESSO POR PASTA (sem acesso / visualizador / editor) - liberado pelo gestor
+   ===================================================================== */
+let setorAtualId = null;   // pasta de dados aberta agora (null = painel, administracao ou fora de pasta)
+const ROOT_DO_SETOR = { ppcp:"appRoot", engenharia:"engenhariaRoot", qualidade:"qualidadeRoot", expedicao:"expedicaoRoot", gestao:"gestaoRoot", producao:"placeholderRoot", almoxarifado:"placeholderRoot" };
+
+function acessoDoUsuario(email){ return ((DB && DB.acessosUsuarios) || {})[chavePerfil(email)] || null; }
+function nivelAcessoSetor(setorId, email){
+  const quem = email === undefined ? emailUsuarioAtual : email;
+  if (!quem) return (!supabaseClient && setorId !== "gestao") ? "editor" : null;   // sem login so vale se o app nem conseguiu conectar
+  if (chavePerfil(quem) === chavePerfil(USUARIO_MASTER)) return "editor";
+  const a = acessoDoUsuario(quem);
+  const n = a && a.setores ? a.setores[setorId] : null;
+  return (n === "editor" || n === "visualizador") ? n : null;
+}
+function temAcessoGestao(){ return nivelAcessoSetor("gestao") !== null; }
+function usuarioAguardandoLiberacao(email){
+  if (chavePerfil(email) === chavePerfil(USUARIO_MASTER)) return false;
+  const a = acessoDoUsuario(email);
+  return !a || !a.setores || !Object.values(a.setores).some(v=>v==="editor" || v==="visualizador");
+}
+function emailsConhecidosParaAcesso(){
+  const mapa = new Map();
+  const add = e => { const k = chavePerfil(e); if (k && k !== chavePerfil(USUARIO_MASTER)) mapa.set(k, k); };
+  Object.keys((DB && DB.perfis) || {}).forEach(add);
+  Object.keys((DB && DB.acessosUsuarios) || {}).forEach(add);
+  return [...mapa.values()];
+}
+function contarUsuariosAguardandoLiberacao(){ return emailsConhecidosParaAcesso().filter(usuarioAguardandoLiberacao).length; }
+
+function mostrarAviso(msg){
+  const t = document.getElementById("toastAviso");
+  if (!t) return;
+  t.textContent = msg;
+  t.classList.remove("hidden");
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(()=>t.classList.add("hidden"), 4500);
+}
+
+function abrirPaginaPadrao(rootId){
+  if (rootId === "appRoot") showPage("painel");
+  else if (rootId === "qualidadeRoot") showQualPage("gerados");
+  else if (rootId === "engenhariaRoot") showEngPage("kanban");
+  else if (rootId === "expedicaoRoot") showExpPage("resumo");
+  else if (rootId === "gestaoRoot") showGestaoPage("indicadores");
+  else if (rootId === "adminRoot") showAdminPage("cadastros");
+}
+
+// marca a pasta aberta como "somente leitura" quando o usuario e visualizador
+function aplicarModoLeitura(setorId){
+  const leitura = !!setorId && nivelAcessoSetor(setorId) === "visualizador";
+  new Set(Object.values(ROOT_DO_SETOR)).forEach(id=>{ const el = document.getElementById(id); if (el) el.classList.remove("somente-leitura"); });
+  const faixa = document.getElementById("faixaLeitura");
+  if (faixa) {
+    faixa.classList.toggle("hidden", !leitura);
+    if (leitura) faixa.textContent = "Somente visualizacao - " + nomeSetorPorId(setorId);
+  }
+  if (leitura) {
+    const rootId = ROOT_DO_SETOR[setorId];
+    const raiz = document.getElementById(rootId);
+    if (raiz) {
+      raiz.classList.add("somente-leitura");
+      const ativa = raiz.querySelector(".page.active");
+      if (ativa && ativa.hasAttribute("data-edicao")) abrirPaginaPadrao(rootId);
+    }
+  }
+  return leitura;
+}
+
+// trava de seguranca: visualizador ate consegue mexer na tela, mas NADA e gravado
+let revertendoLeitura = false;
+function bloquearAlteracaoSomenteLeitura(){
+  DB = loadDB();   // volta pro ultimo estado salvo - a alteracao nao vale
+  mostrarAviso("Voce so tem permissao de visualizacao nesta pasta - a alteracao nao foi salva.");
+  if (revertendoLeitura) return;
+  revertendoLeitura = true;
+  setTimeout(()=>{ try { rerenderizarTelaAtual(); } catch(e) { console.error(e); } revertendoLeitura = false; }, 0);
+}
+
+// usuario novo entra na lista do gestor (Administracao > Acessos) sem precisar de cadastro de perfil
+function registrarUsuarioParaLiberacao(){
+  if (!emailUsuarioAtual || chavePerfil(emailUsuarioAtual) === chavePerfil(USUARIO_MASTER)) return;
+  if (!DB.acessosUsuarios) DB.acessosUsuarios = {};
+  const k = chavePerfil(emailUsuarioAtual);
+  if (!DB.acessosUsuarios[k]) {
+    DB.acessosUsuarios[k] = { setores:{}, criadoEm:new Date().toISOString(), atualizadoPor:null, atualizadoEm:null };
+    saveDB();
+  }
 }
 
 /* =====================================================================
@@ -4050,6 +4326,8 @@ function renderPerfisPendentes(){
       </div>
     </div>`;
   }).join("") : '<p class="muted">Nenhum cadastro aguardando aprovacao.</p>';
+  const navCad = document.getElementById("adminNavCadastros");
+  if (navCad) navCad.textContent = "Cadastros pendentes" + (pendentes.length ? ` (${pendentes.length})` : "");
   wrap.querySelectorAll("[data-aprovar-perfil]").forEach(b=>b.addEventListener("click", ()=>aprovarPerfil(b.dataset.aprovarPerfil)));
   wrap.querySelectorAll("[data-rejeitar-perfil]").forEach(b=>b.addEventListener("click", ()=>rejeitarPerfil(b.dataset.rejeitarPerfil)));
 }
@@ -4092,8 +4370,9 @@ function renderPainelPastas(){
   const nome = (aprovadoPainel && aprovadoPainel.nome) ? aprovadoPainel.nome.split(" ")[0] : primeiroNomeDoEmail(emailUsuarioAtual);
   document.getElementById("painelPastasSaudacao").textContent = nome ? `${saudacaoDoHorario()}, ${nome}` : saudacaoDoHorario();
 
-  const setoresParaMostrar = SETORES.filter(s => s.id!=="gestao" || temAcessoGestao());
-  if (emailUsuarioAtual === USUARIO_MASTER) setoresParaMostrar.push({ id:"admin", nome:"Administra\u00e7\u00e3o", icone:"&#128273;", selo: contarPerfisPendentes() });
+  const tagLeitura = '<span style="font-size:10.5px; font-weight:600; font-family:Inter,sans-serif; color:#1F4E79; background:#E8F1FB; border-radius:10px; padding:1px 8px;">Somente leitura</span>';
+  const setoresParaMostrar = SETORES.filter(s=>nivelAcessoSetor(s.id) !== null).map(s=>({ ...s, leitura: nivelAcessoSetor(s.id) === "visualizador" }));
+  if (emailUsuarioAtual === USUARIO_MASTER) setoresParaMostrar.push({ id:"admin", nome:"Administra\u00e7\u00e3o", icone:"&#128273;", selo: contarPerfisPendentes() + contarUsuariosAguardandoLiberacao() });
 
   const meuPerfil = obterPerfil(emailUsuarioAtual);
   let linhaPerfil;
@@ -4107,11 +4386,14 @@ function renderPainelPastas(){
       <span style="font-size:11.5px; color:#6B7B70;">${linhaPerfil}</span>
     </span>`;
 
-  document.getElementById("painelPastasGrid").innerHTML = setoresParaMostrar.map(s=>`
+  document.getElementById("painelPastasGrid").innerHTML = !setoresParaMostrar.length
+    ? '<div class="card" style="grid-column:1/-1;"><strong>Voce ainda nao tem acesso a nenhuma pasta.</strong><p class="muted" style="margin:6px 0 0;">Peca ao gestor pra liberar os seus acessos. Enquanto isso, complete o seu cadastro no botao ao lado do seu nome.</p></div>'
+    : setoresParaMostrar.map(s=>`
     <button type="button" data-setor="${s.id}" class="botao-setor" style="position:relative; display:flex; flex-direction:column; align-items:flex-start; gap:9px; padding:22px 16px 18px; background:#fff; border:1px solid #E1E6DE; border-radius:8px; cursor:pointer; font-family:'Barlow Semi Condensed',sans-serif; font-weight:700; font-size:14.5px; color:#14462E; letter-spacing:.015em; text-align:left; overflow:hidden; transition:transform .15s ease, box-shadow .15s ease;">
       <span class="botao-setor-barra" style="position:absolute; top:0; left:0; width:100%; height:3px; background:#D3DDCB; transition:background .15s ease;"></span>
       <span style="font-size:22px;">${s.icone}</span>
       <span>${s.nome}</span>
+      ${s.leitura ? tagLeitura : ""}
       ${s.selo ? `<span title="Cadastros aguardando aprovacao" style="position:absolute; top:10px; right:10px; background:var(--danger); color:#fff; font-family:'Inter',sans-serif; font-size:11px; font-weight:700; border-radius:10px; padding:1px 7px;">${s.selo}</span>` : ""}
     </button>`).join("");
 
@@ -4148,12 +4430,14 @@ function garantirPaginaAtiva(rootId){
   else if (rootId === "qualidadeRoot") showQualPage("gerados");
   else if (rootId === "engenhariaRoot") showEngPage("kanban");
   else if (rootId === "expedicaoRoot") showExpPage("resumo");
+  else if (rootId === "gestaoRoot") showGestaoPage("indicadores");
+  else if (rootId === "adminRoot") showAdminPage("cadastros");
 }
 
 function abrirSetorInterno(setorId){
   try {
     abrirSetorInternoBruto(setorId);
-    const raiz = { ppcp:"appRoot", qualidade:"qualidadeRoot", engenharia:"engenhariaRoot", expedicao:"expedicaoRoot" }[setorId];
+    const raiz = { ppcp:"appRoot", qualidade:"qualidadeRoot", engenharia:"engenhariaRoot", expedicao:"expedicaoRoot", gestao:"gestaoRoot", admin:"adminRoot" }[setorId];
     if (raiz) garantirPaginaAtiva(raiz);
   } catch(e) {
     mostrarErroDeTela(e);
@@ -4161,11 +4445,21 @@ function abrirSetorInterno(setorId){
 }
 
 function abrirSetorInternoBruto(setorId){
+  preencherCabecalhosSidebars();
+  const pastaDeDados = SETORES.some(s=>s.id===setorId);
+  const semAcesso = (pastaDeDados && nivelAcessoSetor(setorId) === null) || (setorId === "admin" && emailUsuarioAtual !== USUARIO_MASTER);
+  if (semAcesso) {
+    alert(setorId === "admin" ? "Somente o gestor acessa a Administracao." : `Voce nao tem acesso a pasta ${nomeSetorPorId(setorId)}. Peca ao gestor pra liberar.`);
+    setorAtualId = null; aplicarModoLeitura(null);
+    renderPainelPastas(); mostrarTelaPrincipal("painelPastas");
+    return;
+  }
+  setorAtualId = pastaDeDados ? setorId : null;
+  aplicarModoLeitura(setorAtualId);
   if (setorId === "ppcp") {
     mostrarTelaPrincipal("appRoot");
     renderPainel();
   } else if (setorId === "gestao") {
-    if (!temAcessoGestao()) { alert("Voce nao tem permissao para acessar o setor Gestao. Peca pro usuario master liberar seu acesso."); mostrarTelaPrincipal("painelPastas"); return; }
     mostrarTelaPrincipal("gestaoRoot");
     renderGestao();
   } else if (setorId === "expedicao") {
@@ -4187,6 +4481,7 @@ function abrirSetorInternoBruto(setorId){
     const nomes = { producao:"Produ\u00e7\u00e3o", almoxarifado:"Almoxarifado" };
     document.getElementById("placeholderTitulo").textContent = nomes[setorId] || setorId;
     document.getElementById("placeholderTexto").textContent = "Este setor ainda esta em desenvolvimento.";
+    document.querySelectorAll("#phSidebarNav .brand-sub").forEach(el=>el.textContent = (nomes[setorId] || setorId));
     mostrarTelaPrincipal("placeholderRoot");
   }
 }
@@ -4220,39 +4515,100 @@ async function chamarFuncaoUsuarios(body){
   return json;
 }
 
-function renderAdminGestaoAcesso(){
-  const lista = document.getElementById("adminGestaoLista");
-  const emails = DB.acessoGestao || [];
-  lista.innerHTML = emails.length ? emails.map(email=>`
-    <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid var(--border);">
-      <span>${email}</span>
-      <button type="button" class="acao-icon danger" data-remover-acesso-gestao="${email.replace(/"/g,"&quot;")}" title="Remover acesso">&#128465;</button>
-    </div>`).join("") : '<p class="muted">Nenhum usuario extra tem acesso ainda - somente o master.</p>';
+/* ---- Administracao: acessos por pasta ---- */
+let adminAcessosEmail = null;
+const NOMES_NIVEL = { editor:"Editor", visualizador:"Visualizador" };
 
-  lista.querySelectorAll("[data-remover-acesso-gestao]").forEach(btn=>{
-    btn.addEventListener("click", ()=>{
-      if (!confirm(`Remover o acesso de ${btn.dataset.removerAcessoGestao} ao setor Gestao?`)) return;
-      DB.acessoGestao = DB.acessoGestao.filter(e=>e!==btn.dataset.removerAcessoGestao);
-      saveDB();
-      renderAdminGestaoAcesso();
-    });
-  });
-
-  document.getElementById("adminGestaoAddBtn").onclick = ()=>{
-    const inp = document.getElementById("adminGestaoEmailInput");
-    const email = inp.value.trim().toLowerCase();
-    if (!email) return;
-    if (!email.endsWith("@"+DOMINIO_PERMITIDO)) { alert(`Somente e-mails @${DOMINIO_PERMITIDO}.`); return; }
-    if (email === USUARIO_MASTER) { alert("O usuario master ja tem acesso a tudo."); return; }
-    if (!DB.acessoGestao.includes(email)) { DB.acessoGestao.push(email); saveDB(); }
-    inp.value = "";
-    renderAdminGestaoAcesso();
-  };
+function chipsAcessoUsuario(email){
+  const a = acessoDoUsuario(email);
+  const itens = SETORES.filter(s=>a && a.setores && (a.setores[s.id]==="editor" || a.setores[s.id]==="visualizador"));
+  if (!itens.length) return '<span style="font-size:11.5px; font-weight:700; color:#B7791F;">Aguardando liberacao</span>';
+  return itens.map(s=>{
+    const edit = a.setores[s.id] === "editor";
+    return `<span style="display:inline-block; margin:1px 4px 1px 0; padding:1px 8px; border-radius:10px; font-size:11px; font-weight:600; background:${edit?"#E3F1E8":"#E8F1FB"}; color:${edit?"#14462E":"#1F4E79"};">${escaparHtmlPerfil(s.nome)}: ${NOMES_NIVEL[a.setores[s.id]]}</span>`;
+  }).join("");
 }
+
+function pintarListaAcessos(emails){
+  const wrap = document.getElementById("adminAcessosLista");
+  const unicos = [...new Set(emails.map(chavePerfil).filter(k=>k && k !== chavePerfil(USUARIO_MASTER)))];
+  unicos.sort((a,b)=> (usuarioAguardandoLiberacao(b)-usuarioAguardandoLiberacao(a)) || nomeExibicao(a).localeCompare(nomeExibicao(b), "pt-BR"));
+  const aguardando = unicos.filter(usuarioAguardandoLiberacao).length;
+  const nav = document.getElementById("adminNavAcessos");
+  if (nav) nav.textContent = "Acessos por pasta" + (aguardando ? ` (${aguardando})` : "");
+  if (!unicos.length) { wrap.innerHTML = '<p class="muted">Nenhum usuario cadastrado ainda. Eles aparecem aqui assim que entrarem no sistema.</p>'; return; }
+  wrap.innerHTML = '<table><tr><th>Usuario</th><th>Setor do cadastro</th><th>Acessos liberados</th><th></th></tr>' + unicos.map(email=>{
+    const ap = perfilAprovado(email);
+    return `<tr>
+      <td><div style="display:flex; align-items:center; gap:8px;">${avatarHtml(email, 30)}<div><strong>${escaparHtmlPerfil(ap&&ap.nome?ap.nome:email)}</strong><div class="muted" style="font-size:11px;">${escaparHtmlPerfil(email)}</div></div></div></td>
+      <td>${ap ? escaparHtmlPerfil(nomeSetorPorId(ap.setor)||"-") : '<span class="muted">sem cadastro</span>'}</td>
+      <td>${chipsAcessoUsuario(email)}</td>
+      <td><button type="button" class="btn btn-sm" data-definir-acessos="${escaparHtmlPerfil(email)}">Definir acessos</button></td>
+    </tr>`;
+  }).join("") + '</table>';
+  wrap.querySelectorAll("[data-definir-acessos]").forEach(b=>b.addEventListener("click", ()=>abrirAcessosUsuario(b.dataset.definirAcessos)));
+}
+
+async function renderAdminAcessos(){
+  pintarListaAcessos(emailsConhecidosParaAcesso());
+  try {
+    const reais = await listarFuncionariosReais();       // quem tem login, mesmo sem ter entrado ainda
+    pintarListaAcessos(emailsConhecidosParaAcesso().concat(reais));
+  } catch(e) { /* sem a funcao de administracao: segue com a lista local */ }
+}
+
+function abrirAcessosUsuario(email){
+  if (emailUsuarioAtual !== USUARIO_MASTER) return;
+  const k = chavePerfil(email);
+  adminAcessosEmail = k;
+  const a = acessoDoUsuario(k);
+  const ap = perfilAprovado(k);
+  const configurado = !!(a && a.setores && Object.values(a.setores).some(v=>v==="editor"||v==="visualizador"));
+  let atuais = configurado ? a.setores : {};
+  let sugestao = "";
+  if (!configurado && ap && SETORES.some(s=>s.id===ap.setor)) {
+    atuais = { [ap.setor]: "editor" };   // so uma sugestao: so vale depois de salvar
+    sugestao = `Sugestao inicial: a pasta do setor do cadastro (${nomeSetorPorId(ap.setor)}) como Editor. Ajuste e salve - so vale depois de salvar.`;
+  }
+  document.getElementById("adminAcessosTitulo").textContent = `Acessos - ${ap&&ap.nome?ap.nome:k}`;
+  document.getElementById("adminAcessosSugestao").textContent = sugestao;
+  document.getElementById("adminAcessosMsg").innerHTML = "";
+  document.getElementById("adminAcessosLinhas").innerHTML = SETORES.map(s=>`
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; padding:7px 0; border-top:1px solid var(--border);">
+      <span style="font-weight:600;">${escaparHtmlPerfil(s.nome)}</span>
+      <select id="adminAcesso_${s.id}" style="width:auto; min-width:150px;">
+        <option value="">Sem acesso</option>
+        <option value="visualizador">Visualizador</option>
+        <option value="editor">Editor</option>
+      </select>
+    </div>`).join("");
+  SETORES.forEach(s=>{ document.getElementById("adminAcesso_"+s.id).value = atuais[s.id] || ""; });
+  document.getElementById("adminAcessosOverlay").classList.remove("hidden");
+}
+
+function salvarAcessosUsuario(){
+  if (emailUsuarioAtual !== USUARIO_MASTER || !adminAcessosEmail) return;
+  const msgEl = document.getElementById("adminAcessosMsg");
+  const setores = {};
+  SETORES.forEach(s=>{ const v = document.getElementById("adminAcesso_"+s.id).value; if (v==="editor" || v==="visualizador") setores[s.id] = v; });
+  if (Object.keys(setores).length >= SETORES.length) {
+    msgEl.innerHTML = '<span style="color:var(--danger);">Nenhum usuario pode ficar com acesso a todas as pastas. Deixe pelo menos uma sem acesso.</span>';
+    return;
+  }
+  if (!DB.acessosUsuarios) DB.acessosUsuarios = {};
+  const anterior = DB.acessosUsuarios[adminAcessosEmail] || {};
+  DB.acessosUsuarios[adminAcessosEmail] = { ...anterior, setores, criadoEm: anterior.criadoEm || new Date().toISOString(), atualizadoPor: emailUsuarioAtual, atualizadoEm: new Date().toISOString() };
+  saveDB();
+  document.getElementById("adminAcessosOverlay").classList.add("hidden");
+  renderAdminAcessos();
+}
+
+document.getElementById("adminAcessosFecharBtn").addEventListener("click", ()=>document.getElementById("adminAcessosOverlay").classList.add("hidden"));
+document.getElementById("adminAcessosSalvarBtn").addEventListener("click", salvarAcessosUsuario);
 
 async function renderAdmin(){
   renderPerfisPendentes();
-  renderAdminGestaoAcesso();
+  renderAdminAcessos();
   const avisoEl = document.getElementById("adminAvisoConfig");
   const tabelaEl = document.getElementById("adminTabelaUsuarios");
   avisoEl.textContent = "Verificando conexao com a funcao de administracao...";
@@ -4585,7 +4941,7 @@ function renderGestao(){
       <div class="card" style="margin-bottom:8px;">
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <strong>Lote ${lote.noLote}</strong>
-          <button type="button" class="btn secondary btn-sm" onclick="irParaItensDoLoteGestao(${lote.id});">Ir para Lote</button>
+          <button type="button" class="btn secondary btn-sm btn-leitura" onclick="irParaItensDoLoteGestao(${lote.id});">Ir para Lote</button>
         </div>
         ${itensProblema.length ? `<ul style="margin:8px 0 0 18px; padding:0; font-size:13px;">
           ${itensProblema.map(ip=>`<li>${ip.nome} - ${pill(ip.status)}</li>`).join("")}
@@ -5109,7 +5465,7 @@ function renderQualidadeModelos(){
     return `<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--border);">
       <span>${cl.nome} <span class="muted" style="font-size:12px;">(${cl.secoes.length} secoes, ${totalItens} itens)</span></span>
       <div class="acoes-lote">
-        <button type="button" class="btn secondary btn-sm" data-ver-modelo="${id}">Visualizar</button>
+        <button type="button" class="btn secondary btn-sm btn-leitura" data-ver-modelo="${id}">Visualizar</button>
         <button type="button" class="btn secondary btn-sm" data-editar-modelo="${id}">Editar</button>
       </div>
     </div>`;
@@ -5312,7 +5668,7 @@ function renderTabelaChecklistInstancias(){
         <td>${new Date(inst.dataGeracao).toLocaleDateString('pt-BR')}</td>
         <td>${pill(statusLabels[inst.status], statusCores.hasOwnProperty ? {PENDENTE:statusCores.pendente,APROVADO:statusCores.aprovado,REPROVADO:statusCores.reprovado} : null)}</td>
         <td><div class="acoes-lote">
-          <button type="button" class="acao-icon" data-imprimir-checklist="${inst.id}" title="Imprimir">&#128424;</button>
+          <button type="button" class="acao-icon btn-leitura" data-imprimir-checklist="${inst.id}" title="Imprimir">&#128424;</button>
           ${inst.status!=="aprovado"?`<button type="button" class="acao-icon" data-aprovar-checklist="${inst.id}" title="Aprovar">&#10003;</button>`:''}
           ${inst.status!=="reprovado"?`<button type="button" class="acao-icon danger" data-reprovar-checklist="${inst.id}" title="Reprovar">&#10005;</button>`:''}
           <button type="button" class="acao-icon danger" data-excluir-checklist="${inst.id}" title="Excluir">&#128465;</button>
@@ -5593,6 +5949,8 @@ function criarTarefaEngenharia(){
     coluna: "coleta", checklistProjeto: null, checklistDetalhamento: null,
     criadoEm: agora, criadoPor: emailUsuarioAtual, periodosAtivos: [], rodando: false, finalizada: false,
     atribuicaoPendente, atribuicaoRejeitada: null, prazo,
+    dispensasPendentes: [], dispensaRejeitada: null,
+    coResponsaveis: [], compartilhamentosPendentes: [], compartilhamentoRejeitado: null,
   });
   saveDB();
   document.getElementById("engNovaTarefaTitulo").value = "";
@@ -5689,6 +6047,7 @@ document.getElementById("engSalvarEdicaoTarefaBtn").addEventListener("click", ()
     // decisao do gestor vale na hora (e substitui qualquer pedido de atribuicao em aberto)
     if (escolhido !== (tarefa.funcionario || "")) {
       tarefa.funcionario = escolhido || null;
+      tarefa.coResponsaveis = (tarefa.coResponsaveis||[]).filter(r=>chavePerfil(r.email)!==chavePerfil(tarefa.funcionario));
       tarefa.atribuicaoPendente = null;
       tarefa.atribuicaoRejeitada = null;
     }
@@ -5724,6 +6083,7 @@ function aprovarAtribuicaoTarefa(tarefaId){
     t.rodando = false;
   }
   t.funcionario = t.atribuicaoPendente.para;
+  t.coResponsaveis = (t.coResponsaveis||[]).filter(r=>chavePerfil(r.email)!==chavePerfil(t.funcionario));
   t.atribuicaoPendente = null;
   t.atribuicaoRejeitada = null;
   saveDB();
@@ -5743,6 +6103,189 @@ function rejeitarAtribuicaoTarefa(tarefaId){
   renderEngPendencias();
   renderEngKanban();
 }
+
+/* ---- responsaveis adicionais (tarefa compartilhada) ---- */
+let engRespTarefaId = null;
+const escR = escaparHtmlPerfil;
+
+function candidatosResponsaveisSync(t){
+  const jaTem = new Set(responsaveisDaTarefa(t).concat((t.compartilhamentosPendentes||[]).map(p=>p.email)).map(chavePerfil));
+  const base = emailUsuarioAtual === USUARIO_MASTER ? Object.values(DB.perfis||{}).filter(p=>p.atual).map(p=>p.email) : engenheirosAprovadosExcetoEu();
+  return base.filter(e=>!jaTem.has(chavePerfil(e)));
+}
+
+function renderEngRespLista(){
+  const t = DB.tarefasEngenharia.find(x=>x.id===engRespTarefaId);
+  const wrap = document.getElementById("engRespLista");
+  if (!t) { wrap.innerHTML = ""; return; }
+  const souGestor = emailUsuarioAtual === USUARIO_MASTER;
+  const eu = chavePerfil(emailUsuarioAtual);
+  let html = t.funcionario
+    ? `<div style="padding:6px 0;"><strong>${escR(rotuloFuncionario(t.funcionario))}</strong> <span class="muted" style="font-size:11px;">- responsavel principal</span></div>`
+    : '<div class="muted" style="padding:6px 0;">Sem responsavel principal.</div>';
+  for (const r of (t.coResponsaveis||[])) {
+    const euMesmo = chavePerfil(r.email) === eu;
+    html += `<div style="display:flex; justify-content:space-between; align-items:center; gap:8px; padding:6px 0; border-top:1px solid var(--border);">
+      <span>${escR(rotuloFuncionario(r.email))} <span class="muted" style="font-size:11px;">- ${escR(r.papel)}</span></span>
+      ${(souGestor||euMesmo) ? `<button type="button" class="btn secondary btn-sm" data-resp-remover="${escR(r.email)}">${euMesmo&&!souGestor?"Sair da tarefa":"Remover"}</button>` : ""}
+    </div>`;
+  }
+  for (const p of (t.compartilhamentosPendentes||[])) {
+    const meu = chavePerfil(p.solicitadoPor) === eu;
+    html += `<div style="display:flex; justify-content:space-between; align-items:center; gap:8px; padding:6px 0; border-top:1px solid var(--border);">
+      <span>${escR(rotuloFuncionario(p.email))} <span class="muted" style="font-size:11px;">- ${escR(p.papel)}</span> <span style="font-size:10.5px; font-weight:700; color:#B7791F;">aguardando aprovacao do gestor</span></span>
+      ${(souGestor||meu) ? `<button type="button" class="btn secondary btn-sm" data-resp-cancelar="${escR(p.email)}">Cancelar pedido</button>` : ""}
+    </div>`;
+  }
+  wrap.innerHTML = html;
+  wrap.querySelectorAll("[data-resp-remover]").forEach(b=>b.addEventListener("click", ()=>removerResponsavelTarefa(b.dataset.respRemover)));
+  wrap.querySelectorAll("[data-resp-cancelar]").forEach(b=>b.addEventListener("click", ()=>cancelarCompartilhamentoPendente(b.dataset.respCancelar)));
+}
+
+function preencherSelectNovoResponsavel(emails){
+  const sel = document.getElementById("engRespNovoSelect");
+  const escolhido = sel.value;
+  const html = opcoesAtribuicaoHtml(emails);
+  sel.innerHTML = html || '<option value="">(ninguem disponivel)</option>';
+  if (escolhido && [...sel.options].some(o=>o.value===escolhido)) sel.value = escolhido;
+}
+
+async function abrirResponsaveisTarefa(tarefaId){
+  const t = DB.tarefasEngenharia.find(x=>x.id===tarefaId);
+  if (!t) return;
+  engRespTarefaId = tarefaId;
+  const souGestor = emailUsuarioAtual === USUARIO_MASTER;
+  const pode = podeGerenciarResponsaveis(t);
+  document.getElementById("engRespTitulo").textContent = `Responsaveis - ${t.titulo}`;
+  document.getElementById("engRespMsg").innerHTML = "";
+  document.getElementById("engRespAdicionarWrap").classList.toggle("hidden", !pode);
+  document.getElementById("engRespAviso").classList.toggle("hidden", souGestor);
+  document.getElementById("engRespPapelSelect").innerHTML = PAPEIS_TAREFA_ENG.map(p=>`<option value="${p}">${p}</option>`).join("");
+  renderEngRespLista();
+  document.getElementById("engResponsaveisOverlay").classList.remove("hidden");
+  if (pode) {
+    preencherSelectNovoResponsavel(candidatosResponsaveisSync(t));
+    if (souGestor) {
+      try {
+        const jaTem = new Set(responsaveisDaTarefa(t).concat((t.compartilhamentosPendentes||[]).map(p=>p.email)).map(chavePerfil));
+        const todos = await listarOpcoesAtribuicaoGestor();
+        preencherSelectNovoResponsavel(todos.filter(e=>!jaTem.has(chavePerfil(e))));
+      } catch(e) { console.error(e); }
+    }
+  }
+}
+
+function adicionarResponsavelTarefa(){
+  const t = DB.tarefasEngenharia.find(x=>x.id===engRespTarefaId);
+  const msgEl = document.getElementById("engRespMsg");
+  const erro = txt => { msgEl.innerHTML = `<span style="color:var(--danger);">${txt}</span>`; };
+  if (!t || !podeGerenciarResponsaveis(t)) return;
+  const email = document.getElementById("engRespNovoSelect").value;
+  const papel = document.getElementById("engRespPapelSelect").value || "Apoio";
+  if (!email) return erro("Escolha uma pessoa.");
+  if (!PAPEIS_TAREFA_ENG.includes(papel)) return erro("Escolha o papel (Projeto, Detalhamento ou Apoio).");
+  const k = chavePerfil(email);
+  if (responsaveisDaTarefa(t).some(e=>chavePerfil(e)===k) || (t.compartilhamentosPendentes||[]).some(p=>chavePerfil(p.email)===k)) return erro("Essa pessoa ja esta na tarefa (ou ja tem um pedido em andamento).");
+  if (!t.coResponsaveis) t.coResponsaveis = [];
+  if (!t.compartilhamentosPendentes) t.compartilhamentosPendentes = [];
+  const agora = new Date().toISOString();
+  if (emailUsuarioAtual === USUARIO_MASTER) {
+    t.coResponsaveis.push({ email, papel, adicionadoPor: emailUsuarioAtual, adicionadoEm: agora });
+    msgEl.innerHTML = `<span style="color:var(--ok);">${escR(nomeExibicao(email))} agora divide essa tarefa (${escR(papel)}).</span>`;
+  } else {
+    const perfilAlvo = perfilAprovado(email);
+    if (!perfilAlvo || perfilAlvo.setor !== "engenharia") return erro("So da pra incluir funcionarios da Engenharia com cadastro aprovado.");
+    t.compartilhamentosPendentes.push({ email, papel, solicitadoPor: emailUsuarioAtual, solicitadoEm: agora });
+    t.compartilhamentoRejeitado = null;
+    msgEl.innerHTML = `<span style="color:#B7791F;">Pedido enviado! ${escR(nomeExibicao(email))} so entra na tarefa depois que o gestor aprovar.</span>`;
+  }
+  saveDB();
+  renderEngRespLista();
+  preencherSelectNovoResponsavel(candidatosResponsaveisSync(t));
+  renderEngKanban();
+  renderEngPendencias();
+}
+
+function removerResponsavelTarefa(email){
+  const t = DB.tarefasEngenharia.find(x=>x.id===engRespTarefaId);
+  if (!t) return;
+  const euMesmo = chavePerfil(email) === chavePerfil(emailUsuarioAtual);
+  if (!(emailUsuarioAtual === USUARIO_MASTER || euMesmo)) return;
+  if (!confirm(euMesmo && emailUsuarioAtual !== USUARIO_MASTER ? "Sair dessa tarefa? Ela deixa de aparecer pra voce." : `Remover ${nomeExibicao(email)} dessa tarefa?`)) return;
+  t.coResponsaveis = (t.coResponsaveis||[]).filter(r=>chavePerfil(r.email)!==chavePerfil(email));
+  saveDB();
+  if (!tarefaEngenhariaVisivel(t)) document.getElementById("engResponsaveisOverlay").classList.add("hidden");
+  else { renderEngRespLista(); preencherSelectNovoResponsavel(candidatosResponsaveisSync(t)); }
+  renderEngKanban();
+  renderEngPendencias();
+}
+
+function cancelarCompartilhamentoPendente(email){
+  const t = DB.tarefasEngenharia.find(x=>x.id===engRespTarefaId);
+  if (!t) return;
+  const p = (t.compartilhamentosPendentes||[]).find(x=>chavePerfil(x.email)===chavePerfil(email));
+  if (!p) return;
+  if (!(emailUsuarioAtual === USUARIO_MASTER || chavePerfil(p.solicitadoPor) === chavePerfil(emailUsuarioAtual))) return;
+  t.compartilhamentosPendentes = t.compartilhamentosPendentes.filter(x=>x!==p);
+  saveDB();
+  renderEngRespLista();
+  preencherSelectNovoResponsavel(candidatosResponsaveisSync(t));
+  renderEngKanban();
+  renderEngPendencias();
+}
+
+function aprovarCompartilhamentoTarefa(tarefaId, email){
+  if (emailUsuarioAtual !== USUARIO_MASTER) return;
+  const t = DB.tarefasEngenharia.find(x=>x.id===tarefaId);
+  const p = t && (t.compartilhamentosPendentes||[]).find(x=>chavePerfil(x.email)===chavePerfil(email));
+  if (!p) return;
+  if (!t.coResponsaveis) t.coResponsaveis = [];
+  if (!responsaveisDaTarefa(t).some(e=>chavePerfil(e)===chavePerfil(p.email))) {
+    t.coResponsaveis.push({ email: p.email, papel: p.papel, adicionadoPor: emailUsuarioAtual, adicionadoEm: new Date().toISOString() });
+  }
+  t.compartilhamentosPendentes = t.compartilhamentosPendentes.filter(x=>x!==p);
+  saveDB();
+  renderEngPendencias();
+  renderEngKanban();
+}
+
+function rejeitarCompartilhamentoTarefa(tarefaId, email){
+  if (emailUsuarioAtual !== USUARIO_MASTER) return;
+  const t = DB.tarefasEngenharia.find(x=>x.id===tarefaId);
+  const p = t && (t.compartilhamentosPendentes||[]).find(x=>chavePerfil(x.email)===chavePerfil(email));
+  if (!p) return;
+  const motivo = prompt("Motivo da rejeicao (opcional):");
+  if (motivo === null) return;
+  t.compartilhamentoRejeitado = { email: p.email, papel: p.papel, motivo: motivo.trim() || "sem motivo informado", em: new Date().toISOString() };
+  t.compartilhamentosPendentes = t.compartilhamentosPendentes.filter(x=>x!==p);
+  saveDB();
+  renderEngPendencias();
+  renderEngKanban();
+}
+
+function renderEngCompartilhamentosPendentes(){
+  const wrap = document.getElementById("engCompartilhamentosWrap");
+  const itens = [];
+  for (const t of DB.tarefasEngenharia) for (const p of (t.compartilhamentosPendentes||[])) itens.push({ t, p });
+  wrap.innerHTML = itens.length ? itens.map(({t,p})=>`
+    <div class="card" style="margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+      <div>
+        <strong>${escR(t.titulo)}</strong>
+        <div style="font-size:12.5px; margin-top:2px;">${escR(nomeExibicao(p.solicitadoPor))} <span class="muted">quer incluir</span> <strong>${escR(nomeExibicao(p.email))}</strong> <span class="muted">(${escR(p.papel)})</span></div>
+        <div class="muted" style="font-size:11px;">Responsavel principal: ${escR(t.funcionario?nomeExibicao(t.funcionario):"-")} &middot; solicitado em ${new Date(p.solicitadoEm).toLocaleString('pt-BR')}</div>
+      </div>
+      <div style="display:flex; gap:6px;">
+        <button type="button" class="btn btn-sm" data-aprovar-compart="${t.id}" data-compart-email="${escR(p.email)}">Aprovar</button>
+        <button type="button" class="btn secondary btn-sm" data-rejeitar-compart="${t.id}" data-compart-email="${escR(p.email)}">Rejeitar</button>
+      </div>
+    </div>`).join("") : '<p class="muted">Nenhum pedido de responsavel adicional no momento.</p>';
+  wrap.querySelectorAll("[data-aprovar-compart]").forEach(b=>b.addEventListener("click", ()=>aprovarCompartilhamentoTarefa(parseInt(b.dataset.aprovarCompart), b.dataset.compartEmail)));
+  wrap.querySelectorAll("[data-rejeitar-compart]").forEach(b=>b.addEventListener("click", ()=>rejeitarCompartilhamentoTarefa(parseInt(b.dataset.rejeitarCompart), b.dataset.compartEmail)));
+  return itens.length;
+}
+
+document.getElementById("engRespFecharBtn").addEventListener("click", ()=>document.getElementById("engResponsaveisOverlay").classList.add("hidden"));
+document.getElementById("engRespAdicionarBtn").addEventListener("click", adicionarResponsavelTarefa);
 
 function renderEngAtribuicoesPendentes(){
   const wrap = document.getElementById("engAtribuicoesWrap");
@@ -5838,19 +6381,6 @@ function pausarTarefaEngenharia(tarefaId){
   renderEngKanban();
 }
 
-function toggleFinalizadaTarefa(tarefaId, marcado){
-  const tarefa = DB.tarefasEngenharia.find(t=>t.id===tarefaId);
-  if (!tarefa) return;
-  tarefa.finalizada = marcado;
-  if (marcado && tarefa.rodando) {
-    const ultimo = tarefa.periodosAtivos[tarefa.periodosAtivos.length-1];
-    if (ultimo && !ultimo.fim) ultimo.fim = new Date().toISOString();
-    tarefa.rodando = false;
-  }
-  saveDB();
-  renderEngKanban();
-}
-
 function statusAprovacaoTarefa(tarefa){
   // retorna {pendente:bool} se alguma revisao foi enviada mas ainda nao aprovada
   const pProjeto = tarefa.checklistProjeto;
@@ -5896,12 +6426,17 @@ function situacaoPrazoTarefa(t){
   return { texto: `Prazo ${prazoBR}`, cor: "#6B7B70" };
 }
 
+const PAPEIS_TAREFA_ENG = ["Projeto", "Detalhamento", "Apoio"];
+function responsaveisDaTarefa(t){ return [t.funcionario].concat((t.coResponsaveis||[]).map(r=>r.email)).filter(Boolean); }
+function souResponsavelDaTarefa(t){ const eu = chavePerfil(emailUsuarioAtual); return !!eu && responsaveisDaTarefa(t).some(e=>chavePerfil(e)===eu); }
+function podeGerenciarResponsaveis(t){ return emailUsuarioAtual === USUARIO_MASTER || (souEngenheiro() && souResponsavelDaTarefa(t)); }
 function tarefaEngenhariaVisivel(tarefa){
-  return emailUsuarioAtual === USUARIO_MASTER || (!!tarefa.funcionario && chavePerfil(tarefa.funcionario) === chavePerfil(emailUsuarioAtual));
+  return emailUsuarioAtual === USUARIO_MASTER || souResponsavelDaTarefa(tarefa);
 }
 
 function renderEngKanban(){
   const board = document.getElementById("engKanbanBoard");
+  const somenteLeituraEng = nivelAcessoSetor("engenharia") === "visualizador";
   const porColuna = {}; COLUNAS_ENGENHARIA.forEach(c=>porColuna[c.id]=[]);
   for (const t of DB.tarefasEngenharia) { if (tarefaEngenhariaVisivel(t)) (porColuna[t.coluna]||porColuna.coleta).push(t); }
   // dentro de cada coluna: prazo mais proximo primeiro, tarefas sem prazo por ultimo
@@ -5915,25 +6450,49 @@ function renderEngKanban(){
         const pedido = t.pedidoId ? getPedido(t.pedidoId) : null;
         const lote = t.loteId ? DB.lotes.find(l=>l.id===t.loteId) : null;
         const { pendente } = statusAprovacaoTarefa(t);
-        const corBorda = pendente ? "var(--danger)" : "var(--ok)";
-        const opcoesMover = COLUNAS_ENGENHARIA.filter(cc=>cc.id!==t.coluna).map(cc=>`<option value="${cc.id}">${cc.titulo}</option>`).join("");
+        const estadoRev = estadoRevisaoTarefa(t);
+        // em coluna de revisao: vermelho ate o gestor aprovar, verde depois
+        const corBorda = estadoRev ? (estadoRev.estado==="aprovado" ? "var(--ok)" : "var(--danger)") : (pendente ? "var(--danger)" : "var(--ok)");
         const menuAberto = engMenuCardAberto === t.id;
-        return `<div class="card eng-card acoes-cell" draggable="true" data-card-id="${t.id}" style="margin-bottom:7px; padding:8px; border-left:3px solid ${corBorda}; cursor:grab; font-size:11px;">
+        return `<div class="card eng-card acoes-cell" draggable="${somenteLeituraEng?"false":"true"}" data-card-id="${t.id}" style="margin-bottom:7px; padding:8px; border-left:3px solid ${corBorda}; cursor:${somenteLeituraEng?"default":"grab"}; font-size:11px;">
           <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:6px;">
-            <strong style="font-size:12px;">${t.titulo}</strong>
-            <button type="button" class="acao-icon" data-toggle-menu-tarefa="${t.id}" title="Opcoes" style="flex-shrink:0; font-size:12px;">&#9998;</button>
+            <strong style="font-size:12px;">${escaparHtmlPerfil(t.titulo)}</strong>
+            ${(somenteLeituraEng && !t.checklistProjeto && !t.checklistDetalhamento) ? "" : `<button type="button" class="acao-icon btn-leitura" data-toggle-menu-tarefa="${t.id}" title="Opcoes" style="flex-shrink:0; font-size:12px;">&#9998;</button>`}
           </div>
           <div class="menu-lote ${menuAberto?"":"hidden"}" data-menu-tarefa="${t.id}" style="font-size:12px;">
-            <button type="button" data-editar-tarefa="${t.id}">Editar</button>
-            ${t.checklistProjeto?`<button type="button" data-ver-checklist="${t.id}" data-ver-checklist-tipo="projeto">Ver checklist Projeto</button>`:''}
-            ${t.checklistDetalhamento?`<button type="button" data-ver-checklist="${t.id}" data-ver-checklist-tipo="detalhamento">Ver checklist Detalhamento</button>`:''}
-            <button type="button" class="danger" data-excluir-tarefa="${t.id}">Excluir</button>
+            ${somenteLeituraEng ? "" : `<button type="button" data-editar-tarefa="${t.id}">Editar</button>
+            <button type="button" data-responsaveis-tarefa="${t.id}">Responsaveis</button>`}
+            ${(t.checklistProjeto || t.coluna==="revisao_projeto")?`<button type="button" data-ver-checklist="${t.id}" data-ver-checklist-tipo="projeto">${t.checklistProjeto && t.checklistProjeto.enviado?"Ver":"Preencher"} checklist Projeto</button>`:''}
+            ${(t.checklistDetalhamento || t.coluna==="revisao_detalhamento")?`<button type="button" data-ver-checklist="${t.id}" data-ver-checklist-tipo="detalhamento">${t.checklistDetalhamento && t.checklistDetalhamento.enviado?"Ver":"Preencher"} checklist Detalhamento</button>`:''}
+            ${somenteLeituraEng ? "" : `<button type="button" class="danger" data-excluir-tarefa="${t.id}">Excluir</button>`}
           </div>
-          ${pendente?'<div style="font-size:9px; font-weight:700; color:var(--danger); text-transform:uppercase; margin-top:2px;">Pendente de aprovacao</div>':''}
+          ${(()=>{
+            const faixa = (cor, texto)=>`<div style="font-size:9px; font-weight:700; color:${cor}; text-transform:uppercase; margin-top:2px;">${texto}</div>`;
+            if (!estadoRev) {
+              const dev = [t.checklistProjeto, t.checklistDetalhamento].find(e=>e && !e.enviado && e.devolvido);
+              if (dev) return `<div style="font-size:9px; color:var(--danger); margin-top:2px;"><strong>Revisao devolvida pelo gestor:</strong> ${escaparHtmlPerfil(dev.devolvido.motivo)}</div>`;
+              return pendente ? faixa("var(--danger)", "Pendente de aprovacao") : "";
+            }
+            const env = estadoRev.envio;
+            if (estadoRev.estado === "aprovado") return faixa("var(--ok)", "&#10003; " + (env && env.dispensada ? "Revisao dispensada pelo gestor" : "Revisao aprovada"));
+            if (estadoRev.estado === "pendente") return faixa("var(--danger)", "Pendente de aprovacao");
+            const aviso = estadoRev.estado === "devolvido"
+              ? `<div style="font-size:9px; color:var(--danger); margin-top:2px;"><strong>Devolvido pelo gestor:</strong> ${escaparHtmlPerfil(env.devolvido.motivo)}</div>`
+              : faixa("var(--danger)", "Checklist nao preenchido");
+            const pedidoFeito = (t.dispensasPendentes||[]).some(d=>d.revisao===t.coluna);
+            const btnDispensa = (emailUsuarioAtual !== USUARIO_MASTER && !pedidoFeito)
+              ? `<button type="button" class="btn secondary btn-sm" data-pedir-dispensa="${t.id}" style="font-size:10.5px; padding:4px 6px; margin-top:4px; width:100%;">Pedir dispensa da revisao</button>` : "";
+            return aviso + `<button type="button" class="btn btn-sm" data-abrir-checklist="${t.id}" data-abrir-checklist-tipo="${estadoRev.def.tipo}" style="font-size:10.5px; padding:4px 6px; margin-top:4px; width:100%;">Preencher checklist</button>` + btnDispensa;
+          })()}
           ${t.finalizada?'<div style="font-size:9px; font-weight:700; color:var(--ok); text-transform:uppercase; margin-top:2px;">&#10003; Finalizada</div>':''}
           <div class="muted" style="font-size:10px; margin-top:3px;" title="${escaparHtmlPerfil(t.funcionario||"")}">${t.funcionario ? escaparHtmlPerfil(nomeExibicao(t.funcionario)) : "Sem funcionario"}</div>
           ${t.atribuicaoPendente ? `<div style="font-size:9px; font-weight:700; color:#B7791F; margin-top:2px;">&rarr; ${escaparHtmlPerfil(nomeExibicao(t.atribuicaoPendente.para))} (aguardando aprovacao do gestor)</div>` : ''}
           ${t.atribuicaoRejeitada ? `<div style="font-size:9px; color:var(--danger); margin-top:2px;">Atribuicao a ${escaparHtmlPerfil(nomeExibicao(t.atribuicaoRejeitada.para))} nao aprovada: ${escaparHtmlPerfil(t.atribuicaoRejeitada.motivo)} <a href="#" data-dispensar-rejeicao="${t.id}" style="font-weight:700;">ok</a></div>` : ''}
+          ${(t.coResponsaveis||[]).length ? `<div class="muted" style="font-size:9.5px; margin-top:1px;">Com: ${(t.coResponsaveis||[]).map(r=>`${escaparHtmlPerfil(nomeExibicao(r.email))} (${escaparHtmlPerfil(r.papel)})`).join(", ")}</div>` : ''}
+          ${(t.compartilhamentosPendentes||[]).map(p=>`<div style="font-size:9px; font-weight:700; color:#B7791F; margin-top:2px;">+ ${escaparHtmlPerfil(nomeExibicao(p.email))} (${escaparHtmlPerfil(p.papel)}) - aguardando aprovacao do gestor</div>`).join("")}
+          ${t.compartilhamentoRejeitado ? `<div style="font-size:9px; color:var(--danger); margin-top:2px;">Inclusao de ${escaparHtmlPerfil(nomeExibicao(t.compartilhamentoRejeitado.email))} nao aprovada: ${escaparHtmlPerfil(t.compartilhamentoRejeitado.motivo)} <a href="#" data-dispensar-compartilhamento="${t.id}" style="font-weight:700;">ok</a></div>` : ''}
+          ${(t.dispensasPendentes||[]).map(d=>`<div style="font-size:9px; font-weight:700; color:#B7791F; margin-top:2px;">Dispensa da ${escaparHtmlPerfil(COLUNAS_REVISAO[d.revisao]?COLUNAS_REVISAO[d.revisao].nome:d.revisao)} aguardando aprovacao do gestor</div>`).join("")}
+          ${t.dispensaRejeitada ? `<div style="font-size:9px; color:var(--danger); margin-top:2px;">Dispensa da ${escaparHtmlPerfil(COLUNAS_REVISAO[t.dispensaRejeitada.revisao]?COLUNAS_REVISAO[t.dispensaRejeitada.revisao].nome:t.dispensaRejeitada.revisao)} nao aprovada: ${escaparHtmlPerfil(t.dispensaRejeitada.motivo)} <a href="#" data-dispensar-dispensa-rej="${t.id}" style="font-weight:700;">ok</a></div>` : ''}
           <div class="muted" style="font-size:10px;">${pedido?("Pedido "+pedido.noPedido):""}${pedido&&lote?" - ":""}${lote?("Lote "+lote.noLote):""}</div>
           ${(()=>{ const s = situacaoPrazoTarefa(t); return s ? `<div style="font-size:10px; margin-top:3px; color:${s.cor}; ${s.forte?"font-weight:700;":""}">&#128197; ${s.texto}</div>` : ""; })()}
           ${(()=>{ const min = calcularTempoTotalTarefaMinutos(t); return min!=null ? `<div style="font-size:10px; margin-top:3px; color:var(--primary-dark);">&#9201; ${formatarMinutosComoHoras(min)}${t.rodando?' <span style="color:var(--ok); font-weight:700;">(rodando)</span>':''}</div>` : ''; })()}
@@ -5942,10 +6501,6 @@ function renderEngKanban(){
               ? `<button type="button" class="btn secondary btn-sm" data-pausar-tarefa="${t.id}" style="flex:1; font-size:10.5px; padding:4px 6px;">&#9208; Pausar</button>`
               : `<button type="button" class="btn secondary btn-sm" data-iniciar-tarefa="${t.id}" style="flex:1; font-size:10.5px; padding:4px 6px;">&#9654; Iniciar</button>`) : ''}
           </div>
-          <select data-mover-tarefa="${t.id}" style="margin-top:6px; font-size:10.5px; padding:3px;">
-            <option value="">Mover para...</option>
-            ${opcoesMover}
-          </select>
         </div>`;
       }).join("") || '<p class="muted" style="font-size:10.5px;">Nenhuma tarefa.</p>'}
       </div>
@@ -5970,8 +6525,40 @@ function renderEngKanban(){
     btn.addEventListener("click", (e)=>{
       e.stopPropagation();
       engMenuCardAberto = null;
-      abrirChecklistEngenharia(parseInt(btn.dataset.verChecklist), btn.dataset.verChecklistTipo, "preencher");
+      const id = parseInt(btn.dataset.verChecklist), tipo = btn.dataset.verChecklistTipo;
+      const tarefa = DB.tarefasEngenharia.find(x=>x.id===id);
+      const def = Object.values(COLUNAS_REVISAO).find(d=>d.tipo===tipo);
+      const env = tarefa && def ? tarefa[def.campo] : null;
+      // o gestor abre direto no modo de revisao (aprovar / devolver) quando o checklist esta pendente
+      const modo = (emailUsuarioAtual === USUARIO_MASTER && env && env.enviado && !env.aprovado) ? "revisar" : "preencher";
+      abrirChecklistEngenharia(id, tipo, modo);
     });
+  });
+  board.querySelectorAll("[data-responsaveis-tarefa]").forEach(btn=>{
+    btn.addEventListener("click", (e)=>{ e.stopPropagation(); engMenuCardAberto = null; abrirResponsaveisTarefa(parseInt(btn.dataset.responsaveisTarefa)); });
+  });
+  board.querySelectorAll("[data-pedir-dispensa]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const t = DB.tarefasEngenharia.find(x=>x.id===parseInt(btn.dataset.pedirDispensa));
+      if (!t || !COLUNAS_REVISAO[t.coluna]) return;
+      solicitarDispensasRevisao(t, [{ colId: t.coluna, def: COLUNAS_REVISAO[t.coluna] }]);
+      renderEngKanban();
+    });
+  });
+  [["data-dispensar-compartilhamento","compartilhamentoRejeitado"],["data-dispensar-dispensa-rej","dispensaRejeitada"]].forEach(([attr,campo])=>{
+    board.querySelectorAll("["+attr+"]").forEach(a=>{
+      a.addEventListener("click", (e)=>{
+        e.preventDefault();
+        const t = DB.tarefasEngenharia.find(x=>x.id===parseInt(a.getAttribute(attr)));
+        if (!t) return;
+        t[campo] = null;
+        saveDB();
+        renderEngKanban();
+      });
+    });
+  });
+  board.querySelectorAll("[data-abrir-checklist]").forEach(btn=>{
+    btn.addEventListener("click", ()=>abrirChecklistEngenharia(parseInt(btn.dataset.abrirChecklist), btn.dataset.abrirChecklistTipo, "preencher"));
   });
   board.querySelectorAll("[data-excluir-tarefa]").forEach(btn=>{
     btn.addEventListener("click", (e)=>{
@@ -5988,12 +6575,6 @@ function renderEngKanban(){
     });
   });
 
-  board.querySelectorAll("[data-mover-tarefa]").forEach(sel=>{
-    sel.addEventListener("change", ()=>{
-      if (!sel.value) return;
-      moverTarefaEngenharia(parseInt(sel.dataset.moverTarefa), sel.value);
-    });
-  });
   board.querySelectorAll("[data-dispensar-rejeicao]").forEach(a=>{
     a.addEventListener("click", (e)=>{
       e.preventDefault();
@@ -6039,22 +6620,152 @@ function renderEngKanban(){
   });
 }
 
+/* ---- revisoes: regras de movimentacao ---- */
+function indiceColunaEng(id){ return COLUNAS_ENGENHARIA.findIndex(c=>c.id===id); }
+function revisaoAprovada(t, def){ const e = t[def.campo]; return !!(e && e.aprovado); }
+function revisaoPreenchivel(t, def){ const e = t[def.campo]; return !e || (!e.enviado && !e.aprovado); }
+function arquivarRevisao(t, def, motivo){
+  const e = t[def.campo];
+  if (!e || !(e.enviado || e.aprovado)) return;
+  if (!t.revisoesAnteriores) t.revisoesAnteriores = [];
+  t.revisoesAnteriores.push({ tipo: def.tipo, checklist: e, motivo, arquivadoEm: new Date().toISOString() });
+  t[def.campo] = null;
+}
+function dispensarRevisao(t, def){
+  arquivarRevisao(t, def, "revisao dispensada pelo gestor");
+  const agora = new Date().toISOString();
+  t[def.campo] = { respostas:[], pecaRespostas:[], conjuntoRespostas:[], observacoes:"", enviado:true, aprovado:true, dispensada:true,
+                   enviadoPor:null, enviadoEm:agora, aprovadoPor:emailUsuarioAtual, dataAprovacao:agora, devolvido:null };
+}
+function estadoRevisaoTarefa(t){
+  const def = COLUNAS_REVISAO[t.coluna];
+  if (!def) return null;
+  const e = t[def.campo];
+  let estado = "faltando";
+  if (e && e.aprovado) estado = "aprovado";
+  else if (e && e.enviado) estado = "pendente";
+  else if (e && e.devolvido) estado = "devolvido";
+  return { def, estado, envio: e };
+}
+
+function solicitarDispensasRevisao(tarefa, lista){
+  if (!tarefa.dispensasPendentes) tarefa.dispensasPendentes = [];
+  const novas = lista.filter(x=>!tarefa.dispensasPendentes.some(d=>d.revisao===x.colId));
+  if (!novas.length) {
+    alert("O pedido pra dispensar essa revisao ja foi enviado e aguarda a aprovacao do gestor.");
+    return false;
+  }
+  const nomes = novas.map(x=>x.def.nome).join(" e ");
+  if (!confirm(`Esta tarefa ainda nao passou pela ${nomes}.\n\nPra avancar sem ${novas.length>1?"essas revisoes":"essa revisao"}, o gestor precisa aprovar a dispensa.\n\nPedir a dispensa ao gestor agora?`)) return false;
+  const motivo = prompt("Por que essa revisao nao e necessaria? (opcional - o gestor vai ler)");
+  if (motivo === null) return false;
+  const agora = new Date().toISOString();
+  novas.forEach(x=>tarefa.dispensasPendentes.push({ revisao: x.colId, solicitadoPor: emailUsuarioAtual, solicitadoEm: agora, motivo: motivo.trim() }));
+  tarefa.dispensaRejeitada = null;
+  saveDB();
+  renderEngPendencias();
+  alert("Pedido enviado ao gestor! Assim que ele aprovar, voce consegue avancar a tarefa.");
+  return true;
+}
+
+function aprovarDispensaTarefa(tarefaId, colId){
+  if (emailUsuarioAtual !== USUARIO_MASTER) return;
+  const t = DB.tarefasEngenharia.find(x=>x.id===tarefaId);
+  const def = COLUNAS_REVISAO[colId];
+  if (!t || !def || !(t.dispensasPendentes||[]).some(d=>d.revisao===colId)) return;
+  dispensarRevisao(t, def);
+  t.dispensasPendentes = t.dispensasPendentes.filter(d=>d.revisao!==colId);
+  t.dispensaRejeitada = null;
+  saveDB();
+  renderEngPendencias();
+  renderEngKanban();
+}
+
+function rejeitarDispensaTarefa(tarefaId, colId){
+  if (emailUsuarioAtual !== USUARIO_MASTER) return;
+  const t = DB.tarefasEngenharia.find(x=>x.id===tarefaId);
+  if (!t || !(t.dispensasPendentes||[]).some(d=>d.revisao===colId)) return;
+  const motivo = prompt("Motivo da rejeicao (opcional):");
+  if (motivo === null) return;
+  t.dispensaRejeitada = { revisao: colId, motivo: motivo.trim() || "sem motivo informado", em: new Date().toISOString() };
+  t.dispensasPendentes = t.dispensasPendentes.filter(d=>d.revisao!==colId);
+  saveDB();
+  renderEngPendencias();
+  renderEngKanban();
+}
+
+function renderEngDispensasPendentes(){
+  const wrap = document.getElementById("engDispensasWrap");
+  const itens = [];
+  for (const t of DB.tarefasEngenharia) for (const d of (t.dispensasPendentes||[])) itens.push({ t, d });
+  wrap.innerHTML = itens.length ? itens.map(({t,d})=>{
+    const def = COLUNAS_REVISAO[d.revisao];
+    return `<div class="card" style="margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+      <div>
+        <strong>${escaparHtmlPerfil(t.titulo)}</strong> <span class="muted">- dispensar ${escaparHtmlPerfil(def?def.nome:d.revisao)}</span>
+        <div style="font-size:12.5px; margin-top:2px;">${escaparHtmlPerfil(nomeExibicao(d.solicitadoPor))} <span class="muted">pediu pra seguir sem essa revisao</span></div>
+        ${d.motivo ? `<div class="muted" style="font-size:11.5px;">Motivo: ${escaparHtmlPerfil(d.motivo)}</div>` : ""}
+        <div class="muted" style="font-size:11px;">solicitado em ${new Date(d.solicitadoEm).toLocaleString('pt-BR')}</div>
+      </div>
+      <div style="display:flex; gap:6px;">
+        <button type="button" class="btn btn-sm" data-aprovar-dispensa="${t.id}" data-dispensa-rev="${escaparHtmlPerfil(d.revisao)}">Aprovar dispensa</button>
+        <button type="button" class="btn secondary btn-sm" data-rejeitar-dispensa="${t.id}" data-dispensa-rev="${escaparHtmlPerfil(d.revisao)}">Rejeitar</button>
+      </div>
+    </div>`;
+  }).join("") : '<p class="muted">Nenhum pedido de dispensa no momento.</p>';
+  wrap.querySelectorAll("[data-aprovar-dispensa]").forEach(b=>b.addEventListener("click", ()=>aprovarDispensaTarefa(parseInt(b.dataset.aprovarDispensa), b.dataset.dispensaRev)));
+  wrap.querySelectorAll("[data-rejeitar-dispensa]").forEach(b=>b.addEventListener("click", ()=>rejeitarDispensaTarefa(parseInt(b.dataset.rejeitarDispensa), b.dataset.dispensaRev)));
+  return itens.length;
+}
+
 function moverTarefaEngenharia(tarefaId, colunaDestino){
   const tarefa = DB.tarefasEngenharia.find(t=>t.id===tarefaId);
-  if (!tarefa) return;
-  const idxAtual = COLUNAS_ENGENHARIA.findIndex(c=>c.id===tarefa.coluna);
-  const idxDestino = COLUNAS_ENGENHARIA.findIndex(c=>c.id===colunaDestino);
-  const indoPraFrente = colunaDestino!=="suspensa" && idxDestino > idxAtual;
+  if (!tarefa || tarefa.coluna === colunaDestino || indiceColunaEng(colunaDestino) < 0) return;
+  const souGestor = emailUsuarioAtual === USUARIO_MASTER;
+  // tarefa suspensa conta como estando na etapa em que parou
+  const colunaBase = tarefa.coluna === "suspensa" ? (tarefa.colunaAntesSuspensa || "coleta") : tarefa.coluna;
+  const idxBase = indiceColunaEng(colunaBase);
+  const idxDestino = indiceColunaEng(colunaDestino);
+  const paraSuspensa = colunaDestino === "suspensa";
+  const dispensar = [];
+  const faltando = [];
 
-  if (indoPraFrente && tarefa.coluna==="revisao_projeto") {
-    const p = tarefa.checklistProjeto;
-    if (!p || !p.aprovado) { alert("Esta tarefa esta com o checklist de Revisao - Projeto pendente de aprovacao. Aguarde a aprovacao do gestor antes de avancar."); renderEngKanban(); return; }
+  if (!paraSuspensa && idxDestino > idxBase) {
+    // avancando: toda revisao que ficar pra tras precisa estar aprovada (nao da pra pular)
+    for (const [colId, def] of Object.entries(COLUNAS_REVISAO)) {
+      const idxRev = indiceColunaEng(colId);
+      if (idxRev < idxBase || idxRev >= idxDestino || revisaoAprovada(tarefa, def)) continue;
+      const e = tarefa[def.campo];
+      if (souGestor) {
+        if (!confirm(`A ${def.nome} desta tarefa ainda nao foi aprovada.\n\nComo gestor, voce pode avancar mesmo assim e dispensar essa revisao. Dispensar e avancar?`)) { renderEngKanban(); return; }
+        dispensar.push(def);
+      } else {
+        if (e && e.enviado) {
+          alert(`A ${def.nome} desta tarefa esta aguardando a aprovacao do gestor. Espere a aprovacao antes de avancar.`);
+          renderEngKanban();
+          return;
+        }
+        faltando.push({ colId, def });
+      }
+    }
+    // funcionario: nao pula sozinho, mas pode PEDIR ao gestor pra dispensar a revisao
+    if (faltando.length) {
+      solicitarDispensasRevisao(tarefa, faltando);
+      renderEngKanban();
+      return;
+    }
   }
-  if (indoPraFrente && tarefa.coluna==="revisao_detalhamento") {
-    const d = tarefa.checklistDetalhamento;
-    if (!d || !d.aprovado) { alert("Esta tarefa esta com o checklist de Revisao - Detalhamento pendente de aprovacao. Aguarde a aprovacao do gestor antes de avancar."); renderEngKanban(); return; }
+  if (!paraSuspensa && idxDestino < idxBase) {
+    // voltando: toda revisao entre o destino e a posicao atual perde a validade (precisa revisar de novo)
+    for (const [colId, def] of Object.entries(COLUNAS_REVISAO)) {
+      const idxRev = indiceColunaEng(colId);
+      if (idxRev >= idxDestino && idxRev <= idxBase) arquivarRevisao(tarefa, def, "tarefa voltou para uma etapa anterior");
+    }
   }
+  dispensar.forEach(def=>dispensarRevisao(tarefa, def));
 
+  if (paraSuspensa) tarefa.colunaAntesSuspensa = tarefa.coluna;
+  else if (tarefa.coluna === "suspensa") tarefa.colunaAntesSuspensa = null;
   tarefa.coluna = colunaDestino;
 
   const agora = new Date().toISOString();
@@ -6068,17 +6779,10 @@ function moverTarefaEngenharia(tarefaId, colunaDestino){
   tarefa.finalizadaEm = tarefa.finalizada ? agora : null;
   saveDB();
 
-  if (colunaDestino==="revisao_projeto" && (!tarefa.checklistProjeto || !tarefa.checklistProjeto.aprovado)) {
-    renderEngKanban();
-    abrirChecklistEngenharia(tarefaId, "projeto");
-    return;
-  }
-  if (colunaDestino==="revisao_detalhamento" && (!tarefa.checklistDetalhamento || !tarefa.checklistDetalhamento.aprovado)) {
-    renderEngKanban();
-    abrirChecklistEngenharia(tarefaId, "detalhamento");
-    return;
-  }
   renderEngKanban();
+  renderEngPendencias();
+  const defDestino = COLUNAS_REVISAO[colunaDestino];
+  if (defDestino && revisaoPreenchivel(tarefa, defDestino)) abrirChecklistEngenharia(tarefaId, defDestino.tipo);
 }
 
 let engChecklistTarefaId = null;
@@ -6104,38 +6808,68 @@ function abrirChecklistEngenharia(tarefaId, tipo, modo){
   const corpo = document.getElementById("engChecklistCorpo");
   document.getElementById("engChecklistMsg").innerHTML = "";
 
-  const infoEnvio = (envio && envio.enviado) ? `<p class="muted" style="font-size:11px; margin-top:10px;">Enviado por ${envio.enviadoPor||"?"} em ${new Date(envio.enviadoEm).toLocaleString('pt-BR')}${envio.aprovado?` - Aprovado por ${envio.aprovadoPor||"?"} em ${new Date(envio.dataAprovacao).toLocaleString('pt-BR')}`:' - Pendente de aprovacao'}</p>` : "";
+  const avisoDevolucao = (envio && !envio.enviado && envio.devolvido)
+    ? `<div style="background:#FDECEA; border:1px solid #F2B8B1; border-radius:8px; padding:9px 12px; margin-bottom:10px; font-size:12.5px; color:#8A1F11;"><strong>Devolvido pelo gestor:</strong> ${escaparHtmlPerfil(envio.devolvido.motivo)}<br><span style="font-size:11px;">Ajuste o que foi pedido e confira cada item de novo antes de reenviar.</span></div>` : "";
+  const infoEnvio = (envio && envio.dispensada) ? `<p class="muted" style="font-size:11px; margin-top:10px;">Revisao dispensada pelo gestor (${escaparHtmlPerfil(envio.aprovadoPor||"?")}).</p>`
+    : (envio && envio.enviado) ? `<p class="muted" style="font-size:11px; margin-top:10px;">Enviado por ${envio.enviadoPor||"?"} em ${new Date(envio.enviadoEm).toLocaleString('pt-BR')}${envio.aprovado?` - Aprovado por ${envio.aprovadoPor||"?"} em ${new Date(envio.dataAprovacao).toLocaleString('pt-BR')}`:' - Pendente de aprovacao'}</p>` : "";
 
   if (tipo === "projeto") {
     document.getElementById("engChecklistTitulo").textContent = `Checklist - Desenvolvimento / Projeto${tarefa?" - "+tarefa.titulo:""}`;
-    corpo.innerHTML = `<p class="muted">${somenteLeitura?'Visualizacao do checklist preenchido.':'Confira cada item antes de enviar pra aprovacao do gestor.'}</p>` +
-      CHECKLIST_REVISAO_PROJETO.map((texto,i)=>linhaItemChecklist(texto, i, 'data-eng-item', envio?envio.respostas[i]:false, disabledAttr)).join("") +
+    corpo.innerHTML = avisoDevolucao + `<p class="muted">${somenteLeitura?'Visualizacao do checklist preenchido.':'Confira cada item antes de enviar pra aprovacao do gestor.'}</p>` +
+      CHECKLIST_REVISAO_PROJETO.map((texto,i)=>linhaItemChecklist(texto, i, 'data-eng-item', !!(envio && envio.respostas && envio.respostas[i]), disabledAttr)).join("") +
       `<div class="field" style="margin-top:10px;"><label class="field-label">Observacoes${somenteLeitura?'':' (opcional)'}</label><textarea id="engChecklistObs" rows="2" ${disabledAttr}>${envio?(envio.observacoes||""):""}</textarea></div>` + infoEnvio;
   } else {
     document.getElementById("engChecklistTitulo").textContent = `Checklist - Detalhamento${tarefa?" - "+tarefa.titulo:""}`;
-    corpo.innerHTML = `<p class="muted">${somenteLeitura?'Visualizacao do checklist preenchido.':'Confira cada item antes de enviar pra aprovacao do gestor.'}</p>` +
+    corpo.innerHTML = avisoDevolucao + `<p class="muted">${somenteLeitura?'Visualizacao do checklist preenchido.':'Confira cada item antes de enviar pra aprovacao do gestor.'}</p>` +
       `<h4 style="margin-bottom:4px;">Detalhamento - Peca</h4>` +
-      CHECKLIST_REVISAO_DETALHAMENTO_PECA.map((texto,i)=>linhaItemChecklist(texto, i, 'data-eng-item-peca', envio?envio.pecaRespostas[i]:false, disabledAttr)).join("") +
+      CHECKLIST_REVISAO_DETALHAMENTO_PECA.map((texto,i)=>linhaItemChecklist(texto, i, 'data-eng-item-peca', !!(envio && envio.pecaRespostas && envio.pecaRespostas[i]), disabledAttr)).join("") +
       `<h4 style="margin:14px 0 4px;">Detalhamento - Conjunto</h4>` +
-      CHECKLIST_REVISAO_DETALHAMENTO_CONJUNTO.map((texto,i)=>linhaItemChecklist(texto, i, 'data-eng-item-conjunto', envio?envio.conjuntoRespostas[i]:false, disabledAttr)).join("") +
+      CHECKLIST_REVISAO_DETALHAMENTO_CONJUNTO.map((texto,i)=>linhaItemChecklist(texto, i, 'data-eng-item-conjunto', !!(envio && envio.conjuntoRespostas && envio.conjuntoRespostas[i]), disabledAttr)).join("") +
       `<div class="field" style="margin-top:10px;"><label class="field-label">Observacoes${somenteLeitura?'':' (opcional)'}</label><textarea id="engChecklistObs" rows="2" ${disabledAttr}>${envio?(envio.observacoes||""):""}</textarea></div>` + infoEnvio;
   }
 
+  const gestorRevisando = emailUsuarioAtual === USUARIO_MASTER && modo==="revisar" && envio && envio.enviado && !envio.aprovado;
   document.getElementById("engEnviarChecklistBtn").classList.toggle("hidden", somenteLeitura);
-  document.getElementById("engAprovarChecklistBtn").classList.toggle("hidden", !(modo==="revisar" && envio && envio.enviado && !envio.aprovado));
+  document.getElementById("engAprovarChecklistBtn").classList.toggle("hidden", !gestorRevisando);
+  document.getElementById("engDevolverChecklistBtn").classList.toggle("hidden", !gestorRevisando);
   document.getElementById("engChecklistOverlay").classList.remove("hidden");
 }
 document.getElementById("engFecharChecklistBtn").addEventListener("click", ()=>{
   document.getElementById("engChecklistOverlay").classList.add("hidden");
 });
 document.getElementById("engAprovarChecklistBtn").addEventListener("click", ()=>{
+  if (emailUsuarioAtual !== USUARIO_MASTER) return;
   const tarefa = DB.tarefasEngenharia.find(t=>t.id===engChecklistTarefaId);
   if (!tarefa) return;
-  if (!confirm(`Aprovar o checklist de "${tarefa.titulo}"?`)) return;
   const campo = engChecklistTipo==="projeto" ? "checklistProjeto" : "checklistDetalhamento";
+  if (!tarefa[campo] || !tarefa[campo].enviado || tarefa[campo].aprovado) return;
+  if (!confirm(`Aprovar o checklist de "${tarefa.titulo}"?`)) return;
   tarefa[campo].aprovado = true;
   tarefa[campo].aprovadoPor = emailUsuarioAtual;
   tarefa[campo].dataAprovacao = new Date().toISOString();
+  const colRev = Object.keys(COLUNAS_REVISAO).find(k=>COLUNAS_REVISAO[k].campo===campo);
+  tarefa.dispensasPendentes = (tarefa.dispensasPendentes||[]).filter(d=>d.revisao!==colRev);
+  saveDB();
+  document.getElementById("engChecklistOverlay").classList.add("hidden");
+  renderEngPendencias();
+  renderEngKanban();
+});
+
+document.getElementById("engDevolverChecklistBtn").addEventListener("click", ()=>{
+  if (emailUsuarioAtual !== USUARIO_MASTER) return;
+  const tarefa = DB.tarefasEngenharia.find(t=>t.id===engChecklistTarefaId);
+  const def = Object.values(COLUNAS_REVISAO).find(d=>d.tipo===engChecklistTipo);
+  const env = tarefa && def ? tarefa[def.campo] : null;
+  if (!env || !env.enviado || env.aprovado) return;
+  const motivo = prompt("O que precisa ser ajustado? (o funcionario vai ver esse recado)");
+  if (motivo === null) return;
+  env.enviado = false; env.aprovado = false;
+  env.devolvido = { motivo: motivo.trim() || "sem motivo informado", em: new Date().toISOString(), por: emailUsuarioAtual };
+  // o funcionario precisa conferir cada item de novo
+  ["respostas","pecaRespostas","conjuntoRespostas"].forEach(k=>{ if (Array.isArray(env[k])) env[k] = env[k].map(()=>false); });
+  // a tarefa volta pra etapa de trabalho; quando ele mover pra revisao de novo, o checklist reabre
+  if (tarefa.coluna === "suspensa") tarefa.colunaAntesSuspensa = def.colunaTrabalho;
+  else tarefa.coluna = def.colunaTrabalho;
   saveDB();
   document.getElementById("engChecklistOverlay").classList.add("hidden");
   renderEngPendencias();
@@ -6147,17 +6881,25 @@ document.getElementById("engEnviarChecklistBtn").addEventListener("click", ()=>{
   const tarefa = DB.tarefasEngenharia.find(t=>t.id===engChecklistTarefaId);
   if (!tarefa) return;
   const obs = document.getElementById("engChecklistObs").value.trim();
+  const colunaRevisao = Object.keys(COLUNAS_REVISAO).find(k=>COLUNAS_REVISAO[k].tipo===engChecklistTipo);
+  const colunaEnvio = tarefa.coluna === "suspensa" ? tarefa.colunaAntesSuspensa : tarefa.coluna;
+  if (!colunaRevisao || colunaEnvio !== colunaRevisao) {
+    msgEl.innerHTML = `<span style="color:var(--danger);">Mova a tarefa pra coluna ${colunaRevisao ? COLUNAS_REVISAO[colunaRevisao].nome : "de revisao"} antes de enviar o checklist.</span>`;
+    return;
+  }
 
   if (engChecklistTipo === "projeto") {
     const marcados = [...document.querySelectorAll("[data-eng-item]")].map(el=>el.checked);
     if (marcados.some(v=>!v)) { msgEl.innerHTML = '<span style="color:var(--danger);">Confira todos os itens antes de enviar.</span>'; return; }
-    tarefa.checklistProjeto = { respostas: marcados, observacoes: obs, enviado:true, aprovado:false, enviadoPor: emailUsuarioAtual, enviadoEm: new Date().toISOString(), aprovadoPor:null, dataAprovacao:null };
+    tarefa.checklistProjeto = { respostas: marcados, observacoes: obs, enviado:true, aprovado:false, enviadoPor: emailUsuarioAtual, enviadoEm: new Date().toISOString(), aprovadoPor:null, dataAprovacao:null, devolvido:null };
   } else {
     const marcadosPeca = [...document.querySelectorAll("[data-eng-item-peca]")].map(el=>el.checked);
     const marcadosConjunto = [...document.querySelectorAll("[data-eng-item-conjunto]")].map(el=>el.checked);
     if (marcadosPeca.some(v=>!v) || marcadosConjunto.some(v=>!v)) { msgEl.innerHTML = '<span style="color:var(--danger);">Confira todos os itens antes de enviar.</span>'; return; }
-    tarefa.checklistDetalhamento = { pecaRespostas: marcadosPeca, conjuntoRespostas: marcadosConjunto, observacoes: obs, enviado:true, aprovado:false, enviadoPor: emailUsuarioAtual, enviadoEm: new Date().toISOString(), aprovadoPor:null, dataAprovacao:null };
+    tarefa.checklistDetalhamento = { pecaRespostas: marcadosPeca, conjuntoRespostas: marcadosConjunto, observacoes: obs, enviado:true, aprovado:false, enviadoPor: emailUsuarioAtual, enviadoEm: new Date().toISOString(), aprovadoPor:null, dataAprovacao:null, devolvido:null };
   }
+  // se ele resolveu fazer a revisao, o pedido de dispensa perde o sentido
+  tarefa.dispensasPendentes = (tarefa.dispensasPendentes||[]).filter(d=>d.revisao!==colunaRevisao);
   saveDB();
   msgEl.innerHTML = '<span style="color:var(--ok);">Enviado para aprovacao!</span>';
   renderEngKanban();
@@ -6184,7 +6926,7 @@ function renderEngPendencias(){
   wrap.innerHTML = pendencias.length ? pendencias.map(({tarefa,tipo,envio})=>`
     <div class="card" style="margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
       <div>
-        <strong>${tarefa.titulo}</strong> <span class="muted">(${tipo==="projeto"?"Revisao - Projeto":"Revisao - Detalhamento"})</span>
+        <strong>${escaparHtmlPerfil(tarefa.titulo)}</strong> <span class="muted">(${tipo==="projeto"?"Revisao - Projeto":"Revisao - Detalhamento"})</span>
         <div class="muted" style="font-size:11px;">Enviado por ${envio.enviadoPor||"?"} em ${new Date(envio.enviadoEm).toLocaleString('pt-BR')}</div>
       </div>
       <button type="button" class="btn btn-sm" data-revisar-eng="${tarefa.id}" data-tipo-eng="${tipo}">Revisar e Aprovar</button>
@@ -6197,7 +6939,9 @@ function renderEngPendencias(){
   });
 
   const totalAtribuicoes = renderEngAtribuicoesPendentes();
-  const totalPendencias = pendencias.length + totalAtribuicoes;
+  const totalDispensas = renderEngDispensasPendentes();
+  const totalCompartilhamentos = renderEngCompartilhamentosPendentes();
+  const totalPendencias = pendencias.length + totalAtribuicoes + totalDispensas + totalCompartilhamentos;
   document.getElementById("engNavPendencias").textContent = "Pendencias de Aprovacao" + (totalPendencias ? ` (${totalPendencias})` : "");
 
   renderEngConfigHorario();
