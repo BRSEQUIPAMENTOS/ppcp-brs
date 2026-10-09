@@ -197,6 +197,9 @@
     opacity:0.28; transition:opacity .15s ease, color .15s ease; padding:2px 3px; color:var(--text);
   }
   .lote-card:hover .acao-icon, .eng-card:hover .acao-icon { opacity:0.75; }
+  .eng-card .acao-icon[data-card-nav], .eng-card .acao-icon[data-painel-card] { opacity:1; }
+  .eng-card .acao-icon[data-toggle-menu-tarefa] { opacity:.8; font-size:15px; }
+  .eng-card .acao-icon[data-card-nav][disabled] { opacity:.3; }
   .acao-icon:hover { opacity:1 !important; color:var(--primary); }
   .acao-icon.danger:hover { color:var(--danger); }
   .acoes-cell { position:relative; }
@@ -288,6 +291,11 @@
       position: fixed; left:0; top:0; z-index:400; box-shadow: 6px 0 20px rgba(20,70,46,.25);
     }
     .card { padding: 14px; }
+    /* celular: 16px nos campos evita o zoom automatico do iPhone ao tocar; toque confortavel nos botoes */
+    input[type=text], input[type=number], input[type=date], input[type=email], input[type=password], select, textarea { font-size:16px !important; min-height:40px; }
+    .sidebar button, .btn { min-height:40px; }
+    .sb-usuario { overflow-wrap:anywhere; white-space:normal; }
+    .eng-card .acao-icon, .eng-card .btn-sm { min-height:34px; }
   }
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -317,7 +325,7 @@
     <button id="loginEntrarBtn" style="width:100%; padding:10px; background:#1F6C47; color:#fff; border:none; border-radius:6px; font-weight:600; cursor:pointer; font-size:14px;">Entrar</button>
     <div style="text-align:center; margin-top:8px;"><a href="#" id="loginEsqueciSenhaLink" style="font-size:12px; color:#8A8F87;">Esqueci minha senha</a></div>
     <div id="loginMsg" style="margin-top:10px; font-size:12.5px; min-height:18px;"></div>
-    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 123 - 09/10/2026</div>
+    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 125 - 09/10/2026</div>
     <div id="loginOfflineWrap" class="hidden" style="margin-top:6px;">
       <button id="loginOfflineBtn" style="width:100%; padding:8px; background:transparent; color:#8A8F87; border:1px solid #E1E6DE; border-radius:6px; font-size:12.5px; cursor:pointer;">Continuar sem conexao (usa os dados salvos neste navegador)</button>
     </div>
@@ -354,7 +362,7 @@
     </div>
     <div style="height:3px; width:60px; background:#91C53E; border-radius:2px; margin-bottom:34px;"></div>
     <div id="painelPastasGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(172px, 1fr)); gap:14px;"></div>
-    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 123 - 09/10/2026</p>
+    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 125 - 09/10/2026</p>
   </div>
 </div>
 
@@ -2229,6 +2237,17 @@ const SIDEBAR_POR_SETOR = {
   admin: criarAlternadorSidebar("adminSidebarNav", "adminSidebarToggle", "admin_sidebar_collapsed"),
 };
 criarAlternadorSidebar("phSidebarNav", "phSidebarToggle", "ph_sidebar_collapsed");
+
+// celular: o menu cobre a tela, entao fecha sozinho depois de escolher uma opcao (a seta reabre)
+const SIDEBAR_SETTER_POR_NAV = { sidebarNav: SIDEBAR_POR_SETOR.ppcp, qualSidebarNav: SIDEBAR_POR_SETOR.qualidade, engSidebarNav: SIDEBAR_POR_SETOR.engenharia, expSidebarNav: SIDEBAR_POR_SETOR.expedicao, gestaoSidebarNav: SIDEBAR_POR_SETOR.gestao, adminSidebarNav: SIDEBAR_POR_SETOR.admin };
+document.addEventListener("click", (e)=>{
+  if (window.innerWidth > 768) return;
+  const btn = e.target.closest && e.target.closest(".sidebar button[class*='navbtn']");
+  if (!btn) return;
+  const nav = btn.closest(".sidebar");
+  const setter = nav && SIDEBAR_SETTER_POR_NAV[nav.id];
+  if (setter) setTimeout(()=>setter(true), 0);
+});
 
 // cabecalho padrao das barras laterais (logo, usuario e Sair) - igual ao do PPCP
 function preencherCabecalhosSidebars(){
@@ -7939,14 +7958,14 @@ function renderEngKanban(){
           ${t.numeroDesenho ? `<div class="muted" style="font-size:10px; margin-top:2px;">&#128208; Desenho: <strong>${escaparHtmlPerfil(t.numeroDesenho)}</strong></div>` : ""}
           ${t.equipamentoNome ? `<div class="muted" style="font-size:10px;">&#9881; ${escaparHtmlPerfil(t.equipamentoNome)}</div>` : ""}
           <div style="display:flex; gap:4px; margin-top:5px; align-items:stretch;">
-            ${somenteLeituraEng ? "" : `<button type="button" class="acao-icon" data-card-nav="${t.id}" data-card-nav-destino="${colAnt?colAnt.id:""}" ${colAnt?"":"disabled"} title="${colAnt?"Voltar para: "+colAnt.titulo:""}" style="padding:3px 8px; ${colAnt?"":"opacity:.3;"}">&#9664;</button>`}
+            ${somenteLeituraEng ? "" : `<button type="button" class="acao-icon" data-card-nav="${t.id}" data-card-nav-destino="${colAnt?colAnt.id:""}" ${colAnt?"":"disabled"} title="${colAnt?"Voltar para: "+colAnt.titulo:""}" style="padding:3px 10px; border:1px solid var(--primary); color:var(--primary-dark); background:#fff; border-radius:6px; ${colAnt?"":"opacity:.3;"}">&#9664;</button>`}
             ${!t.finalizada ? (t.rodando
               ? `<button type="button" class="btn secondary btn-sm" data-pausar-tarefa="${t.id}" style="flex:1; font-size:10.5px; padding:4px 6px;">&#9208; Pausar</button>`
               : `<button type="button" class="btn secondary btn-sm" data-iniciar-tarefa="${t.id}" style="flex:1; font-size:10.5px; padding:4px 6px;">&#9654; Iniciar</button>`) : '<span style="flex:1;"></span>'}
-            ${somenteLeituraEng ? "" : `<button type="button" class="acao-icon" data-card-nav="${t.id}" data-card-nav-destino="${colProx?colProx.id:""}" ${colProx?"":"disabled"} title="${colProx?"Avancar para: "+colProx.titulo:""}" style="padding:3px 8px; ${colProx?"":"opacity:.3;"}">&#9654;</button>`}
+            ${somenteLeituraEng ? "" : `<button type="button" class="acao-icon" data-card-nav="${t.id}" data-card-nav-destino="${colProx?colProx.id:""}" ${colProx?"":"disabled"} title="${colProx?"Avancar para: "+colProx.titulo:""}" style="padding:3px 10px; border:1px solid var(--primary); color:var(--primary-dark); background:#fff; border-radius:6px; ${colProx?"":"opacity:.3;"}">&#9654;</button>`}
           </div>
           <div style="display:flex; gap:4px; margin-top:6px;">
-            <button type="button" class="acao-icon" data-painel-card="${t.id}" title="Desenho, responsavel e checklists" style="font-size:13px; padding:3px 9px; ${painelAberto?"background:var(--primary); color:#fff;":""}">&#9776; <span style="font-size:10px;">Detalhes</span></button>
+            <button type="button" class="acao-icon" data-painel-card="${t.id}" title="Desenho, responsavel e checklists" style="font-size:13px; padding:3px 9px; border:1px solid var(--primary); border-radius:6px; ${painelAberto?"background:var(--primary); color:#fff;":"background:#fff; color:var(--primary-dark);"}">&#9776; <span style="font-size:10px;">Detalhes</span></button>
           </div>
           ${painelCard}
         </div>`;
