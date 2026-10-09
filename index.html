@@ -328,7 +328,7 @@
     <button id="loginEntrarBtn" style="width:100%; padding:10px; background:#1F6C47; color:#fff; border:none; border-radius:6px; font-weight:600; cursor:pointer; font-size:14px;">Entrar</button>
     <div style="text-align:center; margin-top:8px;"><a href="#" id="loginEsqueciSenhaLink" style="font-size:12px; color:#8A8F87;">Esqueci minha senha</a></div>
     <div id="loginMsg" style="margin-top:10px; font-size:12.5px; min-height:18px;"></div>
-    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 126 - 09/10/2026</div>
+    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 128 - 09/10/2026</div>
     <div id="loginOfflineWrap" class="hidden" style="margin-top:6px;">
       <button id="loginOfflineBtn" style="width:100%; padding:8px; background:transparent; color:#8A8F87; border:1px solid #E1E6DE; border-radius:6px; font-size:12.5px; cursor:pointer;">Continuar sem conexao (usa os dados salvos neste navegador)</button>
     </div>
@@ -365,7 +365,7 @@
     </div>
     <div style="height:3px; width:60px; background:#91C53E; border-radius:2px; margin-bottom:34px;"></div>
     <div id="painelPastasGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(172px, 1fr)); gap:14px;"></div>
-    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 126 - 09/10/2026</p>
+    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 128 - 09/10/2026</p>
   </div>
 </div>
 
@@ -661,9 +661,6 @@
         <div class="field"><label class="field-label" for="rncEncResp">Respons&aacute;vel</label><input type="text" id="rncEncResp" list="rncPessoasList" autocomplete="off"></div>
         <div class="field"><label class="field-label" for="rncEncData">Data</label><input type="date" id="rncEncData"></div>
       </div>
-        <label class="field-label" style="margin-top:6px;">Assinatura (desenhe com o dedo)</label>
-        <canvas id="rncAssinatura" class="rnc-assin-canvas" width="420" height="130"></canvas>
-        <button type="button" class="btn secondary btn-sm" id="rncLimparAssinaturaBtn" style="margin-top:6px;">Limpar assinatura</button>
       </div></div></div>
       <datalist id="rncPessoasList"></datalist>
 
@@ -6519,8 +6516,6 @@ document.getElementById("qualFecharPrintBtn").addEventListener("click", ()=>{
    ===================================================================== */
 let rncEditandoId = null;
 let rncAcoesTemp = [];
-let rncAssinaturaDesenhada = false;
-let rncAssinaturaAntiga = null;
 
 const CATALOGO_RNC = [{"grupo": "Engenharia", "setor": "Engenharia", "itens": ["PDF/DXF N\u00c3O ATUALIZADO", "FALTA DE DXF PARA PE\u00c7A", "FALTA DE COTAS OU COTA INCORRETA PARA CORTE/FURA\u00c7\u00c3O", "FALTA DE COTAS OU COTA INCORRETA PARA DOBRA", "FALTA DE COTAS OU COTA INCORRETA PARA SOLDA", "IMPOSSIBILIDADE/DIFICULDADE DE SOLDA", "FALTA DE POSICIONAMENTOS PARA MONTAGEM INTERNA", "FALTA DE DETALHES PARA MONTAGEM INTERNA", "FALTA DE COTAS OU COTA INCORRETA PARA MONTAGEM INTERNA", "IMPOSSIBILIDADE/DIFICULDADE DE MONTAGEM INTERNA", "FALTA DE POSICIONAMENTOS PARA MONTAGEM EXTERNA", "FALTA DE DETALHES PARA MONTAGEM EXTERNA", "FALTA DE COTAS OU COTA INCORRETA PARA MONTAGEM EXTERNA", "IMPOSSIBILIDADE/DIFICULDADE DE MONTAGEM EXTERNA", "MATERIAL NA LEGENDA DIVERGENTE DO DETALHAMENTO", "ESPECIFICA\u00c7\u00c3O DE MATERIAL INCORRETA", "NOME DO PROJETISTA DIVERGENTE DO REAL", "DUPLICIDADE DE C\u00d3DIGOS DE PE\u00c7AS", "FALHA NA COMUNICA\u00c7\u00c3O DE ALTERA\u00c7\u00c3O DE PROJETO", "PROCESSO INDICADO INCOMPAT\u00cdVEL COM FERRAMENTAL/MAQUIN\u00c1RIO DISPON\u00cdVEL"]}, {"grupo": "Produ\u00e7\u00e3o", "setor": "Nesting", "itens": ["PE\u00c7AS POSICIONADAS NO SENTIDO INCORRETO DA CHAPA", "APROVEITAMENTO INADEQUADO DE MATERIAL", "QUANTIDADE DE PE\u00c7AS DIVERGENTE DA OF", "UTILIZA\u00c7\u00c3O DE PE\u00c7AS DE DIFERENTES ESPESSURAS NO MESMO PLANO DE CORTE", "ERRO NA DESCRI\u00c7\u00c3O DO ARQUIVO DE CORTE OU DOCUMENTO PDF", "DIST\u00c2NCIA INSUFICIENTE ENTRE PE\u00c7AS", "ORDEM DE CORTE INADEQUADA", "ARQUIVO DXF DESATUALIZADO", "GERA\u00c7\u00c3O DE NESTING DUPLICADO"]}, {"grupo": "Produ\u00e7\u00e3o", "setor": "Corte Laser", "itens": ["PE\u00c7A CORTADA FORA DE MEDIDA", "CORTE INCOMPLETO", "REBARBA EXCESSIVA", "FURO OVALIZADO", "SELE\u00c7\u00c3O DA BITOLA DA CHAPA INCORRETA", "PROGRAMA INCORRETO", "CORTE DIVERGENTE AO NESTING ELABORADO", "IDENTIFICA\u00c7\u00c3O INCORRETA DA PE\u00c7A", "RETALHO ARMAZENADO EM LOCAL DIVERGENTE AO ESPECIFICADO", "FALHA NO ESQUADRO DA PE\u00c7A", "PERDA DE REFER\u00caNCIA DURANTE O CORTE", "CORTE COM PAR\u00c2METROS INCOMPAT\u00cdVEIS COM A CHAPA UTILIZADA"]}, {"grupo": "Produ\u00e7\u00e3o", "setor": "Serra", "itens": ["COMPRIMENTO INCORRETO", "\u00c2NGULO FORA DE MEDIDA", "REBARBA EXCESSIVA", "DIVERG\u00caNCIA DE MATERIAL"]}, {"grupo": "Produ\u00e7\u00e3o", "setor": "Dobra/Prensa", "itens": ["\u00c2NGULO FORA DE MEDIDA", "MEDIDA INCORRETA", "PE\u00c7A DOBRADA INVERTIDA", "MARCA EXCESSIVA DA FERRAMENTA", "PE\u00c7A TRINCADA/EMPENADA", "SETUP INCORRETO", "FERRAMENTAL INCORRETO"]}, {"grupo": "Produ\u00e7\u00e3o", "setor": "Fura\u00e7\u00e3o", "itens": ["FURO FORA DE POSI\u00c7\u00c3O", "DI\u00c2METRO INCORRETO", "FALTA DE FURO", "REBARBA", "GABARITO ERRADO", "QUANTIDADE ERRADA DE FUROS"]}, {"grupo": "Produ\u00e7\u00e3o", "setor": "Solda", "itens": ["FALTA DE SOLDA", "EXCESSO DE SOLDA", "DEFEITOS NA SOLDA (PORO/TRINCA/FALTA DE PENETRA\u00c7\u00c3O)", "DESALINHAMENTO NA PE\u00c7A", "EMPENAMENTO AP\u00d3S SOLDA", "MONTAGEM INCORRETA"]}, {"grupo": "Produ\u00e7\u00e3o", "setor": "Prepara\u00e7\u00e3o Pintura", "itens": ["PE\u00c7A OXIDADA ANTES DA PINTURA", "CONTAMINA\u00c7\u00c3O", "MAU ACABAMENTO", "EXCESSO DE RESPINGO"]}, {"grupo": "Produ\u00e7\u00e3o", "setor": "Pintura", "itens": ["FALTA DE COBERTURA", "ESCORRIMENTO", "CASCA DE LARANJA", "CONTAMINA\u00c7\u00c3O", "DIFEREN\u00c7A DE COR", "DIFEREN\u00c7A DE ESPESSURA", "DESCASCAMENTO", "CURA INADEQUADA", "DEFEITOS P\u00d3S-PINTURA"]}, {"grupo": "Produ\u00e7\u00e3o", "setor": "Montagem", "itens": ["FALTA DE PE\u00c7AS/COMPONENTES NA MONTAGEM", "PE\u00c7A/COMPONENTE ERRADO", "AJUSTE INCORRETO", "INTERFER\u00caNCIA MEC\u00c2NICA", "DESALINHAMENTO", "MAU FUNCIONAMENTO DO EQUIPAMENTO", "CHICOTE/CABOS MAL POSICIONADOS", "DANOS DURANTE A MONTAGEM", "COMPONENTES RISCADOS OU AMASSADOS", "FALTA DE TESTES FUNCIONAIS"]}, {"grupo": "Almoxarifado", "setor": "Almoxarifado", "itens": ["QUANTIDADE DE MATERIAL SEPARADA DE FORMA ERRADA", "TIPO DE MATERIAL SEPARADO ERRADO", "FALTA DE ETIQUETA", "FALTA DE EVID\u00caNCIAS NO APONTAMENTO", "FALTA DE REGISTRO DO APONTAMENTO"]}, {"grupo": "Produ\u00e7\u00e3o", "setor": "Confer\u00eancia", "itens": ["LIBERA\u00c7\u00c3O DE MATERIAL N\u00c3O INDICADO NO ROMANEIO", "LIBERA\u00c7\u00c3O DE MATERIAL COM QUANTIDADE DIVERGENTE AO ROMANEIO", "FALTA DE EVID\u00caNCIAS NO APONTAMENTO", "FALTA DE REGISTRO DO APONTAMENTO", "PRODUTO LIBERADO COM AVARIA"]}, {"grupo": "Expedi\u00e7\u00e3o", "setor": "Expedi\u00e7\u00e3o", "itens": ["MATERIAL ENVIADO ERRADO", "FALTA DE MATERIAL ENVIADO", "QUANTIDADE DE MATERIAL ENVIADA ERRADA", "AVARIA NO TRANSPORTE", "EMBALAGEM INADEQUADA", "IDENTIFICA\u00c7\u00c3O INCORRETA", "FALTA DE ROMANEIO NO MOMENTO DO ENVIO", "FALTA DE DESENHOS DE MONTAGEM NO MOMENTO DO ENVIO", "FALTA DE IDENTIFICA\u00c7\u00c3O DO VOLUME", "PRODUTO ENVIADO COM AVARIA", "TEMPO DE DESTINA\u00c7\u00c3O DE 48 HORAS PARA RETIRADA DE MATERIAL"]}, {"grupo": "Terceiros", "setor": "Terceiros", "itens": ["PE\u00c7A USINADA FORA DA TOLER\u00c2NCIA EXIGIDA", "DEFEITOS EM SOLDA", "DIMENSIONAL INCORRETO", "DEFEITOS EM PINTURA", "DEFEITOS DE GALVANIZA\u00c7\u00c3O"]}];
 const SETORES_RNC = CATALOGO_RNC.map(c=>c.setor);
@@ -6654,8 +6649,6 @@ function renderRnc(){
   document.getElementById("rncCancelarWizBtn").onclick = ()=>{ if (confirm("Descartar o que foi preenchido nesta RNC?")) showQualPage("rncs"); };
   document.getElementById("rncEncerrarBtn").onclick = ()=>salvarRnc(true);
   document.getElementById("rncCancelarBtn").onclick = ()=>{ showQualPage("rncs"); };
-  document.getElementById("rncLimparAssinaturaBtn").onclick = ()=>{ rncLimparCanvas(); rncAssinaturaAntiga = null; };
-  rncIniciarCanvas();
 }
 
 function renderRncTabela(){
@@ -6741,27 +6734,6 @@ function rncLerAcoesDoForm(){
 }
 
 // ---- assinatura (canvas, funciona com dedo ou mouse)
-function rncCanvas(){ return document.getElementById("rncAssinatura"); }
-function rncLimparCanvas(){ const c = rncCanvas(); c.getContext("2d").clearRect(0,0,c.width,c.height); rncAssinaturaDesenhada = false; }
-let rncCanvasPronto = false;
-function rncIniciarCanvas(){
-  if (rncCanvasPronto) return; rncCanvasPronto = true;
-  const c = rncCanvas(); const ctx = c.getContext("2d");
-  ctx.lineWidth = 2.4; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.strokeStyle = "#111";
-  let desenhando = false;
-  const pos = e=>{ const r = c.getBoundingClientRect(); return { x:(e.clientX-r.left)*c.width/r.width, y:(e.clientY-r.top)*c.height/r.height }; };
-  c.addEventListener("pointerdown", e=>{ e.preventDefault(); desenhando = true; try{ c.setPointerCapture(e.pointerId); }catch(_){} const p = pos(e); ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(p.x+0.1,p.y+0.1); ctx.stroke(); rncAssinaturaDesenhada = true; });
-  c.addEventListener("pointermove", e=>{ if (!desenhando) return; e.preventDefault(); const p = pos(e); ctx.lineTo(p.x,p.y); ctx.stroke(); });
-  const fim = ()=>{ desenhando = false; };
-  c.addEventListener("pointerup", fim); c.addEventListener("pointercancel", fim); c.addEventListener("pointerleave", fim);
-}
-function rncDesenharAssinatura(url){
-  rncLimparCanvas();
-  const ok = pngSeguro(url); if (!ok) return;
-  const img = new Image();
-  img.onload = ()=>{ const c = rncCanvas(); c.getContext("2d").drawImage(img,0,0,c.width,c.height); };
-  img.src = ok;
-}
 
 // ---- etapas (nova RNC = passo a passo; RNC ja registrada = tela completa para o gestor tratar)
 let rncModo = "wizard", rncEtapa = 1;
@@ -6838,8 +6810,6 @@ function abrirFormRnc(id){
   const enc = (r && r.encerramento) || {};
   document.getElementById("rncEncResp").value = enc.responsavel || "";
   document.getElementById("rncEncData").value = enc.data || "";
-  rncAssinaturaAntiga = pngSeguro(enc.assinatura);
-  rncDesenharAssinatura(enc.assinatura);
   document.getElementById("rncEncerrarBtn").innerHTML = (r && r.status==="encerrada") ? "&#8635; Salvar (RNC encerrada)" : "&#10003; Encerrar RNC";
   rncAplicarEtapa();
   showQualPage("rncnova");
@@ -6865,8 +6835,6 @@ function salvarRnc(encerrar){
   if (ref.startsWith("eq:")) { const e = getEquipamento(parseInt(ref.slice(3))); equipNome = e ? e.nome : ""; }
   else if (ref.startsWith("peca:")) { const pa = DB.pecasAvulsas.find(x=>x.id===parseInt(ref.slice(5))); equipNome = pa ? pa.nome + " (peca avulsa)" : ""; }
 
-  let assinatura = rncAssinaturaDesenhada ? rncCanvas().toDataURL("image/png") : rncAssinaturaAntiga;
-  assinatura = pngSeguro(assinatura);
 
   const existente = rncEditandoId ? (DB.rncs||[]).find(x=>x.id===rncEditandoId) : null;
   const agoraIso = new Date().toISOString();
@@ -6877,7 +6845,7 @@ function salvarRnc(encerrar){
     numeroDesenho: v("rncDesenho").trim(), quantidadeAfetada: v("rncQtd")==="" ? null : Math.max(0, parseInt(v("rncQtd"))||0),
     setorOrigem: rncGrupoSel, processoOrigem: rncGrupoSel === "Produ\u00e7\u00e3o" ? rncProcessoSel : "", setorEncontrado: v("rncSetorEnc"), observacoes: v("rncObs").trim(), fotos: rncFotosTemp.slice(0, RNC_MAX_FOTOS), naoConformidades: [...rncNcSel], descricao: (rncEditandoId && (DB.rncs||[]).find(x=>x.id===rncEditandoId) ? ((DB.rncs||[]).find(x=>x.id===rncEditandoId).descricao||"") : ""), causa: v("rncCausa").trim(),
     acoes: rncAcoesTemp.filter(a=>(a.acao||"").trim() || (a.responsavel||"").trim() || a.prazo).map(a=>({acao:(a.acao||"").trim(), responsavel:(a.responsavel||"").trim(), prazo:a.prazo||""})),
-    encerramento: { responsavel: respEnc, data: v("rncEncData") || (encerrar ? hojeIsoLocal() : ""), assinatura: assinatura || "" },
+    encerramento: { responsavel: respEnc, data: v("rncEncData") || (encerrar ? hojeIsoLocal() : ""), assinatura: "" },
   };
   if (!ref) dados.equipamentoNome = "";
   if (existente) {
@@ -6905,49 +6873,57 @@ function gerarRncPrintHtml(r){
   const e = escaparHtmlPerfil;
   const ml = t=>e(t).replace(/\n/g,"<br>");
   const ped = getPedido(r.pedidoId); const lote = DB.lotes.find(l=>l.id===r.loteId);
-  const bd = "border:1px solid #333;";
-  const barra = t=>`<div style="background:#333; color:#fff; font-weight:bold; font-style:italic; font-size:12px; padding:5px 8px; margin-top:12px; border:1px solid #333;">${t}</div>`;
-  const lab = t=>`<td style="${bd} padding:6px 8px; font-weight:bold; width:17%; background:#fff;">${t}</td>`;
-  const val = t=>`<td style="${bd} padding:6px 8px; width:33%;">${t}</td>`;
-  const acoes = (r.acoes||[]).slice(); while (acoes.length < 3) acoes.push({acao:"",responsavel:"",prazo:""});
-  const enc = r.encerramento || {}; const ass = pngSeguro(enc.assinatura);
-  let h = `<div style="font-family:Arial,sans-serif; font-size:11.5px; color:#111;">`;
-  h += `<table style="width:100%; border-collapse:collapse;"><tr>
-    <td style="${bd} padding:14px; text-align:center; font-weight:bold; font-size:17px; width:68%;">RNC &ndash; Relat&oacute;rio de N&atilde;o Conformidade</td>
-    <td style="${bd} padding:8px; font-size:11.5px;"><div style="font-weight:bold; margin-bottom:8px;">N&ordm; RNC: ${numRnc(r.sequencia)}</div><div style="font-weight:bold;">Data: ${r.data ? isoParaBR(r.data) : "____/____/______"}</div></td></tr></table>`;
+  const VERDE = "#14462E", VERDE2 = "#1F6C47", LIMA = "#91C53E", LINHA = "#C9D6CB", FUNDO = "#F1F6EE";
+  const logoEl = document.querySelector("#appRoot img[alt='BRS Equipamentos Agricolas']");
+  const logo = logoEl && /^data:image\//.test(logoEl.src) ? logoEl.src : "";
+  const bd = `border:1px solid ${LINHA};`;
+  const barra = t=>`<div style="background:${VERDE2}; color:#fff; font-weight:bold; font-size:10.5px; letter-spacing:.4px; padding:4px 8px; margin-top:7px; border-left:5px solid ${LIMA};">${t}</div>`;
+  const lab = t=>`<td style="${bd} padding:4px 7px; font-weight:bold; width:16%; background:${FUNDO}; color:${VERDE}; font-size:10px;">${t}</td>`;
+  const val = t=>`<td style="${bd} padding:4px 7px; width:34%; font-size:11px;">${t}</td>`;
+  const acoes = (r.acoes||[]).filter(a=>(a.acao||"").trim() || (a.responsavel||"").trim() || a.prazo);
+  const nomeResp = r.emitenteNome || r.emitenteEmail || "";
+  const dataDoc = r.data ? isoParaBR(r.data) : "";
+  let h = `<div style="font-family:Arial,Helvetica,sans-serif; font-size:11px; color:#111; -webkit-print-color-adjust:exact; print-color-adjust:exact;">`;
+  h += `<table style="width:100%; border-collapse:collapse; border:2px solid ${VERDE};"><tr>
+    <td style="width:26%; padding:6px 10px; background:#fff; text-align:center; vertical-align:middle;">${logo ? `<img src="${logo}" alt="BRS" style="max-height:52px; max-width:100%;">` : `<strong style="color:${VERDE}; font-size:18px;">BRS</strong>`}</td>
+    <td style="background:${VERDE}; color:#fff; text-align:center; padding:8px; vertical-align:middle;"><div style="font-weight:bold; font-size:16px; letter-spacing:.3px;">RNC &ndash; Relat&oacute;rio de N&atilde;o Conformidade</div><div style="font-size:9.5px; color:${LIMA}; margin-top:2px; letter-spacing:1px;">BRS EQUIPAMENTOS AGR&Iacute;COLAS</div></td>
+    <td style="width:22%; background:${FUNDO}; padding:6px 10px; vertical-align:middle; border-left:4px solid ${LIMA};"><div style="font-size:9px; color:${VERDE2}; font-weight:bold;">N&ordm; RNC</div><div style="font-weight:bold; font-size:17px; color:${VERDE};">${numRnc(r.sequencia)}</div><div style="font-size:9.5px; margin-top:2px;"><strong>Data:</strong> ${dataDoc || "____/____/______"}</div></td></tr></table>`;
   h += barra("1. IDENTIFICA&Ccedil;&Atilde;O");
   h += `<table style="width:100%; border-collapse:collapse; table-layout:fixed;">
-    <tr>${lab("N&ordm; do pedido:")}${val(e(ped?ped.noPedido:(r.pedidoNo||"")))}${lab("Lote:")}${val(e(lote?lote.noLote:(r.loteNo||"")))}</tr>
-    <tr>${lab("Equipamento:")}${val(e(r.equipamentoNome||""))}${lab("N&uacute;mero de desenho:")}${val(e(r.numeroDesenho||""))}</tr>
-    <tr>${lab("Quantidade afetada:")}${val(r.quantidadeAfetada!=null ? e(r.quantidadeAfetada) : "")}${lab("Setor de origem:")}${val(e(rncRotuloSetor(r)))}</tr>
-    <tr>${lab("Emitente:")}${val(e(r.emitenteNome||r.emitenteEmail||""))}${lab("Encontrada no setor:")}${val(e(r.setorEncontrado||""))}</tr></table>`;
-  h += barra("2. DESCRI&Ccedil;&Atilde;O DA N&Atilde;O CONFORMIDADE");
+    <tr>${lab("N&ordm; do pedido")}${val(e(ped?ped.noPedido:(r.pedidoNo||"")))}${lab("Lote")}${val(e(lote?lote.noLote:(r.loteNo||"")))}</tr>
+    <tr>${lab("Equipamento")}${val(e(r.equipamentoNome||""))}${lab("N&ordm; de desenho")}${val(e(r.numeroDesenho||""))}</tr>
+    <tr>${lab("Qtd. afetada")}${val(r.quantidadeAfetada!=null ? e(r.quantidadeAfetada) : "")}${lab("Setor de origem")}${val(e(rncRotuloSetor(r)))}</tr>
+    <tr>${lab("Emitente")}${val(e(r.emitenteNome||r.emitenteEmail||""))}${lab("Encontrada em")}${val(e(r.setorEncontrado||""))}</tr></table>`;
+  h += barra("2. N&Atilde;O CONFORMIDADE");
   const ncs = r.naoConformidades || [];
-  h += `<div style="${bd} border-top:none; min-height:150px; padding:8px;">` +
-    (ncs.length ? `<div style="font-weight:bold; margin-bottom:4px;">${e(rncRotuloSetor(r))}</div>` + ncs.map(t=>`<div style="margin:2px 0;">&#9746; ${e(t)}</div>`).join("") : "") +
-    (r.descricao ? `<div style="margin-top:8px;">${ml(r.descricao)}</div>` : "") +
-    (r.observacoes ? `<div style="margin-top:8px;"><strong>Observa&ccedil;&otilde;es:</strong> ${ml(r.observacoes)}</div>` : "") + `</div>`;
+  h += `<div style="${bd} border-top:none; padding:6px 8px; min-height:48px;">` +
+    (ncs.length ? ncs.map(t=>`<div style="margin:2px 0;">&#9746; ${e(t)}</div>`).join("") : "") +
+    (r.descricao ? `<div style="margin-top:5px;">${ml(r.descricao)}</div>` : "") +
+    (r.observacoes ? `<div style="margin-top:5px;"><strong style="color:${VERDE};">Observa&ccedil;&otilde;es:</strong> ${ml(r.observacoes)}</div>` : "") + `</div>`;
   h += barra("3. CAUSA PROV&Aacute;VEL");
-  h += `<div style="${bd} border-top:none; min-height:90px; padding:8px;">${ml(r.causa||"")}</div>`;
+  h += `<div style="${bd} border-top:none; padding:6px 8px; min-height:34px;">${ml(r.causa||"")}</div>`;
   const fotos = (r.fotos||[]).filter(f=>/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/.test(f));
-  h += barra("4. EVID&Ecirc;NCIAS");
-  h += `<div style="${bd} border-top:none; min-height:70px; padding:8px; display:flex; flex-wrap:wrap; gap:8px;">` + fotos.map(f=>`<img src="${f}" alt="" style="max-width:48%; max-height:200px; border:1px solid #999;">`).join("") + `</div>`;
-  h += barra("5. A&Ccedil;&Atilde;O TOMADA");
+  if (fotos.length) {
+    const porLinha = fotos.length === 1 ? 1 : (fotos.length <= 4 ? 2 : 3);
+    const larg = Math.floor(98/porLinha) - 1, altMax = fotos.length === 1 ? 210 : (fotos.length <= 4 ? 150 : 105);
+    h += barra("4. EVID&Ecirc;NCIAS");
+    h += `<div style="${bd} border-top:none; padding:6px; text-align:center;">` + fotos.map(f=>`<img src="${f}" alt="" style="width:${larg}%; max-height:${altMax}px; object-fit:contain; border:1px solid ${LINHA}; margin:2px;">`).join("") + `</div>`;
+  }
+  h += barra(fotos.length ? "5. A&Ccedil;&Atilde;O TOMADA" : "4. A&Ccedil;&Atilde;O TOMADA");
   h += `<table style="width:100%; border-collapse:collapse; table-layout:fixed;">
-    <tr style="background:#e6e6e6; font-weight:bold;"><td style="${bd} padding:5px 8px; width:60%;">A&ccedil;&atilde;o</td><td style="${bd} padding:5px 8px; width:25%;">Respons&aacute;vel</td><td style="${bd} padding:5px 8px;">Prazo</td></tr>` +
-    acoes.map(a=>`<tr><td style="${bd} padding:6px 8px; height:30px;">${ml(a.acao)}</td><td style="${bd} padding:6px 8px;">${e(a.responsavel)}</td><td style="${bd} padding:6px 8px;">${a.prazo ? isoParaBR(a.prazo) : ""}</td></tr>`).join("") + `</table>`;
-  h += barra("6. ENCERRAMENTO");
-  h += `<table style="width:100%; border-collapse:collapse; table-layout:fixed;">
-    <tr style="background:#e6e6e6; font-weight:bold;"><td style="${bd} padding:5px 8px; width:33%;">Respons&aacute;vel</td><td style="${bd} padding:5px 8px; width:48%;">Assinatura</td><td style="${bd} padding:5px 8px;">Data</td></tr>
-    <tr><td style="${bd} padding:8px; height:60px;">${e(enc.responsavel||"")}</td><td style="${bd} padding:4px;">${ass ? `<img src="${ass}" alt="" style="max-height:70px; max-width:100%;">` : ""}</td><td style="${bd} padding:8px;">${enc.data ? isoParaBR(enc.data) : ""}</td></tr></table>`;
-  h += `<p style="text-align:right; font-size:9px; color:#888; margin-top:8px;">RNC gerada pelo sistema PPCP-BRS - No ${numRnc(r.sequencia)}</p></div>`;
+    <tr style="background:${FUNDO}; font-weight:bold; color:${VERDE}; font-size:10px;"><td style="${bd} padding:4px 7px; width:52%;">A&ccedil;&atilde;o</td><td style="${bd} padding:4px 7px; width:26%;">Respons&aacute;vel</td><td style="${bd} padding:4px 7px;">Prazo</td></tr>` +
+    (acoes.length ? acoes.map(a=>`<tr><td style="${bd} padding:5px 7px; font-size:11px;">${ml(a.acao||"")}</td><td style="${bd} padding:5px 7px; font-size:11px;">${e(a.responsavel||"")}</td><td style="${bd} padding:5px 7px; font-size:11px;">${a.prazo ? isoParaBR(a.prazo) : ""}</td></tr>`).join("") : `<tr><td style="${bd} padding:5px 7px; height:24px;"></td><td style="${bd}"></td><td style="${bd}"></td></tr>`) + `</table>`;
+  h += `<div style="margin-top:34px; text-align:center; page-break-inside:avoid;">
+    <div style="display:inline-block; min-width:260px; border-top:1px solid ${VERDE}; padding-top:3px; font-weight:bold; color:${VERDE};">${e(nomeResp)}</div>
+    <div style="font-size:9.5px; color:#555;">Respons&aacute;vel${dataDoc ? " &ndash; " + dataDoc : ""}</div></div>`;
+  h += `<div style="margin-top:8px; border-top:2px solid ${LIMA}; padding-top:3px; text-align:right; font-size:8.5px; color:#777;">RNC-${numRnc(r.sequencia)} &middot; gerada pelo sistema PPCP-BRS</div></div>`;
   return h;
 }
 function abrirPreviewRnc(id){
   const r = (DB.rncs||[]).find(x=>x.id===id); if (!r) return;
   document.getElementById("qualPrintPreview").innerHTML = `<div style="padding:14px;">${gerarRncPrintHtml(r)}</div>`;
   document.getElementById("qualidadePrintOverlay").classList.remove("hidden");
-  document.getElementById("qualImprimirAgoraBtn").onclick = ()=>imprimirComoPdf(gerarRncPrintHtml(r), `RNC ${numRnc(r.sequencia)}`);
+  document.getElementById("qualImprimirAgoraBtn").onclick = ()=>imprimirComoPdf(gerarRncPrintHtml(r), `RNC-${numRnc(r.sequencia)}`, { margem: "9mm" });
 }
 
 
@@ -8632,20 +8608,26 @@ function salvarConfigHorarioEngenharia(){
   renderEngKanban();
 }
 
-function imprimirComoPdf(htmlConteudo, titulo){
+function imprimirComoPdf(htmlConteudo, titulo, opcoes){
+  const margem = (opcoes && opcoes.margem) || "16mm";
   const iframe = document.createElement("iframe");
   iframe.style.cssText = "position:fixed; right:0; bottom:0; width:0; height:0; border:0;";
   document.body.appendChild(iframe);
   const doc = iframe.contentWindow.document;
   doc.open();
   doc.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${titulo}</title>
-    <style>@page { size: A4 portrait; margin: 16mm; } body{margin:0;}</style>
+    <style>@page { size: A4 portrait; margin: ${margem}; } body{margin:0;} *{-webkit-print-color-adjust:exact; print-color-adjust:exact;}</style>
   </head><body>${htmlConteudo}</body></html>`);
   doc.close();
+  // o nome do arquivo sugerido ao salvar em PDF vem do titulo da pagina principal
+  const tituloAntigo = document.title;
+  const restaurar = ()=>{ document.title = tituloAntigo; };
+  document.title = titulo;
   setTimeout(()=>{
     iframe.contentWindow.focus();
+    iframe.contentWindow.addEventListener("afterprint", restaurar);
     iframe.contentWindow.print();
-    setTimeout(()=>{ if (iframe.parentNode) document.body.removeChild(iframe); }, 1000);
+    setTimeout(()=>{ restaurar(); if (iframe.parentNode) document.body.removeChild(iframe); }, 1500);
   }, 300);
 }
 
