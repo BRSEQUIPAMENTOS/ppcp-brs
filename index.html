@@ -295,6 +295,9 @@
     input[type=text], input[type=number], input[type=date], input[type=email], input[type=password], select, textarea { font-size:16px !important; min-height:40px; }
     .sidebar button, .btn { min-height:40px; }
     .sb-usuario { overflow-wrap:anywhere; white-space:normal; }
+    /* celular: a seta de abrir/fechar o menu fica sempre no canto esquerdo, acima do menu (nao embaixo do botao Voltar) */
+    .sidebar-toggle, .sidebar-toggle.collapsed { left:10px; top:12px; z-index:450; }
+    .sidebar { padding-top:56px; }
     .eng-card .acao-icon, .eng-card .btn-sm { min-height:34px; }
   }
 </style>
@@ -325,7 +328,7 @@
     <button id="loginEntrarBtn" style="width:100%; padding:10px; background:#1F6C47; color:#fff; border:none; border-radius:6px; font-weight:600; cursor:pointer; font-size:14px;">Entrar</button>
     <div style="text-align:center; margin-top:8px;"><a href="#" id="loginEsqueciSenhaLink" style="font-size:12px; color:#8A8F87;">Esqueci minha senha</a></div>
     <div id="loginMsg" style="margin-top:10px; font-size:12.5px; min-height:18px;"></div>
-    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 125 - 09/10/2026</div>
+    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 126 - 09/10/2026</div>
     <div id="loginOfflineWrap" class="hidden" style="margin-top:6px;">
       <button id="loginOfflineBtn" style="width:100%; padding:8px; background:transparent; color:#8A8F87; border:1px solid #E1E6DE; border-radius:6px; font-size:12.5px; cursor:pointer;">Continuar sem conexao (usa os dados salvos neste navegador)</button>
     </div>
@@ -362,7 +365,7 @@
     </div>
     <div style="height:3px; width:60px; background:#91C53E; border-radius:2px; margin-bottom:34px;"></div>
     <div id="painelPastasGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(172px, 1fr)); gap:14px;"></div>
-    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 125 - 09/10/2026</p>
+    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 126 - 09/10/2026</p>
   </div>
 </div>
 
