@@ -328,7 +328,7 @@
     <button id="loginEntrarBtn" style="width:100%; padding:10px; background:#1F6C47; color:#fff; border:none; border-radius:6px; font-weight:600; cursor:pointer; font-size:14px;">Entrar</button>
     <div style="text-align:center; margin-top:8px;"><a href="#" id="loginEsqueciSenhaLink" style="font-size:12px; color:#8A8F87;">Esqueci minha senha</a></div>
     <div id="loginMsg" style="margin-top:10px; font-size:12.5px; min-height:18px;"></div>
-    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 128 - 09/10/2026</div>
+    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 129 - 09/10/2026</div>
     <div id="loginOfflineWrap" class="hidden" style="margin-top:6px;">
       <button id="loginOfflineBtn" style="width:100%; padding:8px; background:transparent; color:#8A8F87; border:1px solid #E1E6DE; border-radius:6px; font-size:12.5px; cursor:pointer;">Continuar sem conexao (usa os dados salvos neste navegador)</button>
     </div>
@@ -365,7 +365,7 @@
     </div>
     <div style="height:3px; width:60px; background:#91C53E; border-radius:2px; margin-bottom:34px;"></div>
     <div id="painelPastasGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(172px, 1fr)); gap:14px;"></div>
-    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 128 - 09/10/2026</p>
+    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 129 - 09/10/2026</p>
   </div>
 </div>
 
@@ -6914,7 +6914,7 @@ function gerarRncPrintHtml(r){
     <tr style="background:${FUNDO}; font-weight:bold; color:${VERDE}; font-size:10px;"><td style="${bd} padding:4px 7px; width:52%;">A&ccedil;&atilde;o</td><td style="${bd} padding:4px 7px; width:26%;">Respons&aacute;vel</td><td style="${bd} padding:4px 7px;">Prazo</td></tr>` +
     (acoes.length ? acoes.map(a=>`<tr><td style="${bd} padding:5px 7px; font-size:11px;">${ml(a.acao||"")}</td><td style="${bd} padding:5px 7px; font-size:11px;">${e(a.responsavel||"")}</td><td style="${bd} padding:5px 7px; font-size:11px;">${a.prazo ? isoParaBR(a.prazo) : ""}</td></tr>`).join("") : `<tr><td style="${bd} padding:5px 7px; height:24px;"></td><td style="${bd}"></td><td style="${bd}"></td></tr>`) + `</table>`;
   h += `<div style="margin-top:34px; text-align:center; page-break-inside:avoid;">
-    <div style="display:inline-block; min-width:260px; border-top:1px solid ${VERDE}; padding-top:3px; font-weight:bold; color:${VERDE};">${e(nomeResp)}</div>
+    <div style="display:inline-block; min-width:260px; font-weight:bold; color:${VERDE}; font-size:12px;">${e(nomeResp)}</div>
     <div style="font-size:9.5px; color:#555;">Respons&aacute;vel${dataDoc ? " &ndash; " + dataDoc : ""}</div></div>`;
   h += `<div style="margin-top:8px; border-top:2px solid ${LIMA}; padding-top:3px; text-align:right; font-size:8.5px; color:#777;">RNC-${numRnc(r.sequencia)} &middot; gerada pelo sistema PPCP-BRS</div></div>`;
   return h;
