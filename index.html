@@ -377,7 +377,7 @@
     <button id="loginEntrarBtn" style="width:100%; padding:10px; background:#1F6C47; color:#fff; border:none; border-radius:6px; font-weight:600; cursor:pointer; font-size:14px;">Entrar</button>
     <div style="text-align:center; margin-top:8px;"><a href="#" id="loginEsqueciSenhaLink" style="font-size:12px; color:#8A8F87;">Esqueci minha senha</a></div>
     <div id="loginMsg" style="margin-top:10px; font-size:12.5px; min-height:18px;"></div>
-    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 141 - 16/10/2026</div>
+    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 142 - 19/10/2026</div>
     <div id="loginOfflineWrap" class="hidden" style="margin-top:6px;">
       <button id="loginOfflineBtn" style="width:100%; padding:8px; background:transparent; color:#8A8F87; border:1px solid #E1E6DE; border-radius:6px; font-size:12.5px; cursor:pointer;">Continuar sem conexao (usa os dados salvos neste navegador)</button>
     </div>
@@ -414,7 +414,7 @@
     </div>
     <div style="height:3px; width:60px; background:#91C53E; border-radius:2px; margin-bottom:34px;"></div>
     <div id="painelPastasGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(172px, 1fr)); gap:14px;"></div>
-    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 141 - 16/10/2026</p>
+    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 142 - 19/10/2026</p>
   </div>
 </div>
 
@@ -2061,6 +2061,7 @@ function restaurarRegistrosPerdidos(perdidos){
 function agendarSyncNuvem(){
   if (!nuvemConectada) { atualizarStatusSync("local"); return; }
   atualizarStatusSync("salvando");
+  syncPendente = true; const meuSeq = ++syncSeq;
   clearTimeout(syncTimeoutId);
   syncTimeoutId = setTimeout(async ()=>{
     try {
@@ -2069,8 +2070,8 @@ function agendarSyncNuvem(){
     } catch(e) {
       console.error(e);
       atualizarStatusSync("erro");
-    }
-  }, 900);
+    } finally { if (meuSeq === syncSeq) syncPendente = false; }
+  }, 600);
 }
 
 function atualizarStatusSync(estado){
@@ -2087,29 +2088,50 @@ function atualizarStatusSync(estado){
 }
 
 // verifica periodicamente se alguem mais salvou algo novo, e recarrega se sim
+let syncSeq = 0, verificandoNuvem = false, syncPendente = false, pollingIniciado = false, canalRealtime = null;
+// consulta so o carimbo da ultima gravacao (leve); baixa os dados completos apenas se mudou
+async function verificarNuvem(){
+  if (verificandoNuvem || syncPendente || !nuvemConectada || document.getElementById("loginOverlay").style.display==="flex") return;
+  verificandoNuvem = true;
+  try {
+    const { data: leve, error: e0 } = await supabaseClient.from("ppcp_dados").select("atualizado_em").eq("id",1).single();
+    if (e0) throw e0;
+    if (!leve.atualizado_em || leve.atualizado_em === ultimoTimestampNuvem) return;
+    const linha = await buscarLinhaNuvem();
+    if (syncPendente) return;                       // a pessoa mexeu enquanto baixava: nao sobrescreve o que ela fez
+    if (linha.atualizado_em && linha.atualizado_em !== ultimoTimestampNuvem) {
+      ultimoTimestampNuvem = linha.atualizado_em;
+      const dbAntigo = DB;
+      DB = normalizarDB(linha.dados);
+      const perdidos = acharRegistrosPerdidos(dbAntigo, DB);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(DB));
+      oferecerRestauracao(perdidos);
+      // nao redesenha a Engenharia enquanto a pessoa esta digitando/escolhendo num campo (apagaria o que ela fez)
+      const ae = document.activeElement;
+      const digitandoEng = ae && /^(INPUT|SELECT|TEXTAREA)$/.test(ae.tagName) && !document.getElementById("engenhariaRoot").classList.contains("hidden") && document.getElementById("engenhariaRoot").contains(ae);
+      if (!digitandoEng) rerenderizarTelaAtual();
+      verificarAvisosEngenharia();
+      verificarAvisosCadastros();
+      verificarAvisosChecklists();
+      atualizarStatusSync("sincronizado");
+    }
+  } catch(e) { console.error(e); atualizarStatusSync("erro"); }
+  finally { verificandoNuvem = false; }
+}
+// verifica a nuvem a cada 5 s, ao voltar para a aba/app, ao reconectar e (se o Supabase tiver Realtime ligado) assim que alguem grava
 function iniciarPollingNuvem(){
-  setInterval(async ()=>{
-    if (!nuvemConectada || document.getElementById("loginOverlay").style.display==="flex") return;
-    try {
-      const linha = await buscarLinhaNuvem();
-      if (linha.atualizado_em && linha.atualizado_em !== ultimoTimestampNuvem) {
-        ultimoTimestampNuvem = linha.atualizado_em;
-        const dbAntigo = DB;
-        DB = normalizarDB(linha.dados);
-        const perdidos = acharRegistrosPerdidos(dbAntigo, DB);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(DB));
-        oferecerRestauracao(perdidos);
-        // nao redesenha a Engenharia enquanto a pessoa esta digitando/escolhendo num campo (apagaria o que ela fez)
-        const ae = document.activeElement;
-        const digitandoEng = ae && /^(INPUT|SELECT|TEXTAREA)$/.test(ae.tagName) && !document.getElementById("engenhariaRoot").classList.contains("hidden") && document.getElementById("engenhariaRoot").contains(ae);
-        if (!digitandoEng) rerenderizarTelaAtual();
-        verificarAvisosEngenharia();
-        verificarAvisosCadastros();
-        verificarAvisosChecklists();
-        atualizarStatusSync("sincronizado");
-      }
-    } catch(e) { console.error(e); atualizarStatusSync("erro"); }
-  }, 20000);
+  if (pollingIniciado) return; pollingIniciado = true;
+  setInterval(verificarNuvem, 5000);
+  document.addEventListener("visibilitychange", ()=>{ if (!document.hidden) verificarNuvem(); });
+  window.addEventListener("focus", verificarNuvem);
+  window.addEventListener("online", verificarNuvem);
+  try {
+    if (supabaseClient && supabaseClient.channel) {
+      canalRealtime = supabaseClient.channel("ppcp_dados_mudancas")
+        .on("postgres_changes", { event: "UPDATE", schema: "public", table: "ppcp_dados" }, ()=>verificarNuvem())
+        .subscribe();
+    }
+  } catch(e) { console.error(e); }
 }
 
 function rerenderizarTelaAtual(){
