@@ -80,6 +80,10 @@
   .grid-2 { grid-template-columns: 1fr 1fr; }
   .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
   .grid-4 { grid-template-columns: repeat(4,1fr); }
+  .eng-nova-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:10px 14px; align-items:start; }
+  .eng-nova-grid .field { margin:0; min-width:0; }
+  .eng-nova-grid label.field-label { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .eng-nova-grid input, .eng-nova-grid select { width:100%; min-width:0; box-sizing:border-box; text-overflow:ellipsis; }
   .grid-item-avulso { grid-template-columns: 2fr 70px 2fr 32px; }
   .grid-item-avulso-custo { grid-template-columns: 2fr 70px 2fr 70px 32px; }
   .grid-5 { grid-template-columns: repeat(5,1fr); }
@@ -234,8 +238,8 @@
   .rnc-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:4px 12px; }
   .rnc-sec input[type=text], .rnc-sec input[type=number], .rnc-sec input[type=date], .rnc-sec select, .rnc-sec textarea { font-size:16px; min-height:42px; }
   .rnc-sec textarea { min-height:110px; }
-  .rnc-acao { display:grid; grid-template-columns:2fr 1fr 150px 38px; gap:8px; align-items:start; margin-bottom:8px; padding-bottom:8px; border-bottom:1px dashed var(--border); }
-  .rnc-acao-cab { font-size:11.5px; font-weight:700; color:var(--primary-dark); margin-bottom:4px; display:grid; grid-template-columns:2fr 1fr 150px 38px; gap:8px; }
+  .rnc-acao { display:grid; grid-template-columns:2fr 1fr 150px 150px 38px; gap:8px; align-items:start; margin-bottom:8px; padding-bottom:8px; border-bottom:1px dashed var(--border); }
+  .rnc-acao-cab { font-size:11.5px; font-weight:700; color:var(--primary-dark); margin-bottom:4px; display:grid; grid-template-columns:2fr 1fr 150px 150px 38px; gap:8px; }
   .rnc-nc { display:flex; gap:10px; align-items:flex-start; padding:10px 12px; border:1px solid var(--border); border-radius:8px; margin-bottom:6px; cursor:pointer; font-size:14px; line-height:1.3; background:#fff; }
   .rnc-nc input { width:22px; height:22px; flex:0 0 22px; margin:0; }
   .rnc-nc.marcado { background:#E8F3E3; border-color:var(--primary); font-weight:600; }
@@ -377,7 +381,7 @@
     <button id="loginEntrarBtn" style="width:100%; padding:10px; background:#1F6C47; color:#fff; border:none; border-radius:6px; font-weight:600; cursor:pointer; font-size:14px;">Entrar</button>
     <div style="text-align:center; margin-top:8px;"><a href="#" id="loginEsqueciSenhaLink" style="font-size:12px; color:#8A8F87;">Esqueci minha senha</a></div>
     <div id="loginMsg" style="margin-top:10px; font-size:12.5px; min-height:18px;"></div>
-    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 142 - 19/10/2026</div>
+    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 148 - 19/10/2026</div>
     <div id="loginOfflineWrap" class="hidden" style="margin-top:6px;">
       <button id="loginOfflineBtn" style="width:100%; padding:8px; background:transparent; color:#8A8F87; border:1px solid #E1E6DE; border-radius:6px; font-size:12.5px; cursor:pointer;">Continuar sem conexao (usa os dados salvos neste navegador)</button>
     </div>
@@ -414,7 +418,7 @@
     </div>
     <div style="height:3px; width:60px; background:#91C53E; border-radius:2px; margin-bottom:34px;"></div>
     <div id="painelPastasGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(172px, 1fr)); gap:14px;"></div>
-    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 142 - 19/10/2026</p>
+    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 148 - 19/10/2026</p>
   </div>
 </div>
 
@@ -758,7 +762,7 @@
       </div>
 
       <div id="rncStep3"><div class="rnc-sec"><h3 id="rncTituloAcao">5. A&Ccedil;&Atilde;O IMEDIATA</h3><div class="rnc-corpo">
-        <div class="rnc-acao-cab"><span>A&ccedil;&atilde;o</span><span>Respons&aacute;vel</span><span>Prazo</span><span></span></div>
+        <div class="rnc-acao-cab"><span>A&ccedil;&atilde;o</span><span>Respons&aacute;vel</span><span>Prazo</span><span>Setor da a&ccedil;&atilde;o</span><span></span></div>
         <div id="rncAcoesWrap"></div>
         <button type="button" class="btn secondary btn-sm" id="rncAddAcaoBtn">+ Adicionar a&ccedil;&atilde;o</button>
       </div></div></div>
@@ -816,12 +820,13 @@
     <section id="engpage-kanban" class="page active">
       <div class="banner"><h1>Kanban</h1><p>Tarefas de projeto e detalhamento</p></div>
       <div id="engKanbanBoard" style="display:flex; gap:14px; overflow-x:auto; max-width:100%; padding-bottom:10px;"></div>
+      <div id="engProximasWrap"></div>
     </section>
 
     <section id="engpage-nova" class="page" data-edicao>
-      <div class="banner"><h1>Nova Tarefa</h1><p>Cria uma tarefa e vincula a um Pedido/Lote se quiser</p></div>
+      <div class="banner"><h1>Nova Tarefa</h1><p>Cria uma tarefa e vincula a um Pedido/Lote. O respons&aacute;vel &eacute; opcional: sem respons&aacute;vel ela vai para &ldquo;Pr&oacute;ximas atividades&rdquo;.</p></div>
       <div class="card">
-        <div class="grid grid-4">
+        <div class="eng-nova-grid">
           <div class="field"><label class="field-label">Titulo da tarefa</label><input type="text" id="engNovaTarefaTitulo" placeholder="Ex: Projetar suporte do silo"></div>
           <div class="field hidden" id="engNovaTarefaFuncionarioWrap"><label class="field-label">Atribuir para</label><select id="engNovaTarefaFuncionario"></select><div id="engNovaTarefaAvisoAprovacao" class="hidden" style="font-size:10.5px; color:#B7791F; margin-top:3px;">Essa atribuicao precisa da aprovacao do gestor.</div></div>
           <div class="field" id="engNovaTarefaFuncionarioFixoWrap"><label class="field-label">Atribuida para</label><div id="engNovaTarefaFuncionarioFixo" class="muted" style="padding-top:9px; font-weight:600; color:var(--primary-dark);">-</div><div id="engNovaTarefaDicaCadastro" class="hidden" style="font-size:10.5px; color:#6B7B70; margin-top:3px;">Pra atribuir tarefas a colegas da Engenharia, complete seu cadastro (setor Engenharia) e aguarde a aprovacao.</div></div>
@@ -829,6 +834,9 @@
           <div class="field"><label class="field-label">Lote</label><select id="engNovaTarefaLote"></select></div>
           <div class="field"><label class="field-label">Equipamento / Peca avulsa</label><select id="engNovaTarefaEquip"></select></div>
           <div class="field hidden" id="engNovaTarefaPrazoWrap"><label class="field-label">Prazo de execucao</label><input type="date" id="engNovaTarefaPrazo"></div>
+          <div class="field eng-gut-f hidden"><label class="field-label">G &ndash; Gravidade</label><select id="engNovaG"></select></div>
+          <div class="field eng-gut-f hidden"><label class="field-label">U &ndash; Urg&ecirc;ncia</label><select id="engNovaU"></select></div>
+          <div class="field eng-gut-f hidden"><label class="field-label">T &ndash; Tend&ecirc;ncia</label><select id="engNovaT"></select></div>
         </div>
         <div id="engNovaTarefaPrazoDica" class="muted hidden" style="font-size:11px; margin-top:8px;">O prazo de execucao e definido pelo gestor.</div>
         <button type="button" class="btn" id="engCriarTarefaBtn" style="margin-top:10px;">+ Criar Tarefa</button>
@@ -857,6 +865,11 @@
         <h3>Aprovacao de tarefas</h3>
         <p class="muted">Tarefas que chegaram na coluna Aprovacao. Ao aprovar, a tarefa sai do Kanban e fica salva em Tarefas Finalizadas.</p>
         <div id="engAprovTarefasWrap"></div>
+      </div>
+      <div class="card">
+        <h3>Demandas de RNC (Qualidade)</h3>
+        <p class="muted">A&ccedil;&otilde;es de RNC que a Qualidade indicou para a Engenharia. Se voc&ecirc; aprovar, vira uma atividade em &ldquo;Pr&oacute;ximas atividades&rdquo; do Kanban.</p>
+        <div id="engDemandasRncWrap"></div>
       </div>
       <div class="card" id="engPendenciasCard">
         <h3>Checklists</h3>
@@ -887,6 +900,13 @@
           <div class="field"><label class="field-label">Saida para intervalo</label><input type="text" id="engHoraSaidaInput" placeholder="12:00"></div>
           <div class="field"><label class="field-label">Retorno de intervalo</label><input type="text" id="engHoraRetornoInput" placeholder="13:00"></div>
           <div class="field"><label class="field-label">Encerramento do trabalho</label><input type="text" id="engHoraFimInput" placeholder="18:00"></div>
+        </div>
+        <div style="margin-top:10px;">
+          <label style="display:block; font-size:13px; margin-bottom:4px;"><input type="checkbox" id="engPausarFdsInput"> Pausar o cron&ocirc;metro aos s&aacute;bados e domingos</label>
+          <label style="display:block; font-size:13px; margin-bottom:6px;"><input type="checkbox" id="engPausarFeriadosInput"> Pausar nos feriados (nacionais, Paran&aacute; e Camb&eacute;)</label>
+          <label class="field-label" for="engFeriadosExtrasInput">Feriados municipais/extras (um por linha, dd/mm ou dd/mm/aaaa)</label>
+          <textarea id="engFeriadosExtrasInput" rows="3" placeholder="21/10"></textarea>
+          <p class="muted" style="font-size:11px; margin:4px 0 0;">J&aacute; inclu&iacute;dos: feriados nacionais, 19/12 (Paran&aacute;), Carnaval, Sexta-feira Santa e Corpus Christi. O padr&atilde;o traz 21/10 (anivers&aacute;rio de Camb&eacute;) &ndash; confira e ajuste conforme o calend&aacute;rio da cidade.</p>
         </div>
         <button type="button" class="btn secondary btn-sm" id="engSalvarHorarioBtn" style="margin-top:8px;">Salvar horarios</button>
         <div id="engHorarioMsg" style="margin-top:6px; font-size:12.5px;"></div>
@@ -1764,6 +1784,12 @@ function normalizarDB(db){
   }
   if (!db.checklistInstancias) db.checklistInstancias = [];
   if (!db.rncs) db.rncs = [];
+  if (!db.demandasEngRnc) db.demandasEngRnc = [];
+  if (!db.removidosEm || typeof db.removidosEm !== "object") db.removidosEm = {};
+  const maxTomb = (k)=>Math.max(0, ...((db.removidos && db.removidos[k]) || []));
+  db.seq.rnc = Math.max(db.seq.rnc||0, db.rncs.reduce((m,x)=>Math.max(m,x.id||0),0)+1, maxTomb("rncs")+1);
+  db.seq.rncNumero = Math.max(db.seq.rncNumero||0, db.rncs.reduce((m,x)=>Math.max(m,x.sequencia||0),0)+1);
+  db.seq.demandaEngRnc = Math.max(db.seq.demandaEngRnc||0, db.demandasEngRnc.reduce((m,x)=>Math.max(m,x.id||0),0)+1, maxTomb("demandasEngRnc")+1);
   if (!db.atividadesGestor) db.atividadesGestor = [];
   if (!db.seq.atividadeGestor) db.seq.atividadeGestor = db.atividadesGestor.reduce((m,x)=>Math.max(m,x.id||0),0) + 1;
   if (!db.tratativasQualidade) db.tratativasQualidade = {};
@@ -1945,11 +1971,15 @@ async function buscarLinhaNuvem(){
 }
 
 // colecoes em que os registros de pessoas diferentes sao somados (nunca sobrescritos) quando dois aparelhos salvam ao mesmo tempo
-const COLECOES_MESCLAVEIS = ["rncs", "tarefasEngenharia", "checklistInstancias", "atividadesGestor"];
+const COLECOES_MESCLAVEIS = ["rncs", "tarefasEngenharia", "checklistInstancias", "atividadesGestor", "demandasEngRnc"];
 function registrarRemovidos(chave, ids){
   if (!DB.removidos) DB.removidos = {};
   const lista = DB.removidos[chave] || (DB.removidos[chave] = []);
-  ids.forEach(id=>{ if (!lista.includes(id)) lista.push(id); });
+  if (!DB.removidosEm) DB.removidosEm = {};
+  const mapaEm = DB.removidosEm[chave] || (DB.removidosEm[chave] = {});
+  const agoraRem = new Date().toISOString();
+  ids.forEach(id=>{ if (!lista.includes(id)) lista.push(id); mapaEm[id] = agoraRem; });
+  for (const k of Object.keys(mapaEm)) if (!lista.includes(parseInt(k))) delete mapaEm[k];
   if (lista.length > 500) lista.splice(0, lista.length - 500);
 }
 // remove da colecao e lembra os ids removidos (pra eles nao "ressuscitarem" numa mesclagem)
@@ -1959,19 +1989,35 @@ function removerDaColecao(chave, manter){
   const ficaram = new Set(DB[chave].map(x=>x.id));
   registrarRemovidos(chave, antes.filter(id=>!ficaram.has(id)));
 }
+// um registro so e considerado excluido se foi criado ANTES da exclusao (um id reaproveitado depois nao pode ser apagado por engano)
+const TOMB_LEGADO_CORTE = "2026-10-19T00:00:00.000Z";
+function tombAplica(tombIds, emMap, item){
+  if (!tombIds || !tombIds.includes(item.id)) return false;
+  const quando = emMap && emMap[item.id];
+  const criado = item.criadoEm || "";
+  return quando ? criado <= quando : criado < TOMB_LEGADO_CORTE;
+}
 function mesclarDados(nuvem, local){
   const out = Object.assign({}, nuvem, local);
   const tombN = nuvem.removidos || {}, tombL = local.removidos || {};
   const removidos = {};
   for (const k of new Set([...Object.keys(tombN), ...Object.keys(tombL)])) removidos[k] = [...new Set([...(tombN[k]||[]), ...(tombL[k]||[])])];
   out.removidos = removidos;
+  const emN = nuvem.removidosEm || {}, emL = local.removidosEm || {};
+  const removidosEm = {};
+  for (const k of new Set([...Object.keys(emN), ...Object.keys(emL)])) {
+    removidosEm[k] = Object.assign({}, emN[k] || {});
+    for (const [id, t] of Object.entries(emL[k] || {})) if (!removidosEm[k][id] || t > removidosEm[k][id]) removidosEm[k][id] = t;
+  }
+  out.removidosEm = removidosEm;
+  const maxIdPorChave = {};
   for (const chave of COLECOES_MESCLAVEIS) {
     const a = Array.isArray(nuvem[chave]) ? nuvem[chave] : [], b = Array.isArray(local[chave]) ? local[chave] : [];
     const idsN = new Map(a.map(x=>[x.id, x]));
-    let maxId = [...a, ...b].reduce((m,x)=>Math.max(m, x.id||0), 0);
+    let maxId = Math.max([...a, ...b].reduce((m,x)=>Math.max(m, x.id||0), 0), ...(tombN[chave]||[]), ...(tombL[chave]||[]), 0);
     const res = [];
     for (const item of b) {
-      if ((tombN[chave]||[]).includes(item.id)) continue;           // outra pessoa excluiu
+      if (tombAplica(tombN[chave], emN[chave], item)) continue;     // outra pessoa excluiu
       const igual = idsN.get(item.id);
       if (igual && item.criadoEm && igual.criadoEm && item.criadoEm !== igual.criadoEm) {
         // mesmo numero de id criado em dois aparelhos ao mesmo tempo: o do aparelho atual ganha um id novo
@@ -1983,10 +2029,11 @@ function mesclarDados(nuvem, local){
     const idsFinais = new Set(res.map(x=>x.id));
     for (const item of a) {
       if (idsFinais.has(item.id)) continue;
-      if ((tombL[chave]||[]).includes(item.id)) continue;           // este aparelho excluiu
+      if (tombAplica(tombL[chave], emL[chave], item)) continue;     // este aparelho excluiu
       res.push(item);
     }
     out[chave] = res;
+    maxIdPorChave[chave] = Math.max(maxId, res.reduce((m,x)=>Math.max(m,x.id||0),0));
   }
   if (nuvem.seq && local.seq) { out.seq = Object.assign({}, nuvem.seq, local.seq); for (const k of Object.keys(out.seq)) out.seq[k] = Math.max(nuvem.seq[k]||0, local.seq[k]||0, ...(k==="tarefaEngenharia" ? [(out.tarefasEngenharia||[]).reduce((m,x)=>Math.max(m,x.id||0),0)+1] : [])); }
   // catalogo de nao conformidades: cada setor/processo e mesclado separadamente; vale a edicao mais recente (campo em)
@@ -1995,6 +2042,11 @@ function mesclarDados(nuvem, local){
     const res = local.catalogoRnc.map(c=>{ const o = mapa.get(c.setor); mapa.delete(c.setor); return (o && (o.em||"") > (c.em||"")) ? o : c; });
     mapa.forEach(c=>res.push(c));
     out.catalogoRnc = res;
+  }
+  if (out.seq) {
+    out.seq.rnc = Math.max(out.seq.rnc||0, (maxIdPorChave.rncs||0)+1);
+    out.seq.demandaEngRnc = Math.max(out.seq.demandaEngRnc||0, (maxIdPorChave.demandasEngRnc||0)+1);
+    out.seq.rncNumero = Math.max(out.seq.rncNumero||0, (out.rncs||[]).reduce((m,x)=>Math.max(m,x.sequencia||0),0)+1);
   }
   for (const k of ["perfis","acessosUsuarios"]) {
     if (nuvem[k] && local[k] && typeof nuvem[k]==="object" && typeof local[k]==="object") out[k] = Object.assign({}, nuvem[k], local[k]);
@@ -2042,7 +2094,7 @@ function oferecerRestauracao(perdidos){
   const total = Object.values(perdidos).reduce((n,l)=>n+l.length, 0);
   if (!total) return;
   try { localStorage.setItem("ppcp_recuperacao", JSON.stringify({ em: new Date().toISOString(), perdidos })); } catch(e) {}
-  const nomes = { rncs:"RNC", tarefasEngenharia:"tarefa(s) da Engenharia", checklistInstancias:"checklist(s)", atividadesGestor:"atividade(s) do gestor" };
+  const nomes = { rncs:"RNC", tarefasEngenharia:"tarefa(s) da Engenharia", checklistInstancias:"checklist(s)", atividadesGestor:"atividade(s) do gestor", demandasEngRnc:"demanda(s) da RNC" };
   const resumo = Object.entries(perdidos).map(([k,l])=>`${l.length} ${nomes[k]}`).join(", ");
   mostrarToastEng(`${total} registro(s) sumiram da nuvem`, `${resumo}. Toque aqui para restaurar.`, ()=>restaurarRegistrosPerdidos(perdidos), "&#9888;", "Sistema", 60000);
 }
@@ -2066,9 +2118,11 @@ function agendarSyncNuvem(){
   syncTimeoutId = setTimeout(async ()=>{
     try {
       await salvarDadosNuvem(DB);
+      dadosNaoEnviados = false;
       atualizarStatusSync("sincronizado");
     } catch(e) {
       console.error(e);
+      dadosNaoEnviados = true;
       atualizarStatusSync("erro");
     } finally { if (meuSeq === syncSeq) syncPendente = false; }
   }, 600);
@@ -2088,12 +2142,16 @@ function atualizarStatusSync(estado){
 }
 
 // verifica periodicamente se alguem mais salvou algo novo, e recarrega se sim
-let syncSeq = 0, verificandoNuvem = false, syncPendente = false, pollingIniciado = false, canalRealtime = null;
+let dadosNaoEnviados = false, syncSeq = 0, verificandoNuvem = false, syncPendente = false, pollingIniciado = false, canalRealtime = null;
 // consulta so o carimbo da ultima gravacao (leve); baixa os dados completos apenas se mudou
 async function verificarNuvem(){
   if (verificandoNuvem || syncPendente || !nuvemConectada || document.getElementById("loginOverlay").style.display==="flex") return;
   verificandoNuvem = true;
   try {
+    if (dadosNaoEnviados) {   // houve falha ao gravar: reenvia somando com a nuvem (nunca troca os dados daqui pelos de la)
+      await salvarDadosNuvem(DB); dadosNaoEnviados = false; atualizarStatusSync("sincronizado"); try { rerenderizarTelaAtual(); } catch(e) {}
+      return;
+    }
     const { data: leve, error: e0 } = await supabaseClient.from("ppcp_dados").select("atualizado_em").eq("id",1).single();
     if (e0) throw e0;
     if (!leve.atualizado_em || leve.atualizado_em === ultimoTimestampNuvem) return;
@@ -3353,7 +3411,9 @@ function renderLotes(){
       id: DB.seq.lote++, pedidoId, noLote, equipamentoIds, itensPedidoPorEquip, descricoesPorEquip, quantidadesPorEquip, custosEstimadosPorEquip,
     };
     DB.lotes.push(lote);
-    for (const {itemId, prazoOverride, prerequisitosOverride, levantarCusto} of selecionados) DB.itensLote.push({id:DB.seq.itemLote++, loteId:lote.id, itemId, dataSolicitacao:null, dataReal:null, prazoOverride, prerequisitosOverride, levantarCusto});
+    const novasLinhasLote = [];
+    for (const {itemId, prazoOverride, prerequisitosOverride, levantarCusto} of selecionados) { const nl = {id:DB.seq.itemLote++, loteId:lote.id, itemId, dataSolicitacao:null, dataReal:null, prazoOverride, prerequisitosOverride, levantarCusto}; DB.itensLote.push(nl); novasLinhasLote.push(nl); }
+    limparCacheCalc(); engCriarTarefasDoPpcp(lote, novasLinhasLote);
 
     let totalItensAvulsos = 0;
     for (const pa of pecasAvulsasParaCriar) {
@@ -3396,6 +3456,7 @@ function renderLotes(){
     if (!lote) return;
     if (!confirm(`Excluir o Lote ${lote.noLote}? Isso tambem apaga os itens, pecas avulsas e custos cadastrados para ele.`)) return;
     const itensDoLote = DB.itensLote.filter(io=>io.loteId===loteId).map(io=>io.id);
+    engItensLoteRemovidos(itensDoLote);
     const pecasDoLote = DB.pecasAvulsas.filter(p=>p.loteId===loteId).map(p=>p.id);
     const itensAvulsosDoLote = DB.itensAvulsos.filter(ia=>pecasDoLote.includes(ia.pecaAvulsaId)).map(ia=>ia.id);
     DB.custos = DB.custos.filter(c => !itensDoLote.includes(c.itensLoteId) && !itensAvulsosDoLote.includes(c.itensAvulsoId));
@@ -3676,12 +3737,13 @@ function renderLotes(){
             const custoChk = div.querySelector(`.ed-equip-item-custo[data-item="${itemId}"]`);
             const levantarCusto = custoChk ? custoChk.checked : true;
             if (jaExiste) { jaExiste.prazoOverride = prazoOverride; jaExiste.prerequisitosOverride = prerequisitosOverride; jaExiste.levantarCusto = levantarCusto; }
-            else DB.itensLote.push({id:DB.seq.itemLote++, loteId, itemId, dataSolicitacao:null, dataReal:null, prazoOverride, prerequisitosOverride, levantarCusto});
+            else { const nl = {id:DB.seq.itemLote++, loteId, itemId, dataSolicitacao:null, dataReal:null, prazoOverride, prerequisitosOverride, levantarCusto}; DB.itensLote.push(nl); limparCacheCalc(); engCriarTarefasDoPpcp(lote, [nl]); }
           } else if (jaExiste) {
             idsRemovidos.push(jaExiste.id);
           }
         });
         DB.custos = DB.custos.filter(c=>!idsRemovidos.includes(c.itensLoteId));
+        engItensLoteRemovidos(idsRemovidos);
         DB.itensLote = DB.itensLote.filter(io=>!idsRemovidos.includes(io.id));
 
         saveDB(); renderTabelaLotes();
@@ -3696,6 +3758,7 @@ function renderLotes(){
         if (!confirm(`Remover '${eq?eq.nome:"?"}' deste Lote? Isso tambem apaga os itens e custos rastreados dele.`)) return;
         const itensDoEquip = DB.itens.filter(i=>i.equipamentoId===equipId).map(i=>i.id);
         const rowsRemovidos = DB.itensLote.filter(io=>io.loteId===lote.id && itensDoEquip.includes(io.itemId)).map(io=>io.id);
+        engItensLoteRemovidos(rowsRemovidos);
         DB.custos = DB.custos.filter(c=>!rowsRemovidos.includes(c.itensLoteId));
         DB.itensLote = DB.itensLote.filter(io=>!(io.loteId===lote.id && itensDoEquip.includes(io.itemId)));
         lote.equipamentoIds = lote.equipamentoIds.filter(id=>id!==equipId);
@@ -4444,6 +4507,7 @@ function renderItensEquipamentoLista(){
       if (!confirm("Excluir este item? Isso tambem remove ele de qualquer Lote que o use.")) return;
       DB.itens = DB.itens.filter(i=>i.id!==itemId);
       DB.prerequisitos = DB.prerequisitos.filter(p=>p.itemId!==itemId && p.prereqItemId!==itemId);
+      engItensLoteRemovidos(DB.itensLote.filter(io=>io.itemId===itemId).map(io=>io.id));
       DB.itensLote = DB.itensLote.filter(io=>io.itemId!==itemId);
       itemEquipMenuAberto = null;
       saveDB();
@@ -7232,11 +7296,13 @@ function catRnc(){ return (typeof DB==="object" && DB && Array.isArray(DB.catalo
 function catItens(c){ return (c && c.grupos ? c.grupos : []).reduce((a,g)=>a.concat(g.itens),[]); }
 function setoresRnc(){ return catRnc().map(c=>c.setor); }
 function setoresBRS(){ return setoresRnc(); }
+const GESTOR_PROD_RNC = "Gestor de Produ\u00e7\u00e3o";
 function rncSetorOptionsHtml(sel, extra){
   const grupos = []; catRnc().forEach(c=>{ let g = grupos.find(x=>x.nome===c.grupo); if (!g) grupos.push(g = {nome:c.grupo, setores:[]}); g.setores.push(c.setor); });
-  let h = grupos.map(g=> g.setores.length===1 && g.setores[0]===g.nome ? rncOpt(g.nome,g.nome,sel===g.nome)
-      : `<optgroup label="${escaparHtmlPerfil(g.nome)}">` + g.setores.map(n=>rncOpt(n,n,sel===n)).join("") + `</optgroup>`).join("");
-  if (extra && !setoresRnc().includes(extra)) h += rncOpt(extra,extra,true);
+  let h = grupos.map(g=>{ const sets = g.nome==="Produ\u00e7\u00e3o" ? g.setores.concat([GESTOR_PROD_RNC]) : g.setores;
+    return sets.length===1 && sets[0]===g.nome ? rncOpt(g.nome,g.nome,sel===g.nome)
+      : `<optgroup label="${escaparHtmlPerfil(g.nome)}">` + sets.map(n=>rncOpt(n,n,sel===n)).join("") + `</optgroup>`; }).join("");
+  if (extra && extra!==GESTOR_PROD_RNC && !setoresRnc().includes(extra)) h += rncOpt(extra,extra,true);
   return h;
 }
 // ---- evidencias (fotos comprimidas, ficam no proprio registro)
@@ -7308,6 +7374,7 @@ function rncRenderGrupos(){
   }
 }
 let rncNcSel = new Set(), rncNcGrp = {}, rncGrupoNcSel = "";
+function rncRotuloSetorSel(){ return rncGrupoSel ? ((rncGrupoSel==="Produ\u00e7\u00e3o" && rncProcessoSel) ? rncGrupoSel + " - " + rncProcessoSel : rncGrupoSel) : ""; }
 // grupo de uma nao conformidade (do proprio registro ou, se faltar, procurado no catalogo)
 function rncGrupoDaNc(r, t){
   if (r.ncGrupos && r.ncGrupos[t]) return r.ncGrupos[t];
@@ -7321,7 +7388,7 @@ function rncRenderNcs(){
   const cat = catRnc().find(c=>c.setor===setor);
   const cont = ()=>{ document.getElementById("rncNcContagem").textContent = rncNcSel.size ? `${rncNcSel.size} selecionada(s)` : ""; };
   const resumo = ()=>{
-    res.innerHTML = rncNcSel.size ? '<div class="rnc-resumo"><strong>Selecionadas:</strong>' + [...rncNcSel].map((t,i)=>`<div class="rnc-res-item"><span><em>${escaparHtmlPerfil(rncNcGrp[t]||"Outros")}</em> &rsaquo; ${escaparHtmlPerfil(t)}</span><button type="button" class="acao-icon" data-rnc-rem="${i}" title="Remover">&#10005;</button></div>`).join("") + '</div>' : "";
+    res.innerHTML = rncNcSel.size ? '<div class="rnc-resumo"><strong>Selecionadas:</strong>' + [...rncNcSel].map((t,i)=>`<div class="rnc-res-item"><span><em>${escaparHtmlPerfil(rncRotuloSetorSel())}</em> &rsaquo; <em>${escaparHtmlPerfil(rncNcGrp[t]||"Outros")}</em> &rsaquo; ${escaparHtmlPerfil(t)}</span><button type="button" class="acao-icon" data-rnc-rem="${i}" title="Remover">&#10005;</button></div>`).join("") + '</div>' : "";
     const lst = [...rncNcSel];
     res.querySelectorAll("[data-rnc-rem]").forEach(b=>b.addEventListener("click", ()=>{ rncNcSel.delete(lst[parseInt(b.dataset.rncRem)]); rncRenderNcs(); }));
     cont();
@@ -7437,7 +7504,76 @@ document.addEventListener("DOMContentLoaded", ()=>{
   document.getElementById("rncCatSalvarBtn").onclick = catSalvar;
   document.getElementById("rncCatPadraoBtn").onclick = catRestaurarSetor;
 });
-function proximoNumeroRnc(){ return (DB.rncs||[]).reduce((m,r)=>Math.max(m, r.sequencia||0), 0) + 1; }
+
+// ---- demandas da RNC para a Engenharia (o gestor da Engenharia decide se vira atividade)
+function rncStatusDemanda(a){
+  if (!a || !a.demandaEngId) return a && a.demandaEngRej ? `<div style="font-size:10.5px; color:var(--danger); margin-top:2px;">Engenharia n&atilde;o aceitou: ${escaparHtmlPerfil(a.demandaEngRej)}</div>` : "";
+  const d = (DB.demandasEngRnc||[]).find(x=>x.id===a.demandaEngId); if (!d) return "";
+  if (d.status==="pendente") return '<div style="font-size:10.5px; color:#B7791F; margin-top:2px;">Aguardando o gestor da Engenharia</div>';
+  if (d.status==="aprovada") return '<div style="font-size:10.5px; color:var(--ok); margin-top:2px;">&#10003; Virou atividade na Engenharia</div>';
+  if (d.status==="rejeitada") return `<div style="font-size:10.5px; color:var(--danger); margin-top:2px;">Engenharia n&atilde;o aceitou: ${escaparHtmlPerfil(d.motivo||"")}</div>`;
+  return "";
+}
+function rncGerarDemandasEngenharia(r){
+  if (!DB.demandasEngRnc) DB.demandasEngRnc = [];
+  const agora = new Date().toISOString();
+  (r.acoes||[]).forEach(a=>{
+    const d = a.demandaEngId ? DB.demandasEngRnc.find(x=>x.id===a.demandaEngId) : null;
+    if (a.setor === "Engenharia" && (a.acao||"").trim()) {
+      if (!d) {
+        const nova = { id: DB.seq.demandaEngRnc++, rncId:r.id, rncSeq:r.sequencia, acaoId:a.id, acao:a.acao, prazo:a.prazo||"", responsavelSugerido:a.responsavel||"", status:"pendente", criadoEm:agora, criadoPor:emailUsuarioAtual };
+        DB.demandasEngRnc.push(nova); a.demandaEngId = nova.id; a.demandaEngRej = "";
+      } else if (d.status==="pendente") { d.acao = a.acao; d.prazo = a.prazo||""; d.responsavelSugerido = a.responsavel||""; }
+    } else if (d) {
+      if (d.status==="pendente") removerDaColecao("demandasEngRnc", x=>x.id!==d.id);
+      a.demandaEngId = null;
+    }
+  });
+}
+function engAprovarDemandaRnc(id){
+  if (!souGestorEng()) return;
+  const d = (DB.demandasEngRnc||[]).find(x=>x.id===id); if (!d || d.status!=="pendente") return;
+  const r = (DB.rncs||[]).find(x=>x.id===d.rncId); if (!r) return;
+  const agora = new Date().toISOString();
+  const tarefa = { id: DB.seq.tarefaEngenharia++, titulo: `RNC ${numRnc(d.rncSeq)} - ${(d.acao||"").replace(/\s+/g," ").slice(0,90)}`, funcionario:null,
+    pedidoId:r.pedidoId||null, loteId:r.loteId||null, equipamentoRef:r.equipamentoRef||"", equipamentoNome:r.equipamentoNome||"",
+    numeroDesenho: rncDesenhos(r).map(x=>x.numero).filter(Boolean).join(", "), coluna:"coleta", checklistProjeto:null, checklistDetalhamento:null,
+    criadoEm:agora, criadoPor:emailUsuarioAtual, periodosAtivos:[], rodando:false, finalizada:false, atribuicaoPendente:null, atribuicaoRejeitada:null,
+    prazo: (d.prazo && prazoIsoValido(d.prazo)) ? d.prazo : null, dispensasPendentes:[], dispensaRejeitada:null,
+    coResponsaveis:[], compartilhamentosPendentes:[], compartilhamentoRejeitado:null, origem:{ tipo:"rnc", rncId:r.id, rncSeq:d.rncSeq, demandaId:d.id }, descricaoOrigem: d.acao };
+  DB.tarefasEngenharia.push(tarefa);
+  d.status = "aprovada"; d.tarefaId = tarefa.id; d.decididoPor = emailUsuarioAtual; d.decididoEm = agora;
+  saveDB(); renderEngPendencias(); renderEngKanban();
+}
+function engRejeitarDemandaRnc(id){
+  if (!souGestorEng()) return;
+  const d = (DB.demandasEngRnc||[]).find(x=>x.id===id); if (!d || d.status!=="pendente") return;
+  const motivo = prompt("Motivo (a Qualidade vai ver na RNC):");
+  if (motivo === null) return;
+  d.status = "rejeitada"; d.motivo = motivo.trim() || "sem motivo informado"; d.decididoPor = emailUsuarioAtual; d.decididoEm = new Date().toISOString();
+  saveDB(); renderEngPendencias();
+}
+function renderEngDemandasRnc(){
+  const wrap = document.getElementById("engDemandasRncWrap");
+  const lista = (DB.demandasEngRnc||[]).filter(d=>d.status==="pendente");
+  wrap.innerHTML = lista.length ? lista.map(d=>{
+    const r = (DB.rncs||[]).find(x=>x.id===d.rncId);
+    const ncs = r ? (r.naoConformidades||[]).map(t=>`${escaparHtmlPerfil(rncRotuloSetor(r))} &rsaquo; ${escaparHtmlPerfil(rncGrupoDaNc(r,t))} &rsaquo; ${escaparHtmlPerfil(t)}`).join("<br>") : "";
+    return `<div class="card" style="margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+      <div style="min-width:240px; flex:1;">
+        <strong>RNC ${numRnc(d.rncSeq)}</strong> <span class="muted">&ndash; enviada por ${escaparHtmlPerfil(nomeExibicao(d.criadoPor))}</span>
+        <div style="font-size:12px; margin-top:3px;">${ncs}</div>
+        <div style="font-size:12.5px; margin-top:4px;"><strong>A&ccedil;&atilde;o para a Engenharia:</strong> ${escaparHtmlPerfil(d.acao)}</div>
+        <div class="muted" style="font-size:11px;">${d.responsavelSugerido ? "Respons&aacute;vel indicado: "+escaparHtmlPerfil(d.responsavelSugerido)+" &middot; " : ""}${d.prazo ? "Prazo: "+isoParaBR(d.prazo) : "Sem prazo"}${r && r.numeroDesenho ? " &middot; Desenho: "+escaparHtmlPerfil(r.numeroDesenho) : ""}</div>
+      </div>
+      <div style="display:flex; gap:6px;"><button type="button" class="btn btn-sm" data-dem-ap="${d.id}">Aprovar (vira atividade)</button><button type="button" class="btn secondary btn-sm" data-dem-rej="${d.id}">N&atilde;o &eacute; da Engenharia</button></div>
+    </div>`; }).join("") : '<p class="muted">Nenhuma demanda de RNC aguardando.</p>';
+  wrap.querySelectorAll("[data-dem-ap]").forEach(b=>b.addEventListener("click", ()=>engAprovarDemandaRnc(parseInt(b.dataset.demAp))));
+  wrap.querySelectorAll("[data-dem-rej]").forEach(b=>b.addEventListener("click", ()=>engRejeitarDemandaRnc(parseInt(b.dataset.demRej))));
+  return lista.length;
+}
+// o numero da RNC nunca volta atras nem se repete, mesmo apos excluir a ultima
+function proximoNumeroRnc(){ return Math.max((DB.seq && DB.seq.rncNumero) || 1, (DB.rncs||[]).reduce((m,r)=>Math.max(m, r.sequencia||0), 0) + 1); }
 function numRnc(n){ return String(n).padStart(4,"0"); }
 function hojeIsoLocal(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
 function pngSeguro(u){ return (typeof u==="string" && u.length<200000 && /^data:image\/png;base64,[A-Za-z0-9+\/=]+$/.test(u)) ? u : null; }
@@ -7497,7 +7633,7 @@ function renderRncTabela(){
       <td>${escaparHtmlPerfil(r.equipamentoNome||"")}${rncDesenhos(r).length ? `<div class="muted" style="font-size:11px;">Desenho${rncDesenhos(r).length>1?"s":""}: ${escaparHtmlPerfil(rncDesenhos(r).map(d=>d.numero + (d.qtd?` (${d.qtd})`:"")).join(", "))}</div>` : ""}</td>
       <td>${escaparHtmlPerfil(rncRotuloSetor(r))}</td>
       <td>${escaparHtmlPerfil(r.setorEncontrado||"")}</td>
-      <td style="white-space:normal; min-width:200px; font-size:12px;">${(r.naoConformidades||[]).length ? escaparHtmlPerfil(r.naoConformidades[0]) + ((r.naoConformidades.length>1) ? ` <span class="muted" title="${escaparHtmlPerfil(r.naoConformidades.join(" | "))}">(+${r.naoConformidades.length-1})</span>` : "") : escaparHtmlPerfil((r.descricao||"").slice(0,60))}</td>
+      <td style="white-space:normal; min-width:220px; font-size:12px;">${(r.naoConformidades||[]).length ? `<div class="muted" style="font-size:10.5px;">${escaparHtmlPerfil(rncRotuloSetor(r))} &rsaquo; ${escaparHtmlPerfil(rncGrupoDaNc(r, r.naoConformidades[0]))}</div>` + escaparHtmlPerfil(r.naoConformidades[0]) + ((r.naoConformidades.length>1) ? ` <span class="muted" title="${escaparHtmlPerfil(r.naoConformidades.join(" | "))}">(+${r.naoConformidades.length-1})</span>` : "") : escaparHtmlPerfil((r.descricao||"").slice(0,60))}</td>
       <td>${escaparHtmlPerfil(r.emitenteNome||r.emitenteEmail||"")}</td>
       <td>${pill(r.status==="encerrada"?"ENCERRADA":"ABERTA", cores)}</td>
       <td><div class="acoes-lote">
@@ -7543,12 +7679,14 @@ function rncPopularEquips(sel){
 }
 
 // ---- acoes tomadas
+const RNC_SETORES_ACAO = ["Engenharia","PPCP","Produ\u00e7\u00e3o","Almoxarifado","Expedi\u00e7\u00e3o","Assist\u00eancia T\u00e9cnica","Terceiros"];
 function rncRenderAcoes(){
   const wrap = document.getElementById("rncAcoesWrap");
   wrap.innerHTML = rncAcoesTemp.map((a,i)=>`<div class="rnc-acao">
     <textarea data-rnc-ac="acao" data-i="${i}" rows="2" placeholder="Acao" style="min-height:64px;">${escaparHtmlPerfil(a.acao)}</textarea>
     <input type="text" data-rnc-ac="responsavel" data-i="${i}" list="rncPessoasList" placeholder="Responsavel" value="${escaparHtmlPerfil(a.responsavel)}" autocomplete="off">
     <input type="date" data-rnc-ac="prazo" data-i="${i}" value="${escaparHtmlPerfil(a.prazo)}">
+    <div><select data-rnc-ac="setor" data-i="${i}"><option value="">- setor -</option>${RNC_SETORES_ACAO.map(x=>`<option value="${escaparHtmlPerfil(x)}"${a.setor===x?" selected":""}>${escaparHtmlPerfil(x)}</option>`).join("")}</select>${rncStatusDemanda(a)}</div>
     <button type="button" class="acao-icon danger" data-rnc-ac-del="${i}" title="Remover acao">&#128465;</button>
   </div>`).join("");
   wrap.querySelectorAll("[data-rnc-ac-del]").forEach(b=>b.addEventListener("click", ()=>{
@@ -7604,6 +7742,10 @@ function rncValidarEtapa(n){
   }
   if (n===3 && rncModo==="wizard") {
     if (!rncAcoesTemp.some(a=>(a.acao||"").trim())) return "Descreva pelo menos uma acao imediata.";
+  }
+  if (n===3) {
+    const semSetor = rncAcoesTemp.findIndex(a=>(a.acao||"").trim() && !a.setor);
+    if (semSetor >= 0) return `Informe o setor em que a acao ${semSetor+1} sera realizada.`;
   }
   return "";
 }
@@ -7677,7 +7819,7 @@ function salvarRnc(encerrar){
     equipamentoRef: ref, equipamentoNome: equipNome || (existente && !ref ? "" : (existente ? existente.equipamentoNome||"" : "")),
     desenhos: desenhos, numeroDesenho: desenhos.map(d=>d.numero).filter(Boolean).join(", "), quantidadeAfetada: desenhos.some(d=>d.qtd>0) ? desenhos.reduce((a,d)=>a+d.qtd,0) : null,
     setorOrigem: rncGrupoSel, processoOrigem: rncGrupoSel === "Produ\u00e7\u00e3o" ? rncProcessoSel : "", setorEncontrado: v("rncSetorEnc"), observacoes: v("rncObs").trim(), fotos: rncFotosTemp.slice(0, RNC_MAX_FOTOS), naoConformidades: [...rncNcSel], ncGrupos: Object.fromEntries([...rncNcSel].map(t=>[t, rncNcGrp[t]||"Outros"])), descricao: (rncEditandoId && (DB.rncs||[]).find(x=>x.id===rncEditandoId) ? ((DB.rncs||[]).find(x=>x.id===rncEditandoId).descricao||"") : ""), causa: v("rncCausa").trim(),
-    acoes: rncAcoesTemp.filter(a=>(a.acao||"").trim() || (a.responsavel||"").trim() || a.prazo).map(a=>({acao:(a.acao||"").trim(), responsavel:(a.responsavel||"").trim(), prazo:a.prazo||""})),
+    acoes: rncAcoesTemp.filter(a=>(a.acao||"").trim() || (a.responsavel||"").trim() || a.prazo).map(a=>({id:a.id || ("a"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)), acao:(a.acao||"").trim(), responsavel:(a.responsavel||"").trim(), prazo:a.prazo||"", setor:a.setor||"", demandaEngId:a.demandaEngId||null})),
     encerramento: { responsavel: respEnc, data: v("rncEncData") || (encerrar ? hojeIsoLocal() : ""), assinatura: "" },
   };
   if (!ref) dados.equipamentoNome = "";
@@ -7687,7 +7829,10 @@ function salvarRnc(encerrar){
     existente.alteradoEm = agoraIso; existente.alteradoPor = emailUsuarioAtual;
   } else {
     DB.rncs = DB.rncs || [];
-    const novo = { id: DB.rncs.reduce((m,x)=>Math.max(m,x.id),0)+1, sequencia: proximoNumeroRnc(),
+    const numNovo = proximoNumeroRnc();
+    DB.seq.rnc = Math.max(DB.seq.rnc||1, DB.rncs.reduce((m,x)=>Math.max(m,x.id),0)+1);
+    const idNovo = DB.seq.rnc++; DB.seq.rncNumero = numNovo + 1;
+    const novo = { id: idNovo, sequencia: numNovo,
       emitenteEmail: emailUsuarioAtual, emitenteNome: nomeExibicao(emailUsuarioAtual),
       status: encerrar ? "encerrada" : "aberta", criadoEm: agoraIso, criadoPor: emailUsuarioAtual, ...dados };
     if (encerrar) { novo.encerradaEm = agoraIso; novo.encerradaPor = emailUsuarioAtual; }
@@ -7697,7 +7842,9 @@ function salvarRnc(encerrar){
   saveDB();
   renderRncTabela();
   showQualPage("rncs");
-  const numSalvo = numRnc((DB.rncs.find(x=>x.id===rncEditandoId)||{}).sequencia||0);
+  const rncSalva = DB.rncs.find(x=>x.id===rncEditandoId);
+  if (rncSalva) { rncGerarDemandasEngenharia(rncSalva); saveDB(); }
+  const numSalvo = numRnc((rncSalva||{}).sequencia||0);
   mostrarAviso(rncModo==="wizard" ? `RNC No ${numSalvo} registrada! O gestor vai tratar a partir de RNCs Registradas.` : `RNC No ${numSalvo} salva.`);
 }
 
@@ -7736,7 +7883,7 @@ function gerarRncPrintHtml(r){
   h += barra("2. N&Atilde;O CONFORMIDADE");
   const ncs = r.naoConformidades || [];
   h += `<div style="${bd} border-top:none; padding:6px 8px; min-height:48px;">` +
-    (ncs.length ? ncs.map(t=>{ const gn = rncGrupoDaNc(r, t); return `<div style="margin:2px 0;">&#9746; ${gn && gn!=="Outros" ? `<strong style="color:${VERDE};">${e(gn)}:</strong> ` : ""}${e(t)}</div>`; }).join("") : "") +
+    (ncs.length ? ncs.map(t=>{ const gn = rncGrupoDaNc(r, t); return `<div style="margin:2px 0;">&#9746; <strong style="color:${VERDE};">${e(rncRotuloSetor(r))}</strong> &rsaquo; ${gn && gn!=="Outros" ? `<strong style="color:${VERDE};">${e(gn)}</strong> &rsaquo; ` : ""}${e(t)}</div>`; }).join("") : "") +
     (r.descricao ? `<div style="margin-top:5px;">${ml(r.descricao)}</div>` : "") +
     (r.observacoes ? `<div style="margin-top:5px;"><strong style="color:${VERDE};">Observa&ccedil;&otilde;es:</strong> ${ml(r.observacoes)}</div>` : "") + `</div>`;
   h += barra("3. CAUSA PROV&Aacute;VEL");
@@ -7750,8 +7897,8 @@ function gerarRncPrintHtml(r){
   }
   h += barra(fotos.length ? "5. A&Ccedil;&Atilde;O TOMADA" : "4. A&Ccedil;&Atilde;O TOMADA");
   h += `<table style="width:100%; border-collapse:collapse; table-layout:fixed;">
-    <tr style="background:${FUNDO}; font-weight:bold; color:${VERDE}; font-size:10px;"><td style="${bd} padding:4px 7px; width:52%;">A&ccedil;&atilde;o</td><td style="${bd} padding:4px 7px; width:26%;">Respons&aacute;vel</td><td style="${bd} padding:4px 7px;">Prazo</td></tr>` +
-    (acoes.length ? acoes.map(a=>`<tr><td style="${bd} padding:5px 7px; font-size:11px;">${ml(a.acao||"")}</td><td style="${bd} padding:5px 7px; font-size:11px;">${e(a.responsavel||"")}</td><td style="${bd} padding:5px 7px; font-size:11px;">${a.prazo ? isoParaBR(a.prazo) : ""}</td></tr>`).join("") : `<tr><td style="${bd} padding:5px 7px; height:24px;"></td><td style="${bd}"></td><td style="${bd}"></td></tr>`) + `</table>`;
+    <tr style="background:${FUNDO}; font-weight:bold; color:${VERDE}; font-size:10px;"><td style="${bd} padding:4px 7px; width:42%;">A&ccedil;&atilde;o</td><td style="${bd} padding:4px 7px; width:20%;">Respons&aacute;vel</td><td style="${bd} padding:4px 7px; width:20%;">Setor</td><td style="${bd} padding:4px 7px;">Prazo</td></tr>` +
+    (acoes.length ? acoes.map(a=>`<tr><td style="${bd} padding:5px 7px; font-size:11px;">${ml(a.acao||"")}</td><td style="${bd} padding:5px 7px; font-size:11px;">${e(a.responsavel||"")}</td><td style="${bd} padding:5px 7px; font-size:11px;">${e(a.setor||"")}</td><td style="${bd} padding:5px 7px; font-size:11px;">${a.prazo ? isoParaBR(a.prazo) : ""}</td></tr>`).join("") : `<tr><td style="${bd} padding:5px 7px; height:24px;"></td><td style="${bd}"></td><td style="${bd}"></td><td style="${bd}"></td></tr>`) + `</table>`;
   h += `<div style="margin-top:34px; text-align:center; page-break-inside:avoid;">
     <div style="display:inline-block; min-width:260px; font-weight:bold; color:${VERDE}; font-size:12px;">${e(nomeResp)}</div>
     <div style="font-size:9.5px; color:#555;">Respons&aacute;vel${dataDoc ? " &ndash; " + dataDoc : ""}</div></div>`;
@@ -8080,6 +8227,10 @@ async function renderEngenharia(){
   const gestorAgora = souGestorEng();
   document.getElementById("engNovaTarefaPrazoWrap").classList.toggle("hidden", !gestorAgora);
   document.getElementById("engNovaTarefaPrazoDica").classList.toggle("hidden", gestorAgora);
+  document.querySelectorAll(".eng-gut-f").forEach(el=>el.classList.toggle("hidden", !gestorAgora));
+  document.getElementById("engNovaG").innerHTML = atvOpcoesGut(ATV_G, null);
+  document.getElementById("engNovaU").innerHTML = atvOpcoesGut(ATV_U, null);
+  document.getElementById("engNovaT").innerHTML = atvOpcoesGut(ATV_T, null);
 
   // o quadro aparece na hora; a lista de funcionarios (rede) carrega por tras, sem travar a tela
   renderEngKanban();
@@ -8122,6 +8273,11 @@ async function listarFuncionariosReais(){
 }
 
 // gestor: lista todo mundo (cadastros aprovados + logins) | engenheiro: ele mesmo + colegas da Engenharia
+let engOpcoesCache = { em:0, lista:null };
+async function listarOpcoesAtribuicaoGestorCache(){
+  if (engOpcoesCache.lista && Date.now() - engOpcoesCache.em < 60000) return engOpcoesCache.lista;
+  const l = await listarOpcoesAtribuicaoGestor(); engOpcoesCache = { em: Date.now(), lista: l }; return l;
+}
 async function listarOpcoesAtribuicaoGestor(){
   const mapa = new Map();
   const add = e => { if (e) mapa.set(chavePerfil(e), e); };
@@ -8147,8 +8303,9 @@ async function renderEngCampoFuncionarioNovaTarefa(){
   const aviso = document.getElementById("engNovaTarefaAvisoAprovacao");
   const atualizarAviso = ()=>{ aviso.classList.toggle("hidden", souGestor || !sel.value || chavePerfil(sel.value)===chavePerfil(emailUsuarioAtual)); };
   const preencher = (emails)=>{
-    const escolhido = sel.value;
-    sel.innerHTML = opcoesAtribuicaoHtml(emails);
+    const escolhido = sel.dataset.pronto ? sel.value : emailUsuarioAtual;
+    sel.dataset.pronto = "1";
+    sel.innerHTML = '<option value="">- sem responsavel (proximas atividades) -</option>' + opcoesAtribuicaoHtml(emails);
     sel.value = [...sel.options].some(o=>o.value===escolhido) ? escolhido : emailUsuarioAtual;
     atualizarAviso();
   };
@@ -8186,8 +8343,10 @@ function criarTarefaEngenharia(){
     funcionario = document.getElementById("engNovaTarefaFuncionario").value || null;
   } else {
     funcionario = emailUsuarioAtual;
-    const alvo = souEngenheiro() ? document.getElementById("engNovaTarefaFuncionario").value : "";
-    if (alvo && chavePerfil(alvo) !== chavePerfil(emailUsuarioAtual)) {
+    const campoOk = souEngenheiro() && !document.getElementById("engNovaTarefaFuncionarioWrap").classList.contains("hidden");
+    const alvo = campoOk ? document.getElementById("engNovaTarefaFuncionario").value : "";
+    if (campoOk && alvo === "") funcionario = null;
+    else if (alvo && chavePerfil(alvo) !== chavePerfil(emailUsuarioAtual)) {
       const perfilAlvo = perfilAprovado(alvo);
       if (!perfilAlvo || perfilAlvo.setor !== "engenharia") return erro("So da pra atribuir a funcionarios da Engenharia com cadastro aprovado.");
       atribuicaoPendente = { para: alvo, solicitadoPor: emailUsuarioAtual, solicitadoEm: agora };
@@ -8202,6 +8361,9 @@ function criarTarefaEngenharia(){
     atribuicaoPendente, atribuicaoRejeitada: null, prazo,
     dispensasPendentes: [], dispensaRejeitada: null,
     coResponsaveis: [], compartilhamentosPendentes: [], compartilhamentoRejeitado: null,
+    g: souGestor ? (parseInt(document.getElementById("engNovaG").value) || null) : null,
+    u: souGestor ? (parseInt(document.getElementById("engNovaU").value) || null) : null,
+    t: souGestor ? (parseInt(document.getElementById("engNovaT").value) || null) : null,
   });
   saveDB();
   document.getElementById("engNovaTarefaTitulo").value = "";
@@ -8209,9 +8371,12 @@ function criarTarefaEngenharia(){
   document.getElementById("engNovaTarefaPedido").value = "";
   popularEngNovaTarefaLote();
   const selFunc = document.getElementById("engNovaTarefaFuncionario");
-  if (selFunc && selFunc.options.length) selFunc.selectedIndex = 0;
+  if (selFunc && selFunc.options.length) selFunc.value = [...selFunc.options].some(o=>o.value===emailUsuarioAtual) ? emailUsuarioAtual : "";
+  ["engNovaG","engNovaU","engNovaT"].forEach(id=>{ const el = document.getElementById(id); if (el) el.value = ""; });
   const avisoAp = document.getElementById("engNovaTarefaAvisoAprovacao"); if (avisoAp) avisoAp.classList.add("hidden");
-  msgEl.innerHTML = atribuicaoPendente
+  msgEl.innerHTML = !funcionario
+    ? '<span style="color:var(--ok);">Atividade criada em Proximas atividades (sem responsavel).</span>'
+    : atribuicaoPendente
     ? `<span style="color:#B7791F;">Tarefa criada. A atribuicao a ${escaparHtmlPerfil(nomeExibicao(atribuicaoPendente.para))} aguarda a aprovacao do gestor.</span>`
     : '<span style="color:var(--ok);">Tarefa criada!</span>';
   renderEngKanban();
@@ -8573,6 +8738,37 @@ function renderEngAtribuicoesPendentes(){
   return lista.length;
 }
 
+// ---- dias sem expediente: sabados, domingos e feriados (nacionais, do Parana e de Cambe) param o cronometro
+function engPascoa(ano){
+  const a=ano%19,b=Math.floor(ano/100),c=ano%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451);
+  const mes=Math.floor((h+l-7*m+114)/31), dia=((h+l-7*m+114)%31)+1; return new Date(ano, mes-1, dia);
+}
+const ENG_FERIADOS_EXTRAS_PADRAO = "21/10";   // aniversario de Cambe (confirme na Configuracao de Horarios)
+let engFeriadosCache = { chave:"", ano:{} };
+function engFeriadosDoAno(ano, extrasTxt){
+  const chave = extrasTxt || "";
+  if (engFeriadosCache.chave !== chave) engFeriadosCache = { chave, ano:{} };
+  if (engFeriadosCache.ano[ano]) return engFeriadosCache.ano[ano];
+  const set = new Set(); const add = (d,m)=>set.add(`${ano}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`);
+  [[1,1],[21,4],[1,5],[7,9],[12,10],[2,11],[15,11],[20,11],[25,12],[19,12]].forEach(([d,m])=>add(d,m));   // nacionais + 19/12 (Parana)
+  const pas = engPascoa(ano); const mov = (dias)=>{ const x = new Date(pas.getFullYear(), pas.getMonth(), pas.getDate()+dias); add(x.getDate(), x.getMonth()+1); };
+  [-48,-47,-2,60].forEach(mov);   // carnaval (seg e ter), sexta-feira santa, corpus christi
+  String(extrasTxt||"").split(/[\n;,]+/).map(x=>x.trim()).filter(Boolean).forEach(x=>{
+    const m = x.match(/^(\d{1,2})\/(\d{1,2})(?:\/(\d{4}))?/); if (!m) return;
+    if (m[3] && parseInt(m[3]) !== ano) return; add(parseInt(m[1]), parseInt(m[2]));
+  });
+  return (engFeriadosCache.ano[ano] = set);
+}
+function engDiaSemExpediente(dia, config){
+  const dow = dia.getDay();
+  if (config.pausarFimDeSemana !== false && (dow===0 || dow===6)) return true;
+  if (config.pausarFeriados !== false) {
+    const extras = config.feriadosExtras != null ? config.feriadosExtras : ENG_FERIADOS_EXTRAS_PADRAO;
+    const iso = `${dia.getFullYear()}-${String(dia.getMonth()+1).padStart(2,"0")}-${String(dia.getDate()).padStart(2,"0")}`;
+    if (engFeriadosDoAno(dia.getFullYear(), extras).has(iso)) return true;
+  }
+  return false;
+}
 function calcularTempoTrabalhadoMinutos(inicioISO, fimISO, config){
   if (!config || !config.horaInicio || !config.horaEncerramento) return null;
   const inicio = new Date(inicioISO);
@@ -8591,6 +8787,7 @@ function calcularTempoTrabalhadoMinutos(inicioISO, fimISO, config){
   const diaFimLimite = new Date(fim.getFullYear(), fim.getMonth(), fim.getDate());
 
   while (diaCursor <= diaFimLimite) {
+    if (engDiaSemExpediente(diaCursor, config)) { diaCursor = new Date(diaCursor.getFullYear(), diaCursor.getMonth(), diaCursor.getDate()+1); continue; }
     for (const [pIni, pFim] of periodosBase) {
       const periodoInicioAbs = new Date(diaCursor.getFullYear(), diaCursor.getMonth(), diaCursor.getDate(), 0, pIni);
       const periodoFimAbs = new Date(diaCursor.getFullYear(), diaCursor.getMonth(), diaCursor.getDate(), 0, pFim);
@@ -8692,17 +8889,152 @@ const PAPEIS_TAREFA_ENG = ["Projeto", "Detalhamento", "Apoio"];
 function responsaveisDaTarefa(t){ return [t.funcionario].concat((t.coResponsaveis||[]).map(r=>r.email)).filter(Boolean); }
 function souResponsavelDaTarefa(t){ const eu = chavePerfil(emailUsuarioAtual); return !!eu && responsaveisDaTarefa(t).some(e=>chavePerfil(e)===eu); }
 function podeGerenciarResponsaveis(t){ return souGestorEng() || (souEngenheiro() && souResponsavelDaTarefa(t)); }
+function tarefaSemResponsavel(t){ return !t.funcionario && !(t.coResponsaveis||[]).length; }
 function tarefaEngenhariaVisivel(tarefa){
-  return souGestorEng() || souResponsavelDaTarefa(tarefa);
+  return souGestorEng() || souResponsavelDaTarefa(tarefa) || (tarefaSemResponsavel(tarefa) && nivelAcessoSetor("engenharia") !== null);
+}
+// GUT da Engenharia (mesma escala da Matriz GUT dos gestores; so o gestor da Engenharia define)
+function engGutBadge(t){
+  const sc = atvScore(t); const c = atvClasse(sc);
+  return `<span title="Matriz GUT: G${t.g||"-"} x U${t.u||"-"} x T${t.t||"-"}" style="display:inline-block; font-size:9px; font-weight:700; padding:1px 6px; border-radius:8px; background:${c.bg}; color:${c.cor};">GUT ${sc!=null?sc+" &middot; ":""}${c.rot}</span>`;
+}
+function engGutSelects(t){
+  const ed = souGestorEng() && nivelAcessoSetor("engenharia") !== "visualizador";
+  const mk = (k, rot, arr)=>`<label style="font-size:9.5px; font-weight:700; color:var(--primary-dark);">${rot}<select data-eng-gut="${k}" data-eng-gut-id="${t.id}" ${ed?"":"disabled"} style="width:100%; font-size:10px; margin-top:1px;">${atvOpcoesGut(arr, t[k])}</select></label>`;
+  return `<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:4px; margin:3px 0;">${mk("g","G",ATV_G)}${mk("u","U",ATV_U)}${mk("t","T",ATV_T)}</div>` + (ed ? "" : '<div class="muted" style="font-size:9.5px;">Quem define a prioridade &eacute; o gestor.</div>');
+}
+function engLigarGut(raiz){
+  raiz.querySelectorAll("[data-eng-gut]").forEach(sel=>sel.addEventListener("change", (e)=>{
+    e.stopPropagation();
+    const t = DB.tarefasEngenharia.find(x=>x.id===parseInt(sel.dataset.engGutId)); if (!t || !souGestorEng()) return;
+    t[sel.dataset.engGut] = parseInt(sel.value) || null;
+    saveDB(); renderEngKanban();
+  }));
+}
+function engOrdenarPrioridade(lista){
+  return lista.sort((a,b)=>{
+    const sa = atvScore(a), sb = atvScore(b);
+    if ((sa==null) !== (sb==null)) return sa==null ? 1 : -1;
+    if (sa !== sb) return (sb||0) - (sa||0);
+    return (a.prazo||"9999-99-99").localeCompare(b.prazo||"9999-99-99") || a.id-b.id;
+  });
+}
+function engRotuloOrigem(t){
+  if (!t.origem) return "";
+  const txt = t.origem.tipo==="rnc" ? `RNC ${numRnc(t.origem.rncSeq||0)}` : (t.origem.tipo==="ppcp" ? "PPCP" : "");
+  const aviso = t.origem.removidoDoPpcp ? `<div style="font-size:9px; font-weight:700; color:var(--danger); margin-top:2px;">&#9888; Item removido do PPCP &ndash; gestor decide se exclui</div>` : "";
+  return (txt ? `<span style="display:inline-block; font-size:9px; font-weight:700; padding:1px 6px; border-radius:8px; background:#E8F3E3; color:var(--primary-dark); margin-left:3px;">${txt}</span>` : "") + aviso;
+}
+// prazo vindo do PPCP acompanha o item "Desenvolvimento Engenharia" do lote (so em memoria; vira definitivo no proximo salvamento)
+function engPrazoDoItemPpcp(row){
+  const lote = DB.lotes.find(l=>l.id===row.loteId); const meta = getItem(row.itemId);
+  if (!lote || !meta) return null;
+  const st = calcularStatusItem(lote, row, 0, hojeUTC());
+  const dias = row.prazoOverride!=null ? row.prazoOverride : meta.prazoDias;
+  const d = st.dataPrevista || (st.dataLimiteSolicitacao ? addPrazo(st.dataLimiteSolicitacao, dias) : null);
+  return d ? fmtISO(d) : null;
+}
+function engAtualizarPrazosPpcp(){
+  for (const t of DB.tarefasEngenharia) {
+    if (!t.origem || t.origem.tipo!=="ppcp" || t.concluida) continue;
+    const row = DB.itensLote.find(x=>x.id===t.origem.itemLoteId); if (!row) continue;
+    try { const novo = engPrazoDoItemPpcp(row); if (novo && novo !== t.prazo) t.prazo = novo; } catch(e) {}
+  }
+}
+// item removido do PPCP: a tarefa some se ainda nao foi mexida; se ja tem andamento, fica marcada para o gestor decidir
+function engItensLoteRemovidos(ids){
+  if (!ids || !ids.length) return;
+  const set = new Set(ids);
+  for (const t of DB.tarefasEngenharia.slice()) {
+    if (!t.origem || t.origem.tipo!=="ppcp" || !set.has(t.origem.itemLoteId) || t.concluida) continue;
+    const intocada = !t.funcionario && !(t.coResponsaveis||[]).length && !(t.periodosAtivos||[]).length && !t.checklistProjeto && !t.checklistDetalhamento && t.coluna==="coleta" && !t.rodando;
+    if (intocada) removerDaColecao("tarefasEngenharia", x=>x.id!==t.id);
+    else t.origem.removidoDoPpcp = true;
+  }
+}
+// PPCP: todo lote com "Desenvolvimento Engenharia" gera uma atividade direta na Engenharia (sem responsavel); o PPCP da o titulo
+function engCriarTarefasDoPpcp(lote, rows){
+  if (!lote || !rows || !rows.length) return;
+  for (const row of rows) {
+    const meta = getItem(row.itemId);
+    if (!meta || colunaKanbanPorNomeItem(meta.nome) !== "desenvolvimento") continue;
+    if (DB.tarefasEngenharia.some(t=>t.origem && t.origem.tipo==="ppcp" && t.origem.itemLoteId===row.id)) continue;
+    const eq = getEquipamento(meta.equipamentoId);
+    const padrao = `Desenvolvimento - ${eq ? eq.nome : "Equipamento"} - Lote ${lote.noLote}`;
+    let titulo = prompt(`Este lote tem "Desenvolvimento Engenharia" e vai gerar uma atividade na Engenharia.\nDigite o titulo da atividade:`, padrao);
+    if (titulo === null || !titulo.trim()) titulo = padrao;
+    const agora = new Date().toISOString();
+    let prazo = null; try { prazo = engPrazoDoItemPpcp(row); } catch(e) {}
+    DB.tarefasEngenharia.push({ id: DB.seq.tarefaEngenharia++, titulo: titulo.trim(), funcionario:null, pedidoId:lote.pedidoId||null, loteId:lote.id,
+      equipamentoRef: meta.equipamentoId ? "eq:"+meta.equipamentoId : "", equipamentoNome: eq ? eq.nome : "", numeroDesenho:"", coluna:"coleta",
+      checklistProjeto:null, checklistDetalhamento:null, criadoEm:agora, criadoPor:emailUsuarioAtual, periodosAtivos:[], rodando:false, finalizada:false,
+      atribuicaoPendente:null, atribuicaoRejeitada:null, prazo, dispensasPendentes:[], dispensaRejeitada:null, coResponsaveis:[], compartilhamentosPendentes:[], compartilhamentoRejeitado:null,
+      origem:{ tipo:"ppcp", itemLoteId:row.id, loteId:lote.id } });
+  }
 }
 
+
+// ---- Proximas atividades: precisam ser feitas, mas ainda nao tem responsavel
+function renderEngProximas(){
+  const wrap = document.getElementById("engProximasWrap"); if (!wrap) return;
+  const somenteLeitura = nivelAcessoSetor("engenharia") === "visualizador";
+  const gestor = souGestorEng();
+  const lista = engOrdenarPrioridade(DB.tarefasEngenharia.filter(t=>!t.concluida && tarefaSemResponsavel(t) && tarefaEngenhariaVisivel(t)));
+  const pessoas = gestor ? Object.values(DB.perfis||{}).filter(p=>p.atual).map(p=>p.email) : [];
+  wrap.innerHTML = `<h2 style="font-size:16px; margin:18px 0 2px; color:var(--primary-dark);">Pr&oacute;ximas atividades (${lista.length})</h2>
+    <p class="muted" style="font-size:12px; margin:0 0 8px;">Atividades que precisam ser feitas mas ainda n&atilde;o t&ecirc;m respons&aacute;vel. Ao atribuir (ou assumir), v&atilde;o para o Kanban. Ordem: prioridade GUT.</p>` +
+    (lista.length ? `<div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:8px;">` + lista.map(t=>{
+      const pedido = t.pedidoId ? getPedido(t.pedidoId) : null, lote = t.loteId ? DB.lotes.find(l=>l.id===t.loteId) : null;
+      const s = situacaoPrazoTarefa(t);
+      return `<div class="card" style="padding:9px; font-size:11px; border-left:3px solid #B7791F;">
+        <div><strong style="font-size:12px;">${escaparHtmlPerfil(t.titulo)}</strong>${engRotuloOrigem(t)}</div>
+        <div style="margin-top:2px;">${engGutBadge(t)}</div>
+        ${t.descricaoOrigem ? `<div style="font-size:10px; margin-top:3px;">${escaparHtmlPerfil(t.descricaoOrigem)}</div>` : ""}
+        <div class="muted" style="font-size:10px; margin-top:3px;">${pedido?("Pedido "+escaparHtmlPerfil(String(pedido.noPedido))):""}${pedido&&lote?" - ":""}${lote?("Lote "+escaparHtmlPerfil(String(lote.noLote))):""}</div>
+        ${t.equipamentoNome ? `<div class="muted" style="font-size:10px;">&#9881; ${escaparHtmlPerfil(t.equipamentoNome)}</div>` : ""}
+        ${t.numeroDesenho ? `<div class="muted" style="font-size:9px;">&#128208; Desenho: <strong>${escaparHtmlPerfil(t.numeroDesenho)}</strong></div>` : ""}
+        ${s ? `<div style="font-size:10px; margin-top:3px; color:${s.cor}; ${s.forte?"font-weight:700;":""}">&#128197; ${s.texto}</div>` : ""}
+        ${gestor ? engGutSelects(t) : ""}
+        ${somenteLeitura ? "" : `<div style="display:flex; gap:4px; margin-top:6px; flex-wrap:wrap;">
+          ${gestor ? `<select data-prox-resp="${t.id}" style="flex:1; min-width:110px; font-size:10.5px;"><option value="">- escolher -</option>${opcoesAtribuicaoHtml(pessoas)}</select><button type="button" class="btn btn-sm" data-prox-atribuir="${t.id}" style="font-size:10.5px; padding:4px 7px;">Atribuir</button>` : ""}
+          ${(souEngenheiro() || gestor) ? `<button type="button" class="btn secondary btn-sm" data-prox-assumir="${t.id}" style="font-size:10.5px; padding:4px 7px;">Assumir</button>` : ""}
+          ${(gestor || chavePerfil(t.criadoPor)===chavePerfil(emailUsuarioAtual)) ? `<button type="button" class="acao-icon" data-prox-editar="${t.id}" title="Editar" style="font-size:12px; opacity:1;">&#9998;</button><button type="button" class="acao-icon danger" data-prox-excluir="${t.id}" title="Excluir" style="font-size:12px; opacity:1;">&#128465;</button>` : ""}
+        </div>`}
+      </div>`; }).join("") + `</div>` : '<p class="muted" style="font-size:12px;">Nenhuma atividade aguardando respons&aacute;vel.</p>');
+  engLigarGut(wrap);
+  if (gestor && lista.length) listarOpcoesAtribuicaoGestorCache().then(todos=>{
+    wrap.querySelectorAll("[data-prox-resp]").forEach(sel=>{ const cur = sel.value; sel.innerHTML = '<option value="">- escolher -</option>' + opcoesAtribuicaoHtml(todos); sel.value = [...sel.options].some(o=>o.value===cur) ? cur : ""; });
+  }).catch(e=>console.error(e));
+  wrap.querySelectorAll("[data-prox-assumir]").forEach(b=>b.addEventListener("click", ()=>{
+    const t = DB.tarefasEngenharia.find(x=>x.id===parseInt(b.dataset.proxAssumir)); if (!t || t.funcionario) return;
+    t.funcionario = emailUsuarioAtual; saveDB(); renderEngKanban(); renderEngPendencias();
+  }));
+  wrap.querySelectorAll("[data-prox-atribuir]").forEach(b=>b.addEventListener("click", ()=>{
+    if (!souGestorEng()) return;
+    const id = parseInt(b.dataset.proxAtribuir), t = DB.tarefasEngenharia.find(x=>x.id===id); if (!t) return;
+    const v = wrap.querySelector(`[data-prox-resp="${id}"]`).value; if (!v) { alert("Escolha o responsavel."); return; }
+    t.funcionario = v; saveDB(); renderEngKanban(); renderEngPendencias();
+  }));
+  wrap.querySelectorAll("[data-prox-editar]").forEach(b=>b.addEventListener("click", ()=>abrirEdicaoTarefaEngenharia(parseInt(b.dataset.proxEditar))));
+  wrap.querySelectorAll("[data-prox-excluir]").forEach(b=>b.addEventListener("click", ()=>{
+    const id = parseInt(b.dataset.proxExcluir), t = DB.tarefasEngenharia.find(x=>x.id===id); if (!t) return;
+    if (!confirm(`Excluir a atividade "${t.titulo}"?`)) return;
+    removerDaColecao("tarefasEngenharia", x=>x.id!==id); saveDB(); renderEngKanban();
+  }));
+}
 function renderEngKanban(){
+  engAtualizarPrazosPpcp();
+  renderEngKanbanBoard();
+  engLigarGut(document.getElementById("engKanbanBoard"));
+  renderEngProximas();
+}
+function renderEngKanbanBoard(){
   const board = document.getElementById("engKanbanBoard");
   const somenteLeituraEng = nivelAcessoSetor("engenharia") === "visualizador";
   const porColuna = {}; COLUNAS_ENGENHARIA.forEach(c=>porColuna[c.id]=[]);
-  for (const t of DB.tarefasEngenharia) { if (!t.concluida && tarefaEngenhariaVisivel(t)) (porColuna[t.coluna]||porColuna.coleta).push(t); }
-  // dentro de cada coluna: prazo mais proximo primeiro, tarefas sem prazo por ultimo
-  for (const lista of Object.values(porColuna)) lista.sort((a,b)=>(a.prazo||"9999-99-99").localeCompare(b.prazo||"9999-99-99") || a.id-b.id);
+  for (const t of DB.tarefasEngenharia) { if (!t.concluida && !tarefaSemResponsavel(t) && tarefaEngenhariaVisivel(t)) (porColuna[t.coluna]||porColuna.coleta).push(t); }
+  // dentro de cada coluna: maior prioridade GUT primeiro; depois prazo mais proximo, tarefas sem prazo por ultimo
+  for (const lista of Object.values(porColuna)) engOrdenarPrioridade(lista);
 
   board.innerHTML = COLUNAS_ENGENHARIA.map(c=>`
     <div class="eng-coluna" data-coluna-alvo="${c.id}" style="flex:0 0 210px; background:var(--bg-soft); border-radius:10px; padding:8px; transition:background .1s;">
@@ -8730,16 +9062,18 @@ function renderEngKanban(){
           const cab = (id, ico, rot)=>`<button type="button" data-secao-card="${id}" style="width:100%; text-align:left; background:none; border:0; padding:3px 0; font-size:11px; font-weight:700; color:var(--primary-dark); cursor:pointer; display:flex; justify-content:space-between;"><span>${ico} ${rot}</span><span>${sc===id?"&#9650;":"&#9660;"}</span></button>`;
           painelCard = `<div class="eng-painel" style="margin-top:5px; padding:6px; background:var(--bg-soft); border-radius:6px;">
             ${cab("desenho","&#128208;","N&ordm; de desenho (opcional)")}
-            ${sc==="desenho" ? `<div style="display:flex; gap:4px; margin:3px 0;"><input type="text" data-desenho-input="${t.id}" value="${escaparHtmlPerfil(t.numeroDesenho||"")}" ${somenteLeituraEng?"disabled":""} style="flex:1; min-width:0; font-size:12px;">${somenteLeituraEng?"":`<button type="button" class="btn btn-sm" data-desenho-salvar="${t.id}" style="font-size:10.5px; padding:3px 7px;">Salvar</button>`}</div>` : ""}
-            ${somenteLeituraEng ? "" : `<div style="${sec}">${cab("responsavel","&#128100;","Responsavel")}${sc==="responsavel" ? `<select data-resp-select="${t.id}" style="width:100%; font-size:12px; margin-top:3px;"></select>${gestorAgora?"":'<div style="font-size:9.5px; color:#B7791F; margin-top:2px;">A troca so vale depois da aprovacao do gestor.</div>'}<div style="display:flex; gap:4px; margin:4px 0;"><button type="button" class="btn btn-sm" data-resp-salvar="${t.id}" style="flex:1; font-size:10.5px; padding:3px 7px;">${gestorAgora?"Alterar":"Solicitar troca"}</button><button type="button" class="btn secondary btn-sm" data-resp-colab="${t.id}" style="flex:1; font-size:10.5px; padding:3px 7px;">+ Colaborador</button></div>` : ""}</div>`}
-            <div style="${sec}">${cab("checklist","&#9745;","Checklists")}${sc==="checklist" ? (chk || '<div class="muted" style="font-size:10.5px; margin:3px 0;">Nenhum checklist disponivel ainda.</div>') : ""}</div>
+            ${sc==="desenho" ? `<div style="display:flex; gap:4px; margin:3px 0;"><input type="text" data-desenho-input="${t.id}" value="${escaparHtmlPerfil(t.numeroDesenho||"")}" ${somenteLeituraEng?"disabled":""} style="flex:1; min-width:0; font-size:10px;">${somenteLeituraEng?"":`<button type="button" class="btn btn-sm" data-desenho-salvar="${t.id}" style="font-size:9.5px; padding:3px 7px;">Salvar</button>`}</div>` : ""}
+            ${somenteLeituraEng ? "" : `<div style="${sec}">${cab("responsavel","&#128100;","Responsavel")}${sc==="responsavel" ? `<select data-resp-select="${t.id}" style="width:100%; font-size:10px; margin-top:3px;"></select>${gestorAgora?"":'<div style="font-size:9px; color:#B7791F; margin-top:2px;">A troca so vale depois da aprovacao do gestor.</div>'}<div style="display:flex; gap:4px; margin:4px 0;"><button type="button" class="btn btn-sm" data-resp-salvar="${t.id}" style="flex:1; font-size:9.5px; padding:3px 7px;">${gestorAgora?"Alterar":"Solicitar troca"}</button><button type="button" class="btn secondary btn-sm" data-resp-colab="${t.id}" style="flex:1; font-size:9.5px; padding:3px 7px;">+ Colaborador</button></div>` : ""}</div>`}
+            <div style="${sec}">${cab("checklist","&#9745;","Checklists")}${sc==="checklist" ? (chk || '<div class="muted" style="font-size:9.5px; margin:3px 0;">Nenhum checklist disponivel ainda.</div>') : ""}</div>
+            <div style="${sec}">${cab("gut","&#127919;","Prioridade (GUT)")}${sc==="gut" ? engGutSelects(t) : ""}</div>
           </div>`;
         }
         return `<div class="card eng-card acoes-cell" draggable="${somenteLeituraEng?"false":"true"}" data-card-id="${t.id}" style="margin-bottom:7px; padding:8px; border-left:3px solid ${corBorda}; cursor:${somenteLeituraEng?"default":"grab"}; font-size:11px;">
           <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:6px;">
-            <strong style="font-size:12px;">${escaparHtmlPerfil(t.titulo)}</strong>
+            <span><strong style="font-size:12px;">${escaparHtmlPerfil(t.titulo)}</strong>${engRotuloOrigem(t)}</span>
             ${somenteLeituraEng ? "" : `<button type="button" class="acao-icon btn-leitura" data-toggle-menu-tarefa="${t.id}" title="Opcoes" style="flex-shrink:0; font-size:12px;">&#9998;</button>`}
           </div>
+          <div style="margin-top:2px;">${engGutBadge(t)}</div>
           <div class="menu-lote ${menuAberto?"":"hidden"}" data-menu-tarefa="${t.id}" style="font-size:12px;">
             ${somenteLeituraEng ? "" : `<button type="button" data-editar-tarefa="${t.id}">Editar</button>
             <button type="button" class="danger" data-excluir-tarefa="${t.id}">Excluir</button>`}
@@ -8774,7 +9108,7 @@ function renderEngKanban(){
           <div class="muted" style="font-size:10px;">${pedido?("Pedido "+pedido.noPedido):""}${pedido&&lote?" - ":""}${lote?("Lote "+lote.noLote):""}</div>
           ${(()=>{ const s = situacaoPrazoTarefa(t); return s ? `<div style="font-size:10px; margin-top:3px; color:${s.cor}; ${s.forte?"font-weight:700;":""}">&#128197; ${s.texto}</div>` : ""; })()}
           ${(()=>{ const min = calcularTempoTotalTarefaMinutos(t); return min!=null ? `<div style="font-size:10px; margin-top:3px; color:var(--primary-dark);">&#9201; ${formatarMinutosComoHoras(min)}${t.rodando?' <span style="color:var(--ok); font-weight:700;">(rodando)</span>':''}</div>` : ''; })()}
-          ${t.numeroDesenho ? `<div class="muted" style="font-size:10px; margin-top:2px;">&#128208; Desenho: <strong>${escaparHtmlPerfil(t.numeroDesenho)}</strong></div>` : ""}
+          ${t.numeroDesenho ? `<div class="muted" style="font-size:9px; margin-top:2px;">&#128208; Desenho: <strong>${escaparHtmlPerfil(t.numeroDesenho)}</strong></div>` : ""}
           ${t.equipamentoNome ? `<div class="muted" style="font-size:10px;">&#9881; ${escaparHtmlPerfil(t.equipamentoNome)}</div>` : ""}
           <div style="display:flex; gap:4px; margin-top:5px; align-items:stretch;">
             ${somenteLeituraEng ? "" : `<button type="button" class="acao-icon" data-card-nav="${t.id}" data-card-nav-destino="${colAnt?colAnt.id:""}" ${colAnt?"":"disabled"} title="${colAnt?"Voltar para: "+colAnt.titulo:""}" style="padding:3px 10px; border:1px solid var(--primary); color:var(--primary-dark); background:#fff; border-radius:6px; ${colAnt?"":"opacity:.3;"}">&#9664;</button>`}
@@ -8848,12 +9182,24 @@ function renderEngKanban(){
     const atual = (!souGestor && t.atribuicaoPendente) ? t.atribuicaoPendente.para : (t.funcionario||"");
     if ([...sel.options].some(o=>o.value===atual)) sel.value = atual;
   });
+  // o gestor enxerga todos os usuarios com login (a lista vem da rede e completa as opcoes ja mostradas)
+  if (souGestorEng() && board.querySelector("[data-resp-select]")) {
+    listarOpcoesAtribuicaoGestorCache().then(todos=>{
+      board.querySelectorAll("[data-resp-select]").forEach(sel=>{
+        const t = DB.tarefasEngenharia.find(x=>x.id===parseInt(sel.dataset.respSelect)); if (!t) return;
+        const cur = sel.value;
+        sel.innerHTML = '<option value="">- sem funcionario -</option>' + opcoesAtribuicaoHtml(todos.concat(t.funcionario ? [t.funcionario] : []));
+        sel.value = [...sel.options].some(o=>o.value===cur) ? cur : "";
+      });
+    }).catch(e=>console.error(e));
+  }
   board.querySelectorAll("[data-resp-salvar]").forEach(btn=>{
     btn.addEventListener("click", (e)=>{
       e.stopPropagation();
       const id = parseInt(btn.dataset.respSalvar);
       const t = DB.tarefasEngenharia.find(x=>x.id===id); if (!t) return;
       const escolhido = board.querySelector(`[data-resp-select="${id}"]`).value || "";
+      if (escolhido === (t.funcionario||"") && !(t.atribuicaoPendente && !souGestorEng())) { mostrarAviso("Escolha outra pessoa na lista antes de clicar em " + (souGestorEng() ? "Alterar" : "Solicitar troca") + "."); return; }
       if (souGestorEng()) {
         if (escolhido !== (t.funcionario||"")) {
           t.funcionario = escolhido || null;
@@ -9578,6 +9924,7 @@ function listarAprovacoesEngenharia(){
     if (t.atribuicaoPendente) itens.push({ key:`at:${t.id}:${t.atribuicaoPendente.para}`, titulo:"Troca de responsavel", texto:`${nome} - ${nomeExibicao(t.atribuicaoPendente.para)}` });
     for (const c of (t.compartilhamentosPendentes||[])) itens.push({ key:`cp:${t.id}:${c.email}`, titulo:"Novo colaborador na tarefa", texto:`${nome} - ${nomeExibicao(c.email)}` });
   }
+  for (const d of (DB.demandasEngRnc||[])) if (d.status==="pendente") itens.push({ key:`dr:${d.id}`, titulo:"Demanda de RNC para a Engenharia", texto:`RNC ${numRnc(d.rncSeq)} - ${(d.acao||"").slice(0,60)}` });
   return itens;
 }
 function mostrarToastEng(titulo, texto, aoClicar, icone, origem, duracao){
@@ -9760,16 +10107,24 @@ function renderEngFinalizadas(){
       <div class="muted" style="font-size:12px;">Responsaveis: ${resp || "-"}</div>
       ${sit ? `<div style="font-size:12px; color:${sit.cor};">&#128197; ${sit.texto}</div>` : ""}
       ${min!=null ? `<div style="font-size:12px; color:var(--primary-dark);">&#9201; ${formatarMinutosComoHoras(min)}</div>` : ""}
-      <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;">${bt("projeto", t.checklistProjeto)}${bt("detalhamento", t.checklistDetalhamento)}${souGestorEng()?`<button type="button" class="btn secondary btn-sm" data-fin-reabrir="${t.id}" style="font-size:10.5px; padding:3px 8px;">Reabrir</button>`:""}</div>
+      <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;">${bt("projeto", t.checklistProjeto)}${bt("detalhamento", t.checklistDetalhamento)}${souGestorEng()?`<button type="button" class="btn secondary btn-sm" data-fin-reabrir="${t.id}" style="font-size:10.5px; padding:3px 8px;">Reabrir</button><button type="button" class="btn secondary btn-sm" data-fin-excluir="${t.id}" style="font-size:10.5px; padding:3px 8px; color:var(--danger); border-color:var(--danger);">Excluir</button>`:""}</div>
     </div>`;
   }).join("") : '<p class="muted">Nenhuma tarefa finalizada encontrada.</p>';
   wrap.querySelectorAll("[data-fin-checklist]").forEach(b=>b.addEventListener("click", ()=>abrirChecklistEngenharia(parseInt(b.dataset.finChecklist), b.dataset.finTipo, "revisar")));
+  wrap.querySelectorAll("[data-fin-excluir]").forEach(b=>b.addEventListener("click", ()=>engExcluirFinalizada(parseInt(b.dataset.finExcluir))));
   wrap.querySelectorAll("[data-fin-reabrir]").forEach(b=>b.addEventListener("click", ()=>{
     const t = DB.tarefasEngenharia.find(x=>x.id===parseInt(b.dataset.finReabrir)); if (!t) return;
     if (!confirm(`Reabrir a tarefa "${t.titulo}"? Ela volta para a coluna Aprovacao do Kanban.`)) return;
     t.concluida = false; t.finalizada = false; t.concluidaEm = null; t.finalizadaEm = null; t.aprovadaPor = null; t.enviadaAprovacaoEm = new Date().toISOString();
     saveDB(); renderEngFinalizadas(); renderEngKanban(); renderEngPendencias();
   }));
+}
+function engExcluirFinalizada(id){
+  if (!souGestorEng()) return;
+  const t = DB.tarefasEngenharia.find(x=>x.id===id); if (!t || !t.concluida) return;
+  if (!confirm(`Excluir DEFINITIVAMENTE a tarefa finalizada "${t.titulo}"? Isso apaga tambem os checklists e o tempo registrado e nao pode ser desfeito.`)) return;
+  removerDaColecao("tarefasEngenharia", x=>x.id!==id);
+  saveDB(); renderEngFinalizadas(); renderEngKanban();
 }
 ["engFinPedido","engFinLote","engFinEquip"].forEach(id=>document.getElementById(id).addEventListener("change", renderEngFinalizadas));
 document.getElementById("engFinBusca").addEventListener("input", renderEngFinalizadas);
@@ -9809,7 +10164,8 @@ function renderEngPendencias(){
   const totalDispensas = renderEngDispensasPendentes();
   const totalCompartilhamentos = renderEngCompartilhamentosPendentes();
   const totalAprovTarefas = renderEngAprovTarefas();
-  const totalPendencias = totalAprovTarefas + pendencias.length + totalAtribuicoes + totalDispensas + totalCompartilhamentos;
+  const totalDemandas = renderEngDemandasRnc();
+  const totalPendencias = totalAprovTarefas + pendencias.length + totalAtribuicoes + totalDispensas + totalCompartilhamentos + totalDemandas;
   document.getElementById("engNavPendencias").textContent = "Pendencias de Aprovacao" + (totalPendencias ? ` (${totalPendencias})` : "");
 
   renderEngConfigHorario();
@@ -9821,6 +10177,9 @@ function renderEngConfigHorario(){
   document.getElementById("engHoraSaidaInput").value = cfg.horaSaidaIntervalo || "";
   document.getElementById("engHoraRetornoInput").value = cfg.horaRetornoIntervalo || "";
   document.getElementById("engHoraFimInput").value = cfg.horaEncerramento || "";
+  document.getElementById("engPausarFdsInput").checked = cfg.pausarFimDeSemana !== false;
+  document.getElementById("engPausarFeriadosInput").checked = cfg.pausarFeriados !== false;
+  document.getElementById("engFeriadosExtrasInput").value = cfg.feriadosExtras != null ? cfg.feriadosExtras : ENG_FERIADOS_EXTRAS_PADRAO;
   document.getElementById("engSalvarHorarioBtn").onclick = salvarConfigHorarioEngenharia;
 }
 
@@ -9837,6 +10196,9 @@ function salvarConfigHorarioEngenharia(){
     if (valor && !re.test(valor)) { msgEl.innerHTML = '<span style="color:var(--danger);">Use o formato HH:MM, ex: 08:00.</span>'; return; }
   }
   if (!vals.horaInicio || !vals.horaEncerramento) { msgEl.innerHTML = '<span style="color:var(--danger);">Preencha ao menos o inicio e o encerramento do trabalho.</span>'; return; }
+  vals.pausarFimDeSemana = document.getElementById("engPausarFdsInput").checked;
+  vals.pausarFeriados = document.getElementById("engPausarFeriadosInput").checked;
+  vals.feriadosExtras = document.getElementById("engFeriadosExtrasInput").value.trim();
   DB.configEngenharia = vals;
   saveDB();
   msgEl.innerHTML = '<span style="color:var(--ok);">Horarios salvos!</span>';
