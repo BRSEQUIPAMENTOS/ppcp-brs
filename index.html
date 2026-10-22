@@ -432,7 +432,7 @@
     </form>
     <div style="text-align:center; margin-top:8px;"><a href="#" id="loginEsqueciSenhaLink" style="font-size:12px; color:#8A8F87;">Esqueci minha senha</a></div>
     <div id="loginMsg" style="margin-top:10px; font-size:12.5px; min-height:18px;"></div>
-    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 170 - 22/10/2026</div>
+    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 171 - 22/10/2026</div>
     <div id="loginOfflineWrap" class="hidden" style="margin-top:6px;">
       <button id="loginOfflineBtn" style="width:100%; padding:8px; background:transparent; color:#8A8F87; border:1px solid #E1E6DE; border-radius:6px; font-size:12.5px; cursor:pointer;">Continuar sem conexao (usa os dados salvos neste navegador)</button>
     </div>
@@ -469,7 +469,7 @@
     </div>
     <div style="height:3px; width:60px; background:#91C53E; border-radius:2px; margin-bottom:34px;"></div>
     <div id="painelPastasGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(172px, 1fr)); gap:14px;"></div>
-    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 170 - 22/10/2026</p>
+    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 171 - 22/10/2026</p>
   </div>
 </div>
 
@@ -2121,6 +2121,20 @@ function tombAplica(tombIds, emMap, item){
   const criado = item.criadoEm || "";
   return quando ? criado <= quando : criado < TOMB_LEGADO_CORTE;
 }
+function mesclarPerfilUsuario(a, b){
+  if (!a) return b; if (!b) return a;
+  const tsDe = p => String((p.atual&&p.atual.aprovadoEm)||"") > String((p.pendente&&p.pendente.enviadoEm)||"") ? String(p.atual.aprovadoEm) : String((p.pendente&&p.pendente.enviadoEm)||"");
+  const base = tsDe(a) > tsDe(b) ? a : b;       // empate: o aparelho atual
+  const outro = base === a ? b : a;
+  const res = Object.assign({}, base);
+  const atA = a.atual, atB = b.atual;
+  res.atual = !atA ? (atB||null) : !atB ? atA : (String(atA.aprovadoEm||"") >= String(atB.aprovadoEm||"") ? atA : atB);
+  if (res.pendente && res.atual && String(res.atual.aprovadoEm||"") >= String(res.pendente.enviadoEm||"")) {
+    res.pendente = null; res.status = "aprovado"; res.motivoRejeicao = null;
+  }
+  if (res.pendente && outro.pendente && outro.pendente.enviadoEm === res.pendente.enviadoEm && outro.status==="rejeitado") { res.status = "rejeitado"; res.motivoRejeicao = outro.motivoRejeicao || null; }
+  return res;
+}
 function mesclarDados(nuvem, local){
   const out = Object.assign({}, nuvem, local);
   const tombN = nuvem.removidos || {}, tombL = local.removidos || {};
@@ -2177,8 +2191,17 @@ function mesclarDados(nuvem, local){
     for (const x of [...(Array.isArray(nuvem.rncsExcluidas)?nuvem.rncsExcluidas:[]), ...(Array.isArray(local.rncsExcluidas)?local.rncsExcluidas:[])]) if (x && x.id!=null && !mp.has(x.id)) mp.set(x.id, x);
     out.rncsExcluidas = [...mp.values()];
   }
-  for (const k of ["perfis","acessosUsuarios"]) {
-    if (nuvem[k] && local[k] && typeof nuvem[k]==="object" && typeof local[k]==="object") out[k] = Object.assign({}, nuvem[k], local[k]);
+  // perfis e acessos: mescla por usuario; a decisao do gestor (aprovacao/acessos) mais recente nunca e desfeita por um aparelho desatualizado
+  if (nuvem.perfis && local.perfis && typeof nuvem.perfis==="object" && typeof local.perfis==="object") {
+    out.perfis = {};
+    for (const k of new Set([...Object.keys(nuvem.perfis), ...Object.keys(local.perfis)])) out.perfis[k] = mesclarPerfilUsuario(nuvem.perfis[k], local.perfis[k]);
+  }
+  if (nuvem.acessosUsuarios && local.acessosUsuarios && typeof nuvem.acessosUsuarios==="object" && typeof local.acessosUsuarios==="object") {
+    out.acessosUsuarios = {};
+    for (const k of new Set([...Object.keys(nuvem.acessosUsuarios), ...Object.keys(local.acessosUsuarios)])) {
+      const a = nuvem.acessosUsuarios[k], b = local.acessosUsuarios[k];
+      out.acessosUsuarios[k] = (!a) ? b : (!b) ? a : (String(a.atualizadoEm||"") > String(b.atualizadoEm||"") ? a : b);
+    }
   }
   return out;
 }
