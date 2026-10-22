@@ -432,7 +432,7 @@
     </form>
     <div style="text-align:center; margin-top:8px;"><a href="#" id="loginEsqueciSenhaLink" style="font-size:12px; color:#8A8F87;">Esqueci minha senha</a></div>
     <div id="loginMsg" style="margin-top:10px; font-size:12.5px; min-height:18px;"></div>
-    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 169 - 22/10/2026</div>
+    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 170 - 22/10/2026</div>
     <div id="loginOfflineWrap" class="hidden" style="margin-top:6px;">
       <button id="loginOfflineBtn" style="width:100%; padding:8px; background:transparent; color:#8A8F87; border:1px solid #E1E6DE; border-radius:6px; font-size:12.5px; cursor:pointer;">Continuar sem conexao (usa os dados salvos neste navegador)</button>
     </div>
@@ -469,7 +469,7 @@
     </div>
     <div style="height:3px; width:60px; background:#91C53E; border-radius:2px; margin-bottom:34px;"></div>
     <div id="painelPastasGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(172px, 1fr)); gap:14px;"></div>
-    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 169 - 22/10/2026</p>
+    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 170 - 22/10/2026</p>
   </div>
 </div>
 
@@ -714,6 +714,7 @@
     <div class="qual-grupo" style="margin-top:16px;">&#9888; RNC - N&Atilde;O CONFORMIDADE</div>
     <button class="qual-navbtn" data-qualpage="rncs">RNCs Registradas</button>
     <button class="qual-navbtn" data-qualpage="rncnova" data-edicao>Nova RNC</button>
+    <button class="qual-navbtn" data-qualpage="rncsexcluidas">RNCs Exclu&iacute;das</button>
   </nav>
   <main class="main">
     <section id="qualpage-gerados" class="page active">
@@ -763,6 +764,13 @@
           <button type="button" class="btn secondary btn-sm hidden" id="rncEditarCat2Btn">&#9998; Editar cat&aacute;logo de n&atilde;o conformidades</button>
         </div>
         <div style="overflow-x:auto;"><table id="rncTabela"><tr><th>No</th></tr></table></div>
+      </div>
+    </section>
+
+    <section id="qualpage-rncsexcluidas" class="page">
+      <div class="banner"><h1>RNCs Exclu&iacute;das</h1><p>Hist&oacute;rico para rastreabilidade: o n&uacute;mero de uma RNC exclu&iacute;da nunca &eacute; reaproveitado</p></div>
+      <div class="card">
+        <div style="overflow-x:auto;"><table id="rncExcluidasTabela"><tr><th>No</th></tr></table></div>
       </div>
     </section>
 
@@ -1876,11 +1884,12 @@ function normalizarDB(db){
   }
   if (!db.checklistInstancias) db.checklistInstancias = [];
   if (!db.rncs) db.rncs = [];
+  if (!Array.isArray(db.rncsExcluidas)) db.rncsExcluidas = [];
   if (!db.demandasEngRnc) db.demandasEngRnc = [];
   if (!db.removidosEm || typeof db.removidosEm !== "object") db.removidosEm = {};
   const maxTomb = (k)=>Math.max(0, ...((db.removidos && db.removidos[k]) || []));
   db.seq.rnc = Math.max(db.seq.rnc||0, db.rncs.reduce((m,x)=>Math.max(m,x.id||0),0)+1, maxTomb("rncs")+1);
-  compactarSequenciaRnc(db);
+  db.seq.rncNumero = Math.max(db.seq.rncNumero||0, db.rncs.reduce((m,x)=>Math.max(m,x.sequencia||0),0)+1);
   db.seq.demandaEngRnc = Math.max(db.seq.demandaEngRnc||0, db.demandasEngRnc.reduce((m,x)=>Math.max(m,x.id||0),0)+1, maxTomb("demandasEngRnc")+1);
   if (!db.atividadesGestor) db.atividadesGestor = [];
   if (!db.seq.atividadeGestor) db.seq.atividadeGestor = db.atividadesGestor.reduce((m,x)=>Math.max(m,x.id||0),0) + 1;
@@ -2112,16 +2121,6 @@ function tombAplica(tombIds, emMap, item){
   const criado = item.criadoEm || "";
   return quando ? criado <= quando : criado < TOMB_LEGADO_CORTE;
 }
-// numeracao das RNCs sempre 1..n sem buracos: ao excluir, as seguintes sobem um numero
-function compactarSequenciaRnc(db){
-  if (!db || !Array.isArray(db.rncs)) return false;
-  const ord = db.rncs.slice().sort((a,b)=>((a.sequencia||1e9)-(b.sequencia||1e9)) || String(a.criadoEm||"").localeCompare(String(b.criadoEm||"")) || ((a.id||0)-(b.id||0)));
-  let mudou = false;
-  ord.forEach((r,i)=>{ if (r.sequencia !== i+1) { r.sequencia = i+1; mudou = true; } });
-  if (Array.isArray(db.demandasEngRnc)) db.demandasEngRnc.forEach(d=>{ const r = db.rncs.find(x=>x.id===d.rncId); if (r && d.rncSeq !== r.sequencia) d.rncSeq = r.sequencia; });
-  if (db.seq) db.seq.rncNumero = ord.length + 1;
-  return mudou;
-}
 function mesclarDados(nuvem, local){
   const out = Object.assign({}, nuvem, local);
   const tombN = nuvem.removidos || {}, tombL = local.removidos || {};
@@ -2173,10 +2172,14 @@ function mesclarDados(nuvem, local){
     out.seq.demandaEngRnc = Math.max(out.seq.demandaEngRnc||0, (maxIdPorChave.demandasEngRnc||0)+1);
     out.seq.rncNumero = Math.max(out.seq.rncNumero||0, (out.rncs||[]).reduce((m,x)=>Math.max(m,x.sequencia||0),0)+1);
   }
+  { // RNCs excluidas: historico, uniao dos dois lados (nunca se perde)
+    const mp = new Map();
+    for (const x of [...(Array.isArray(nuvem.rncsExcluidas)?nuvem.rncsExcluidas:[]), ...(Array.isArray(local.rncsExcluidas)?local.rncsExcluidas:[])]) if (x && x.id!=null && !mp.has(x.id)) mp.set(x.id, x);
+    out.rncsExcluidas = [...mp.values()];
+  }
   for (const k of ["perfis","acessosUsuarios"]) {
     if (nuvem[k] && local[k] && typeof nuvem[k]==="object" && typeof local[k]==="object") out[k] = Object.assign({}, nuvem[k], local[k]);
   }
-  compactarSequenciaRnc(out);
   return out;
 }
 async function tentarGravarNuvem(dbObj){
@@ -7103,6 +7106,7 @@ function rotuloUnidadeChecklist(inst){
 function showQualPage(name){
   if ((name === "gerar" || name === "pendencias") && !souGestorQualidade()) name = "gerados";
   if (name === "pendencias") renderQualPendencias();
+  if (name === "rncsexcluidas") renderRncExcluidas();
   if (name === "gerar") atualizarQualUnidades();   // sempre mostra o estado de agora (nada de lista velha)
   document.querySelectorAll("#qualidadeRoot .page").forEach(p=>p.classList.remove("active"));
   document.getElementById("qualpage-"+name).classList.add("active");
@@ -8337,7 +8341,7 @@ function renderEngDemandasRnc(){
   return lista.length;
 }
 // o numero da RNC nunca volta atras nem se repete, mesmo apos excluir a ultima
-function proximoNumeroRnc(){ return (DB.rncs||[]).reduce((m,r)=>Math.max(m, r.sequencia||0), 0) + 1; }
+function proximoNumeroRnc(){ return Math.max((DB.seq && DB.seq.rncNumero) || 1, (DB.rncs||[]).reduce((m,r)=>Math.max(m, r.sequencia||0), 0) + 1); }
 function numRnc(n){ return String(n).padStart(4,"0"); }
 function hojeIsoLocal(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
 function pngSeguro(u){ return (typeof u==="string" && u.length<200000 && /^data:image\/png;base64,[A-Za-z0-9+\/=]+$/.test(u)) ? u : null; }
@@ -8379,6 +8383,23 @@ function renderRnc(){
   document.getElementById("rncCancelarBtn").onclick = ()=>{ showQualPage("rncs"); };
 }
 
+function renderRncExcluidas(){
+  const el = document.getElementById("rncExcluidasTabela");
+  const lista = [...(DB.rncsExcluidas||[])].sort((a,b)=>String(b.excluidaEm||"").localeCompare(String(a.excluidaEm||"")));
+  const cab = '<tr><th>No</th><th>Data da RNC</th><th>Pedido</th><th>Lote</th><th>Equipamento</th><th>Setor de origem</th><th>Emitente</th><th>Excluida em</th><th>Excluida por</th><th>Motivo</th><th></th></tr>';
+  if (!lista.length) { el.innerHTML = cab + '<tr><td colspan="11" class="muted">Nenhuma RNC foi excluida.</td></tr>'; return; }
+  const dh = iso => { const d = new Date(iso); return isNaN(d) ? "-" : d.toLocaleDateString("pt-BR")+" "+d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}); };
+  el.innerHTML = cab + lista.map(r=>{
+    const ped = getPedido(r.pedidoId); const lote = DB.lotes.find(l=>l.id===r.loteId);
+    return `<tr><td>${numRnc(r.sequencia)}</td><td>${r.data ? isoParaBR(r.data) : ""}</td>
+      <td>${escaparHtmlPerfil(ped ? ped.noPedido : (r.pedidoNo||""))}</td><td>${escaparHtmlPerfil(lote ? lote.noLote : (r.loteNo||""))}</td>
+      <td>${escaparHtmlPerfil(r.equipamentoNome||"")}</td><td>${escaparHtmlPerfil(rncRotuloSetor(r))}</td>
+      <td>${escaparHtmlPerfil(r.emitenteNome||r.emitenteEmail||"")}</td><td>${dh(r.excluidaEm)}</td>
+      <td>${escaparHtmlPerfil(nomeExibicao(r.excluidaPor)||r.excluidaPor||"")}</td><td style="white-space:normal; min-width:200px;">${escaparHtmlPerfil(r.excluidaMotivo||"")}</td>
+      <td><button type="button" class="acao-icon btn-leitura" data-rncex-ver="${r.id}" title="Visualizar">&#128424;</button></td></tr>`;
+  }).join("");
+  el.querySelectorAll("[data-rncex-ver]").forEach(b=>b.addEventListener("click", ()=>abrirPreviewRnc(parseInt(b.dataset.rncexVer), true)));
+}
 function renderRncTabela(){
   const el = document.getElementById("rncTabela");
   const fStatus = document.getElementById("rncFiltroStatus").value;
@@ -8413,9 +8434,13 @@ function renderRncTabela(){
 
 function excluirRnc(id){
   const r = (DB.rncs||[]).find(x=>x.id===id); if (!r) return;
-  if (!confirm(`Excluir a RNC No ${numRnc(r.sequencia)}? Essa acao nao pode ser desfeita.`)) return;
+  if (!confirm(`Excluir a RNC No ${numRnc(r.sequencia)}? Ela sai da lista e fica registrada em "RNCs Excluidas" (o numero nao e reaproveitado).`)) return;
+  const motivo = prompt(`Motivo da exclusao da RNC No ${numRnc(r.sequencia)}:`);
+  if (motivo === null) return;
+  if (!motivo.trim()) { alert("Informe o motivo da exclusao para manter a rastreabilidade."); return; }
+  if (!Array.isArray(DB.rncsExcluidas)) DB.rncsExcluidas = [];
+  DB.rncsExcluidas.push(Object.assign({}, JSON.parse(JSON.stringify(r)), { excluidaEm: new Date().toISOString(), excluidaPor: emailUsuarioAtual||"", excluidaMotivo: motivo.trim() }));
   removerDaColecao("rncs", x=>x.id!==id);
-  compactarSequenciaRnc(DB);
   saveDB(); renderRncTabela();
 }
 
@@ -8670,8 +8695,8 @@ function gerarRncPrintHtml(r){
   h += `<div style="margin-top:8px; border-top:2px solid ${LIMA}; padding-top:3px; text-align:right; font-size:8.5px; color:#777;">RNC-${numRnc(r.sequencia)} &middot; gerada pelo sistema PPCP-BRS</div></div>`;
   return h;
 }
-function abrirPreviewRnc(id){
-  const r = (DB.rncs||[]).find(x=>x.id===id); if (!r) return;
+function abrirPreviewRnc(id, excluida){
+  const r = (excluida ? (DB.rncsExcluidas||[]) : (DB.rncs||[])).find(x=>x.id===id); if (!r) return;
   document.getElementById("qualPrintPreview").innerHTML = `<div style="padding:14px;">${gerarRncPrintHtml(r)}</div>`;
   document.getElementById("qualidadePrintOverlay").classList.remove("hidden");
   document.getElementById("qualImprimirAgoraBtn").onclick = ()=>imprimirComoPdf(gerarRncPrintHtml(r), `RNC-${numRnc(r.sequencia)}`, { margem: "9mm" });
