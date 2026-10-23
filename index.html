@@ -156,10 +156,9 @@
   .lote-card.enc { border-left-color:var(--ok); }
   .tabela-itens-lote { width:100%; min-width:960px; border-collapse:collapse; font-size:13px; table-layout:fixed; }
   .tabela-itens-lote th { white-space:normal !important; vertical-align:bottom; line-height:1.25; }
-  .tabela-itens-lote th:nth-child(1) { width:16%; }
-  .tabela-itens-lote th:nth-child(2), .tabela-itens-lote th:nth-child(4), .tabela-itens-lote th:nth-child(6) { width:14%; }
-  .tabela-itens-lote th:nth-child(3), .tabela-itens-lote th:nth-child(5) { width:13%; }
-  .tabela-itens-lote th:nth-child(7) { width:16%; }
+  .tabela-itens-lote th:nth-child(1) { width:22%; }
+  .tabela-itens-lote th:nth-child(2), .tabela-itens-lote th:nth-child(3), .tabela-itens-lote th:nth-child(4), .tabela-itens-lote th:nth-child(5), .tabela-itens-lote th:nth-child(6) { width:14%; }
+  .tabela-itens-lote th:nth-child(7) { width:8%; }
   .tabela-itens-lote td .pill { white-space:normal; display:inline-block; max-width:100%; box-sizing:border-box; word-break:break-word; font-size:10.5px; line-height:1.25; padding:3px 9px; }
   .tabela-itens-lote input.date-mask, .tabela-itens-lote input.date-mask-avulso { width:118px; box-sizing:border-box; font-size:13px; padding:6px 8px; }
   .tabela-itens-lote th { text-align:left; padding:8px 6px; color:var(--gray); font-weight:600; font-size:12px; border-bottom:1px solid var(--border); background:transparent; white-space:nowrap; }
@@ -174,6 +173,7 @@
   .tabela-prod th { text-align:left; padding:8px 6px; font-size:12px; vertical-align:bottom; line-height:1.25; white-space:normal; }
   .tabela-prod th.ver { background:#ECEFEA; color:#5C665F; }
   .tabela-prod th.preencher { background:#DDF1E4; color:#14462E; border-top:3px solid var(--ok); }
+  .tabela-terc td.ver .dt { font-size:15px; }
   .tabela-prod th small { display:block; font-weight:500; font-size:10.5px; opacity:.85; }
   .tabela-prod td { padding:8px 6px; border-bottom:1px solid var(--border); vertical-align:top; }
   .tabela-prod td.ver { background:#FAFBF9; }
@@ -185,6 +185,9 @@
   .prod-secao-titulo { margin:14px 0 6px; font-size:14px; font-weight:700; color:var(--primary-dark); display:flex; align-items:center; gap:8px; }
   .prod-secao-titulo i { width:10px; height:10px; border-radius:3px; display:inline-block; }
   .prod-falta { display:inline-block; margin-top:4px; font-size:10.5px; font-weight:700; color:#B7791F; background:#FFF3D6; padding:1px 7px; border-radius:999px; }
+  .resp-tag { display:inline-block; font-size:10px; font-weight:700; padding:1px 8px; border-radius:999px; }
+  .resp-tag.eng { background:#E3F0FA; color:#1B5E8C; } .resp-tag.prod { background:#E3F1E7; color:#14462E; } .resp-tag.ppcp { background:#F6EEDB; color:#7A5A12; }
+  .tabela-itens-lote td.auto { background:#F7F9F6; }
   .btn-edit-grupo { margin-left:10px; font-size:11px !important; padding:2px 8px !important; width:auto !important; height:auto !important; }
   .drag-h { display:inline-block; cursor:grab; touch-action:none; user-select:none; color:var(--gray); font-size:17px; line-height:1; padding:2px 6px 2px 0; vertical-align:middle; }
   .drag-h:hover { color:var(--primary-dark); }
@@ -455,7 +458,7 @@
     </form>
     <div style="text-align:center; margin-top:8px;"><a href="#" id="loginEsqueciSenhaLink" style="font-size:12px; color:#8A8F87;">Esqueci minha senha</a></div>
     <div id="loginMsg" style="margin-top:10px; font-size:12.5px; min-height:18px;"></div>
-    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 178 - 22/10/2026</div>
+    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 180 - 22/10/2026</div>
     <div id="loginOfflineWrap" class="hidden" style="margin-top:6px;">
       <button id="loginOfflineBtn" style="width:100%; padding:8px; background:transparent; color:#8A8F87; border:1px solid #E1E6DE; border-radius:6px; font-size:12.5px; cursor:pointer;">Continuar sem conexao (usa os dados salvos neste navegador)</button>
     </div>
@@ -492,7 +495,7 @@
     </div>
     <div style="height:3px; width:60px; background:#91C53E; border-radius:2px; margin-bottom:34px;"></div>
     <div id="painelPastasGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(172px, 1fr)); gap:14px;"></div>
-    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 178 - 22/10/2026</p>
+    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 180 - 22/10/2026</p>
   </div>
 </div>
 
@@ -515,7 +518,7 @@
           <div class="field"><label class="field-label">Mostrar</label><select id="prodSecao"><option value="">Tudo (terceiros, fabricacao e montagem)</option><option value="terceiros">So servicos de terceiros</option><option value="fabricacao">So fabricacao</option><option value="montagem">So montagem interna</option></select></div>
         </div>
         <label style="display:flex; gap:6px; align-items:center; margin-top:8px; font-size:13px;"><input type="checkbox" id="prodConcluidos"> Mostrar tambem os itens ja concluidos</label>
-        <div class="prod-legenda"><span class="prod-leg ver">&#128065; Cinza = informacao do PPCP (so para consultar)</span><span class="prod-leg preencher">&#9998; Verde = voce preenche</span></div>
+        <div class="prod-legenda"><span class="prod-leg ver">&#128065; Cinza = informacao do PPCP (so para consultar)</span><span class="prod-leg preencher">&#9998; Verde = voce preenche (fabricacao e montagem interna)</span><span class="prod-leg ver">Servicos de terceiros: so para consultar a data limite</span></div>
         <div class="resumo-chips" id="prodResumo"></div>
       </div>
       <div id="prodLista"></div>
@@ -1305,7 +1308,6 @@
         <div class="card"><h3>Itens por status</h3><div id="chartItemStatus"></div></div>
       </div>
       <div class="card"><h3>Lotes - proximo vencimento critico</h3><p class="muted">So os lotes urgentes ou com vencimento proximo (dentro da antecedencia de alerta), os mais criticos primeiro. Clique numa linha para ir direto aos Itens do Lote.</p><div id="tabelaLotes"></div></div>
-      <div class="card"><h3>Lotes por equipamento</h3><p class="muted">Quantos Lotes usam cada Equipamento (um Lote com mais de um Equipamento conta em cada barra).</p><div id="chartEquip"></div></div>
     </section>
 
     <!-- ============================= KANBAN ============================= -->
@@ -1433,11 +1435,12 @@
       <div id="itensLoteLista"></div>
       <div class="card" style="background:var(--bg-soft); margin-top:14px;">
     <div style="font-weight:700; margin-bottom:6px; color:var(--primary-dark);">Como ler as colunas</div>
-    <div style="font-size:13px;"><strong>Solicitacao</strong> <span class="muted">= quando voce pediu o item.</span></div>
-    <div style="font-size:13px;"><strong>Limite</strong> <span class="muted">= prazo maximo pra pedir sem atrasar o lote.</span></div>
-    <div style="font-size:13px;"><strong>Inicio</strong> <span class="muted">= quando o responsavel realmente comecou o desenvolvimento.</span></div>
-    <div style="font-size:13px;"><strong>Previsao</strong> <span class="muted">= chegada estimada (Inicio ou Solicitacao + prazo).</span></div>
-    <div style="font-size:13px;"><strong>Real</strong> <span class="muted">= quando o item chegou de fato.</span></div>
+    <div style="font-size:13px;"><strong>Solicitar ate</strong> <span class="muted">= prazo maximo para pedir o item sem atrasar o lote.</span></div>
+    <div style="font-size:13px;"><strong>Solicitado em</strong> <span class="muted">= quando o PPCP pediu o item (voce preenche).</span></div>
+    <div style="font-size:13px;"><strong>Inicio</strong> <span class="muted">= so existe em Desenvolvimento Engenharia, Fabricacao e Montagem. Vem sozinho: da atividade na Engenharia ou do que o gestor da Producao preenche.</span></div>
+    <div style="font-size:13px;"><strong>Entrega prevista</strong> <span class="muted">= chegada estimada (inicio ou solicitacao + prazo).</span></div>
+    <div style="font-size:13px;"><strong>Entrega real</strong> <span class="muted">= quando o item ficou pronto. Nos itens da Engenharia, Fabricacao e Montagem vem sozinho; nos demais, voce preenche.</span></div>
+    <div style="margin-top:8px; font-size:12px;"><span class="resp-tag eng">Engenharia</span> <span class="resp-tag prod">Producao</span> <span class="resp-tag ppcp">PPCP</span> <span class="muted">= quem preenche as datas do item.</span></div>
   </div>
     </section>
 
@@ -2031,6 +2034,7 @@ function atualizarTamanhoDados(txt){
 function saveDB(){
   limparCacheCalc();
   if (setorAtualId && !atvBypass && nivelAcessoSetor(setorAtualId) === "visualizador") { bloquearAlteracaoSomenteLeitura(); return; }
+  try { if (engSincronizarPpcp()) limparCacheCalc(); } catch(e) { console.error(e); }
   const txtDB = JSON.stringify(DB);
   try { localStorage.setItem(STORAGE_KEY, txtDB); } catch(e) { console.error(e); typeof mostrarAviso==="function" && mostrarAviso("Memoria do navegador cheia (muitas fotos). Os dados foram para a nuvem, mas nao ficaram salvos neste aparelho."); }
   atualizarTamanhoDados(txtDB);
@@ -3321,14 +3325,6 @@ function renderPainel(){
     });
   }
 
-  const eqCounts = {};
-  for (const lote of DB.lotes) { for (const eq of getEquipamentosDoLote(lote)) eqCounts[eq.nome]=(eqCounts[eq.nome]||0)+1; }
-  const maxEq = Math.max(1, ...Object.values(eqCounts), 1);
-  const eqHtml = Object.entries(eqCounts).map(([nome,v])=>{
-    const w = Math.round((v/maxEq)*100);
-    return `<div class="gantt-row"><div class="gantt-label">${nome}</div><div class="gantt-track"><div class="gantt-bar" style="width:${w}%;background:var(--primary)"></div></div><div style="width:30px;text-align:right;">${v}</div></div>`;
-  }).join("");
-  document.getElementById("chartEquip").innerHTML = eqHtml || '<p class="muted">Nenhum lote cadastrado.</p>';
 }
 
 /* =====================================================================
@@ -4642,6 +4638,50 @@ function renderItensLote(){
   popularSelLoteItens();
 }
 
+function quemPreencheItem(nome){
+  const col = colunaKanbanPorNomeItem(nome);
+  if (col === "desenvolvimento") return { k:"eng", rot:"Engenharia", auto:true, aguarda:"aguardando a Engenharia" };
+  if (col === "producao") return { k:"prod", rot:"Producao", auto:true, aguarda:"aguardando a Producao" };
+  return { k:"ppcp", rot:"PPCP", auto:false, aguarda:"" };
+}
+const ITENS_CABECALHO = '<tr><th>Item</th><th>Solicitar ate<div class="th-sub">(data limite)</div></th><th>Solicitado em<div class="th-sub">(PPCP)</div></th><th>Inicio<div class="th-sub">(automatico)</div></th><th>Entrega prevista<div class="th-sub">(inicio ou solicitacao + prazo)</div></th><th>Entrega real</th><th>Situacao</th></tr>';
+function linhaItemLote(lote, row, r, tipo, nome, subTxt){
+  const q = quemPreencheItem(nome);
+  const solicitado = !!row.dataSolicitacao;
+  const fmtN = n => Math.abs(n)===1 ? "1 dia" : Math.abs(n)+" dias";
+  const cls = tipo==="avulso" ? "date-mask-avulso" : "date-mask";
+  const attrId = tipo==="avulso" ? `data-item-avulso="${row.id}"` : `data-item="${row.id}"`;
+  let lim = '<span class="muted">-</span>';
+  if (r.dataLimiteSolicitacao) {
+    let info = "";
+    if (solicitado) { const atraso = diffDays(parseDate(row.dataSolicitacao), r.dataLimiteSolicitacao); info = atraso>0 ? `<div class="dt-info ruim">solicitado ${fmtN(atraso)} apos o limite</div>` : `<div class="dt-info ok">solicitado dentro do limite</div>`; }
+    else if (r.diasRestantes!==null) info = r.diasRestantes<0 ? `<div class="dt-info ruim">limite vencido ha ${fmtN(r.diasRestantes)}</div>` : `<div class="dt-info neutro">faltam ${fmtN(r.diasRestantes)}</div>`;
+    lim = `<div class="dt">${fmtBR(r.dataLimiteSolicitacao)}</div>${info}`;
+  }
+  const sol = `<input type="text" class="${cls}" ${attrId} data-field="dataSolicitacao" data-iso-inicial="${row.dataSolicitacao||""}" title="Quando o PPCP solicitou este item">`;
+  let ini = '<span class="muted">&mdash;</span>', iniAuto = false;
+  if (q.auto) {
+    iniAuto = true;
+    if (row.dataInicio) {
+      let extra = "";
+      if (solicitado) { const espera = diffDays(parseDate(row.dataInicio), parseDate(row.dataSolicitacao)); extra = `<div class="dt-info neutro">iniciou ${espera<=0?"no mesmo dia":"apos "+fmtN(espera)}</div>`; }
+      ini = `<div class="dt">${fmtBR(parseDate(row.dataInicio))}</div>${extra}`;
+    } else ini = `<span class="muted" style="font-size:12px;">${q.aguarda}</span>`;
+  }
+  let prev = '<span class="muted">-</span>';
+  if (r.dataPrevista) {
+    let info = "";
+    if (!row.dataReal && r.diasRestantes!==null && solicitado) info = r.diasRestantes<0 ? `<div class="dt-info ruim">atrasado ha ${fmtN(r.diasRestantes)}</div>` : `<div class="dt-info neutro">faltam ${fmtN(r.diasRestantes)}</div>`;
+    prev = `<div class="dt">${fmtBR(r.dataPrevista)}</div>${info}`;
+  }
+  let real, realAuto = q.auto;
+  if (q.auto) real = row.dataReal ? `<div class="dt">${fmtBR(parseDate(row.dataReal))}</div>` : `<span class="muted" style="font-size:12px;">${q.aguarda}</span>`;
+  else real = `<input type="text" class="${cls}" ${attrId} data-field="dataReal" data-iso-inicial="${row.dataReal||""}" title="Quando o item chegou ou foi concluido">`;
+  const drag = tipo==="avulso" ? "avulso" : "item";
+  return `<tr data-drag-id="${row.id}" data-drag-tipo="${drag}">
+    <td><div class="name"><span class="drag-h" data-edicao title="Segure e arraste para mudar a ordem">&#9776;</span>${escaparHtmlPerfil(nome)}</div><div class="sub">${subTxt}</div><span class="resp-tag ${q.k}" title="${q.auto?"Datas preenchidas automaticamente por esse setor":"O PPCP preenche as datas deste item"}">${q.rot}${q.auto?" (automatico)":""}</span></td>
+    <td>${lim}</td><td>${sol}</td><td class="${iniAuto?"auto":""}">${ini}</td><td>${prev}</td><td class="${realAuto?"auto":""}">${real}</td><td>${pill(r.status)}</td></tr>`;
+}
 function celulasPrazoItem(r, row, tipo){
   const solicitado = !!row.dataSolicitacao;
   const iniciou = !!row.dataInicio;
@@ -4797,18 +4837,12 @@ function renderItensUmLote(lote, resumoEl, lista, unico){
       const kEq = lote.id+"|eq-"+equipId;
       const nConcEq = idsOrdenados.filter(id=>itensMap.get(id).dataReal).length;
       html += `<details class="itens-det" data-key="${kEq}" ${(itensDetAbertos.has(kEq)||filtroEquipPeca===("eq-"+equipId))?"open":""}><summary class="itens-grupo-titulo"><small>Equipamento</small>${eq?eq.nome:"?"}<button type="button" class="acao-icon btn-edit-grupo" data-edicao data-edit-grupo="eq|${equipId}|${lote.id}" title="Editar dados, itens, prazos e pre-requisitos">&#9998; Editar</button><span class="itens-cont">${nConcEq}/${idsOrdenados.length} itens concluidos</span></summary><div class="tabela-itens-lote-wrap"><table class="tabela-itens-lote">`+
-        "<tr><th>Item</th><th>Solicitacao realizada em</th><th>Solicitar ate<div class=\"th-sub\">(data limite)</div></th><th>Inicio do desenvolvimento</th><th>Entrega prevista<div class=\"th-sub\">(inicio ou solicitacao + prazo)</div></th><th>Entrega em<div class=\"th-sub\">(data real)</div></th><th>Situacao</th></tr>";
+        ITENS_CABECALHO;
       for (const itemId of idsOrdenados) {
         const row = itensMap.get(itemId);
         const meta = getItem(itemId);
         const r = calcularStatusItem(lote, row, alertaDias);
-        html += `<tr data-drag-id="${row.id}" data-drag-tipo="item">
-          <td><div class="name"><span class="drag-h" data-edicao title="Segure e arraste para mudar a ordem">&#9776;</span>${meta.nome}</div><div class="sub">prazo ${row.prazoOverride!=null?row.prazoOverride+"d (ajustado)":meta.prazoDias+"d"} - acumulado ${r.prazoAcumulado}d</div></td>
-          <td><input type="text" class="date-mask" data-item="${row.id}" data-field="dataSolicitacao" data-iso-inicial="${row.dataSolicitacao||""}" title="Quando voce solicitou/pediu este item"></td>
-          ${celulasPrazoItem(r, row, "item")}
-          <td><input type="text" class="date-mask" data-item="${row.id}" data-field="dataReal" data-iso-inicial="${row.dataReal||""}" title="Quando o item realmente chegou ou foi concluido"></td>
-          <td>${pill(r.status)}</td>
-        </tr>`;
+        html += linhaItemLote(lote, row, r, "item", meta.nome, `prazo ${row.prazoOverride!=null?row.prazoOverride+"d (ajustado)":meta.prazoDias+"d"} - acumulado ${r.prazoAcumulado}d`);
         if (r.alertaPrerequisito) alertas.push(`${eq?eq.nome:"?"} - ${meta.nome}: ${r.alertaPrerequisito}`);
       }
       html += "</table>" + (idsOrdenados.some(id=>itensMap.get(id).ordemManual) ? `<div style="margin-top:6px;"><button type="button" class="btn secondary btn-sm" data-edicao data-reset-ordem="eq|${equipId}|${lote.id}">Restaurar ordem padrao</button></div>` : "") + "</div></details>";
@@ -4823,16 +4857,10 @@ function renderItensUmLote(lote, resumoEl, lista, unico){
       const kPc = lote.id+"|peca-"+peca.id;
       const nConcPc = itensDaPeca.filter(i=>i.dataReal).length;
       html += `<details class="itens-det" data-key="${kPc}" ${(itensDetAbertos.has(kPc)||filtroEquipPeca===("peca-"+peca.id))?"open":""}><summary class="itens-grupo-titulo peca"><small>Peca/Conjunto Avulso</small>${peca.nome}<button type="button" class="acao-icon btn-edit-grupo" data-edicao data-edit-grupo="peca|${peca.id}|${lote.id}" title="Editar dados, itens, prazos e pre-requisitos">&#9998; Editar</button><span class="itens-cont">${nConcPc}/${itensDaPeca.length} itens concluidos</span></summary><div class="tabela-itens-lote-wrap"><table class="tabela-itens-lote">`+
-        "<tr><th>Item</th><th>Solicitacao realizada em</th><th>Solicitar ate<div class=\"th-sub\">(data limite)</div></th><th>Inicio do desenvolvimento</th><th>Entrega prevista<div class=\"th-sub\">(inicio ou solicitacao + prazo)</div></th><th>Entrega em<div class=\"th-sub\">(data real)</div></th><th>Situacao</th></tr>";
+        ITENS_CABECALHO;
       for (const ia of itensDaPeca) {
         const r = calcularStatusItemAvulso(lote, ia, alertaDias);
-        html += `<tr data-drag-id="${ia.id}" data-drag-tipo="avulso">
-          <td><div class="name"><span class="drag-h" data-edicao title="Segure e arraste para mudar a ordem">&#9776;</span>${ia.itemNome}</div><div class="sub">prazo ${ia.prazoDias}d - acumulado ${r.prazoAcumulado}d</div></td>
-          <td><input type="text" class="date-mask-avulso" data-item-avulso="${ia.id}" data-field="dataSolicitacao" data-iso-inicial="${ia.dataSolicitacao||""}"></td>
-          ${celulasPrazoItem(r, ia, "avulso")}
-          <td><input type="text" class="date-mask-avulso" data-item-avulso="${ia.id}" data-field="dataReal" data-iso-inicial="${ia.dataReal||""}"></td>
-          <td>${pill(r.status)}</td>
-        </tr>`;
+        html += linhaItemLote(lote, ia, r, "avulso", ia.itemNome, `prazo ${ia.prazoDias}d - acumulado ${r.prazoAcumulado}d`);
       }
       html += "</table>" + (itensDaPeca.some(x=>x.ordemManual) ? `<div style="margin-top:6px;"><button type="button" class="btn secondary btn-sm" data-edicao data-reset-ordem="peca|${peca.id}|${lote.id}">Restaurar ordem padrao</button></div>` : "") + "</div></details>";
     }
@@ -5449,9 +5477,11 @@ function renderGanttBody(){
   for (const l of linhas) { for (const d of [l.limiteInicio,l.limiteFim,l.solicInicio,l.previsaoFim,l.realFim]) if (d) todasDatas.push(d); }
   const minDate = todasDatas.reduce((m,d)=>d<m?d:m, todasDatas[0]);
   const maxDateReal = todasDatas.reduce((m,d)=>d>m?d:m, todasDatas[0]);
-  const diasFuturoExtra = 60; // espaco extra pra rolar e ver datas futuras alem do que ja tem dado
+  const diasFuturoExtra = 5;
   const totalDays = Math.max(1, diffDays(maxDateReal, minDate)) + diasFuturoExtra;
-  const pxPorDia = 26;
+  const _wDisp = Math.max(500, ((document.getElementById("ganttChart")||{}).clientWidth||900) - 260);
+  const pxPorDia = Math.max(8, Math.min(26, Math.floor(_wDisp/totalDays)));
+  const _hoje = hojeUTC(); const _offHoje = diffDays(_hoje, minDate);
   const larguraTotalPx = totalDays * pxPorDia;
 
   function barMini(inicio, fim, top, cor, rotulo){
@@ -5474,11 +5504,13 @@ function renderGanttBody(){
 
   let ganttHtml = `<div class="gantt-legenda" style="display:flex;gap:16px;margin-bottom:10px;font-size:11px;flex-wrap:wrap;">
     <span><span style="display:inline-block;width:10px;height:10px;background:var(--gray);border-radius:2px;margin-right:4px;"></span>Limite (prazo permitido)</span>
+    <span><span style="display:inline-block;width:2px;height:10px;background:#d33;margin-right:4px;"></span>Hoje</span>
     <span><span style="display:inline-block;width:10px;height:10px;background:var(--info);border-radius:2px;margin-right:4px;"></span>Solicitado &#8594; Previsao</span>
     <span><span style="display:inline-block;width:10px;height:10px;background:var(--ok);border-radius:2px;margin-right:4px;"></span>Solicitado &#8594; Chegou (real)</span>
   </div><div style="overflow-x:auto; max-width:100%; padding-bottom:12px;"><div style="width:${larguraTotalPx+240}px;">` + reguaHtml;
   for (const l of linhas) {
     ganttHtml += `<div class="gantt-row"><div class="gantt-label">${l.nome}</div><div class="gantt-track-triplo" style="width:${larguraTotalPx}px;flex:0 0 auto;${gridBackground}">`+
+      (_offHoje>=0 && _offHoje<=totalDays ? `<div title="Hoje" style="position:absolute;left:${_offHoje*pxPorDia}px;top:0;bottom:0;width:2px;background:#d33;opacity:.6;z-index:1"></div>` : "")+
       barMini(l.limiteInicio, l.limiteFim, 2, "var(--gray)", "Limite")+
       barMini(l.solicInicio, l.previsaoFim, 14, "var(--info)", "Previsao")+
       barMini(l.solicInicio, l.realFim, 26, STATUS_COLORS[l.status]||"var(--ok)", "Real")+
@@ -5573,6 +5605,7 @@ const SETORES = [
 ];
 
 function iniciarApp(){
+  try { if (DB && engSincronizarPpcp()) saveDB(); } catch(e) { console.error(e); }
   document.getElementById("alertaDiasInput").value = DB.settings.alertaDias;
   document.getElementById("alertaDiasInput").addEventListener("change", (e)=>{
     DB.settings.alertaDias = parseInt(e.target.value) || 5;
@@ -5656,7 +5689,7 @@ function renderProducao(){
     }
     const visiveis = linhas.filter(x=>(!filtroSecao || x.sec===filtroSecao) && (mostrarConcl || !x.row.dataReal));
     for (const x of linhas) {
-      if (x.row.dataReal) continue;
+      if (x.row.dataReal || x.sec==="terceiros") continue;
       if (!x.row.dataSolicitacao) nNaoSolic++;
       else { nAguardReal++; if (!x.row.dataInicio) nAguardIni++; if (x.r.diasRestantes!==null && x.r.diasRestantes<0) nAtrasados++; }
     }
@@ -5669,14 +5702,19 @@ function renderProducao(){
       const grupo = visiveis.filter(x=>x.sec===sec.id).sort((a,b)=>(rankEtapaItem(a.nome)-rankEtapaItem(b.nome)) || a.nome.localeCompare(b.nome));
       if (!grupo.length) continue;
       html += `<div class="prod-secao-titulo"><i style="background:${sec.cor};"></i>${sec.titulo} <span class="muted" style="font-weight:500;">(${grupo.length})</span></div>
-        <div style="overflow-x:auto;"><table class="tabela-prod"><tr>
+        <div style="overflow-x:auto;">${sec.id==="terceiros" ? `<table class="tabela-prod tabela-terc"><tr>
+          <th style="width:30%;">Item</th>
+          <th class="ver" style="width:22%;">Solicitar ate<small>DATA LIMITE - prepare as pecas para envio ate la</small></th>
+          <th class="ver" style="width:16%;">Solicitado em<small>feito pelo PPCP</small></th>
+          <th class="ver" style="width:18%;">Entrega prevista<small>calculada automaticamente</small></th>
+          <th style="width:14%;">Situacao</th></tr>` : `<table class="tabela-prod"><tr>
           <th style="width:19%;">Item</th>
           <th class="ver" style="width:13%;">Solicitar ate<small>data limite (PPCP)</small></th>
           <th class="ver" style="width:13%;">Solicitado em<small>feito pelo PPCP</small></th>
           <th class="preencher" style="width:15%;">&#9998; Inicio do desenvolvimento<small>VOCE PREENCHE</small></th>
           <th class="ver" style="width:14%;">Entrega prevista<small>calculada automaticamente</small></th>
           <th class="preencher" style="width:15%;">&#9998; Entrega real<small>VOCE PREENCHE</small></th>
-          <th style="width:11%;">Situacao</th></tr>`;
+          <th style="width:11%;">Situacao</th></tr>`}`;
       for (const x of grupo) {
         const row = x.row, r = x.r;
         const solic = !!row.dataSolicitacao;
@@ -5697,6 +5735,15 @@ function renderProducao(){
         const faltaIni = solic && !row.dataInicio && !row.dataReal;
         const faltaReal = solic && !row.dataReal;
         const chave = (x.tipo==="avulso" ? "a" : "i") + row.id;
+        if (sec.id==="terceiros") {
+          html += `<tr>
+            <td><div style="font-weight:600;">${escaparHtmlPerfil(x.nome)}</div><div class="muted" style="font-size:11px;">${escaparHtmlPerfil(x.origem)}</div></td>
+            <td class="ver" style="font-size:15px;">${lim}</td>
+            <td class="ver">${solTxt}</td>
+            <td class="ver">${prev}</td>
+            <td>${pill(r.status)}</td></tr>`;
+          continue;
+        }
         html += `<tr>
           <td><div style="font-weight:600;">${escaparHtmlPerfil(x.nome)}</div><div class="muted" style="font-size:11px;">${escaparHtmlPerfil(x.origem)}</div></td>
           <td class="ver">${lim}</td>
@@ -10023,8 +10070,19 @@ function engPrazoDoItemPpcp(row){
 function engAtualizarPrazosPpcp(){
   for (const t of DB.tarefasEngenharia) {
     if (!t.origem || t.origem.tipo!=="ppcp" || t.concluida) continue;
-    const row = DB.itensLote.find(x=>x.id===t.origem.itemLoteId); if (!row) continue;
-    try { const novo = engPrazoDoItemPpcp(row); if (novo && novo !== t.prazo) t.prazo = novo; } catch(e) {}
+    try {
+      let novo = null;
+      if (t.origem.itemAvulsoId) {
+        const ia = DB.itensAvulsos.find(x=>x.id===t.origem.itemAvulsoId); const lote = ia && DB.lotes.find(l=>l.id===t.origem.loteId); if (!ia || !lote) continue;
+        const st = calcularStatusItemAvulso(lote, ia, 0, hojeUTC());
+        const d = st.dataPrevista || (st.dataLimiteSolicitacao ? addPrazo(st.dataLimiteSolicitacao, ia.prazoDias||0) : null);
+        novo = d ? fmtISO(d) : null;
+      } else {
+        const row = DB.itensLote.find(x=>x.id===t.origem.itemLoteId); if (!row) continue;
+        novo = engPrazoDoItemPpcp(row);
+      }
+      if (novo && novo !== t.prazo) t.prazo = novo;
+    } catch(e) {}
   }
 }
 // item removido do PPCP: a tarefa some se ainda nao foi mexida; se ja tem andamento, fica marcada para o gestor decidir
@@ -10037,6 +10095,81 @@ function engItensLoteRemovidos(ids){
     if (intocada) removerDaColecao("tarefasEngenharia", x=>x.id!==t.id);
     else t.origem.removidoDoPpcp = true;
   }
+}
+function tarefaIntocada(t){
+  return !t.funcionario && !(t.coResponsaveis||[]).length && !(t.periodosAtivos||[]).length && !t.checklistProjeto && !t.checklistDetalhamento && t.coluna==="coleta" && !t.rodando && !t.concluida;
+}
+// Mantem a Engenharia e o PPCP em sintonia: toda linha "Desenvolvimento Engenharia" (equipamento ou peca avulsa) tem uma atividade
+// na Engenharia (sem responsavel); se o item some, a atividade some (ou fica marcada, se ja tem andamento);
+// o inicio e o fim da atividade preenchem sozinhos "Inicio" e "Entrega real" do item.
+let sincronizandoEngPpcp = false;
+function engSincronizarPpcp(){
+  if (sincronizandoEngPpcp || !DB || !Array.isArray(DB.tarefasEngenharia) || !DB.seq) return false;
+  sincronizandoEngPpcp = true;
+  let mudou = false;
+  try {
+    const chaveDe = t => t.origem.itemAvulsoId ? "a"+t.origem.itemAvulsoId : "i"+t.origem.itemLoteId;
+    const nota = t => (t.funcionario?4:0) + ((t.periodosAtivos||[]).length?2:0) + (t.concluida?8:0) + (t.coluna!=="coleta"?1:0);
+    // 1) duplicadas (dois aparelhos criaram ao mesmo tempo): fica a mais adiantada
+    const porChave = new Map();
+    for (const t of DB.tarefasEngenharia) if (t.origem && t.origem.tipo==="ppcp") { const k = chaveDe(t); if (!porChave.has(k)) porChave.set(k, []); porChave.get(k).push(t); }
+    for (const lista of porChave.values()) if (lista.length > 1) {
+      lista.sort((a,b)=>(nota(b)-nota(a)) || (a.id-b.id));
+      for (const t of lista.slice(1)) if (tarefaIntocada(t)) { removerDaColecao("tarefasEngenharia", x=>x.id!==t.id); mudou = true; }
+    }
+    // 2) itens que existem hoje
+    const alvos = new Map();   // chave -> {row, lote, avulso, peca, meta}
+    for (const lote of DB.lotes) {
+      const nomesPorItem = new Map();
+      for (const row of DB.itensLote.filter(r=>r.loteId===lote.id)) {
+        const meta = getItem(row.itemId);
+        if (meta && colunaKanbanPorNomeItem(meta.nome)==="desenvolvimento") alvos.set("i"+row.id, { row, lote, meta });
+      }
+      for (const peca of DB.pecasAvulsas.filter(p=>p.loteId===lote.id)) {
+        for (const ia of DB.itensAvulsos.filter(i=>i.pecaAvulsaId===peca.id && i.rastrear!==false)) {
+          if (colunaKanbanPorNomeItem(ia.itemNome)==="desenvolvimento") alvos.set("a"+ia.id, { row:ia, lote, avulso:true, peca });
+        }
+      }
+    }
+    // 3) atividades cujo item nao existe mais
+    for (const t of DB.tarefasEngenharia.slice()) {
+      if (!t.origem || t.origem.tipo!=="ppcp" || t.concluida) continue;
+      if (alvos.has(chaveDe(t))) continue;
+      if (tarefaIntocada(t)) { removerDaColecao("tarefasEngenharia", x=>x.id!==t.id); mudou = true; }
+      else if (!t.origem.removidoDoPpcp) { t.origem.removidoDoPpcp = true; mudou = true; }
+    }
+    // 4) itens sem atividade: cria (lotes ainda abertos e itens ainda nao concluidos)
+    const agora = new Date().toISOString();
+    const existentes = new Set(DB.tarefasEngenharia.filter(t=>t.origem && t.origem.tipo==="ppcp").map(chaveDe));
+    for (const [k, a] of alvos) {
+      if (existentes.has(k) || a.row.dataReal || loteEstaEncerrado(a.lote)) continue;
+      let titulo, eqNome, eqRef;
+      if (a.avulso) { titulo = `Desenvolvimento - ${a.peca.nome} - Lote ${a.lote.noLote}`; eqNome = a.peca.nome + " (peca avulsa)"; eqRef = ""; }
+      else { const eq = getEquipamento(a.meta.equipamentoId); titulo = `Desenvolvimento - ${eq?eq.nome:"Equipamento"} - Lote ${a.lote.noLote}`; eqNome = eq?eq.nome:""; eqRef = a.meta.equipamentoId ? "eq:"+a.meta.equipamentoId : ""; }
+      DB.tarefasEngenharia.push({ id: DB.seq.tarefaEngenharia++, titulo, funcionario:null, pedidoId:a.lote.pedidoId||null, loteId:a.lote.id,
+        equipamentoRef:eqRef, equipamentoNome:eqNome, numeroDesenho:"", coluna:"coleta",
+        checklistProjeto:null, checklistDetalhamento:null, criadoEm:agora, criadoPor:emailUsuarioAtual||"", periodosAtivos:[], rodando:false, finalizada:false,
+        atribuicaoPendente:null, atribuicaoRejeitada:null, prazo:null, dispensasPendentes:[], dispensaRejeitada:null, coResponsaveis:[], compartilhamentosPendentes:[], compartilhamentoRejeitado:null,
+        origem: a.avulso ? { tipo:"ppcp", itemAvulsoId:a.row.id, loteId:a.lote.id } : { tipo:"ppcp", itemLoteId:a.row.id, loteId:a.lote.id } });
+      mudou = true;
+    }
+    // 5) datas: o que a Engenharia faz preenche o item (nao se altera na mao)
+    for (const t of DB.tarefasEngenharia) {
+      if (!t.origem || t.origem.tipo!=="ppcp") continue;
+      const a = alvos.get(chaveDe(t)); if (!a) continue;
+      const row = a.row;
+      const inicios = (t.periodosAtivos||[]).map(x=>x && x.inicio).filter(Boolean).sort();
+      const iniISO = inicios.length ? dataLocalISO(inicios[0]) : null;
+      const fimISO = t.concluida ? dataLocalISO(t.finalizadaEm || t.concluidaEm || agora) : null;
+      const auto = row.autoEng || (row.autoEng = {});
+      if (iniISO) { if (row.dataInicio !== iniISO) { row.dataInicio = iniISO; mudou = true; } if (!auto.ini) { auto.ini = true; mudou = true; } }
+      else if (auto.ini) { row.dataInicio = null; auto.ini = false; mudou = true; }
+      if (fimISO) { if (row.dataReal !== fimISO) { row.dataReal = fimISO; mudou = true; } if (!auto.fim) { auto.fim = true; mudou = true; } }
+      else if (auto.fim) { row.dataReal = null; auto.fim = false; mudou = true; }
+    }
+    if (mudou) { try { limparCacheCalc(); engAtualizarPrazosPpcp(); } catch(e) {} }
+  } finally { sincronizandoEngPpcp = false; }
+  return mudou;
 }
 // PPCP: todo lote com "Desenvolvimento Engenharia" gera uma atividade direta na Engenharia (sem responsavel); o PPCP da o titulo
 function engCriarTarefasDoPpcp(lote, rows){
