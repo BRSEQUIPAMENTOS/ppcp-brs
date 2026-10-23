@@ -435,7 +435,7 @@
     </form>
     <div style="text-align:center; margin-top:8px;"><a href="#" id="loginEsqueciSenhaLink" style="font-size:12px; color:#8A8F87;">Esqueci minha senha</a></div>
     <div id="loginMsg" style="margin-top:10px; font-size:12.5px; min-height:18px;"></div>
-    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 172 - 22/10/2026</div>
+    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 174 - 22/10/2026</div>
     <div id="loginOfflineWrap" class="hidden" style="margin-top:6px;">
       <button id="loginOfflineBtn" style="width:100%; padding:8px; background:transparent; color:#8A8F87; border:1px solid #E1E6DE; border-radius:6px; font-size:12.5px; cursor:pointer;">Continuar sem conexao (usa os dados salvos neste navegador)</button>
     </div>
@@ -472,7 +472,7 @@
     </div>
     <div style="height:3px; width:60px; background:#91C53E; border-radius:2px; margin-bottom:34px;"></div>
     <div id="painelPastasGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(172px, 1fr)); gap:14px;"></div>
-    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 172 - 22/10/2026</p>
+    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 174 - 22/10/2026</p>
   </div>
 </div>
 
@@ -2278,11 +2278,18 @@ function agendarSyncNuvem(){
     } catch(e) {
       console.error(e);
       dadosNaoEnviados = true;
+      registrarErroSync(e);
       atualizarStatusSync("erro");
     } finally { if (meuSeq === syncSeq) syncPendente = false; }
   }, 600);
 }
 
+let ultimoErroSync = "";
+function registrarErroSync(e){
+  let m = "";
+  try { m = (e && (e.message || e.error_description || e.details || e.hint)) || String(e); if (e && e.code) m = e.code + ": " + m; } catch(x){ m = "erro desconhecido"; }
+  ultimoErroSync = String(m).slice(0, 160);
+}
 function atualizarStatusSync(estado){
   const el = document.getElementById("syncStatus");
   if (!el) return;
@@ -2293,7 +2300,7 @@ function atualizarStatusSync(estado){
     local: '&#9898; Somente local (sem conexao)',
     carregando: '&#8987; Carregando...',
   };
-  el.innerHTML = mapa[estado] || mapa.local;
+  el.innerHTML = (mapa[estado] || mapa.local) + ((estado==='erro' && ultimoErroSync) ? '<div style="font-size:10px; margin-top:2px; word-break:break-word;">Motivo: ' + escaparHtmlPerfil(ultimoErroSync) + '</div>' : '');
 }
 
 // verifica periodicamente se alguem mais salvou algo novo, e recarrega se sim
@@ -2328,7 +2335,7 @@ async function verificarNuvem(){
       verificarAvisosChecklists();
       atualizarStatusSync("sincronizado");
     }
-  } catch(e) { console.error(e); atualizarStatusSync("erro"); }
+  } catch(e) { console.error(e); registrarErroSync(e); atualizarStatusSync("erro"); }
   finally { verificandoNuvem = false; }
 }
 // verifica a nuvem a cada 5 s, ao voltar para a aba/app, ao reconectar e (se o Supabase tiver Realtime ligado) assim que alguem grava
@@ -4193,7 +4200,7 @@ function renderLotes(){
             <td style="text-align:center;"><input type="checkbox" class="ed-equip-item-check" data-item="${it.id}" ${row?"checked":""}></td>
             <td style="text-align:center;"><input type="checkbox" class="ed-equip-item-custo" data-item="${it.id}" ${levantarCustoAtual?"checked":""} ${desabilitado?"disabled":""}></td>
             <td><input type="number" class="ed-equip-item-prazo" data-item="${it.id}" min="0" step="0.5" value="${prazoAtual}" style="width:70px;" ${desabilitado?"disabled":""}></td>
-            <td><div class="checklist ed-equip-item-prereq" data-item="${it.id}" style="max-height:60px;font-size:12px;">${outros.map(o=>`<label><input type="checkbox" value="${o.id}" ${prereqsAtuais.includes(o.id)?"checked":""} ${desabilitado?"disabled":""}> ${o.nome}</label>`).join("")||'<span class="muted" style="font-size:11px;">(nenhum outro item)</span>'}</div></td>
+            <td><div class="checklist ed-equip-item-prereq" data-item="${it.id}" style="min-height:130px;max-height:260px;min-width:300px;font-size:13px;">${outros.map(o=>`<label><input type="checkbox" value="${o.id}" ${prereqsAtuais.includes(o.id)?"checked":""} ${desabilitado?"disabled":""}> ${o.nome}</label>`).join("")||'<span class="muted" style="font-size:11px;">(nenhum outro item)</span>'}</div></td>
           </tr>`;
         } else {
           const nomesPrereq = prereqsAtuais.map(id=>{const m=getItem(id); return m?m.nome:null;}).filter(Boolean);
@@ -4233,7 +4240,7 @@ function renderLotes(){
           ${acoesHtml}
         </div>
         ${headerHtml}
-        <table><tr><th>Item</th><th title="Se este item esta sendo acompanhado neste Lote (aparece em Itens do Lote com Data de Solicitacao/Real)">Rastrear &#9432;</th><th title="Se este item aparece na aba Custos pra lancar o valor">Levantar Custo &#9432;</th><th>Prazo (dias) - especifico deste Lote</th><th>Pre-requisito(s)</th></tr>
+        <table><tr><th>Item</th><th title="Se este item esta sendo acompanhado neste Lote (aparece em Itens do Lote com Data de Solicitacao/Real)">Rastrear &#9432;</th><th title="Se este item aparece na aba Custos pra lancar o valor">Levantar Custo &#9432;</th><th>Prazo (dias) - especifico deste Lote</th><th style="min-width:320px;">Pre-requisito(s)</th></tr>
         ${linhasItens || '<tr><td colspan="5" class="muted">Nenhum item cadastrado para este equipamento.</td></tr>'}
         </table>
       </div>`;
@@ -4379,7 +4386,7 @@ function renderLotes(){
            </div>`;
 
       const itensHtml = editando ? `
-        <table><tr><th>Item</th><th>Rastrear</th><th title="Se este item aparece na aba Custos">Levantar Custo &#9432;</th><th>Prazo (dias)</th><th>Pre-requisito(s)</th><th>Acoes</th></tr>
+        <table><tr><th>Item</th><th>Rastrear</th><th title="Se este item aparece na aba Custos">Levantar Custo &#9432;</th><th>Prazo (dias)</th><th style="min-width:320px;">Pre-requisito(s)</th><th>Acoes</th></tr>
         ${itensDaPeca.map(ia=>{
           const outros = itensDaPeca.filter(x=>x.id!==ia.id);
           const prereqsAtuais = getPrerequisitosAvulso(ia.id);
@@ -4390,13 +4397,13 @@ function renderLotes(){
             <td style="text-align:center;"><input type="checkbox" class="ed-peca-item-rastrear" ${rastrearAtual?"checked":""}></td>
             <td style="text-align:center;"><input type="checkbox" class="ed-peca-item-custo" ${levantarCustoAtual?"checked":""} ${rastrearAtual?"":"disabled"}></td>
             <td><input type="number" class="ed-peca-item-dias" min="0" step="0.5" value="${ia.prazoDias}" style="width:70px;" ${rastrearAtual?"":"disabled"}></td>
-            <td><div class="checklist" style="max-height:60px;font-size:12px;">${outros.map(o=>`<label><input type="checkbox" class="ed-peca-item-prereq" value="${o.id}" ${prereqsAtuais.includes(o.id)?"checked":""} ${rastrearAtual?"":"disabled"}> ${o.itemNome}</label>`).join("")||'<span class="muted" style="font-size:11px;">(nenhum outro item)</span>'}</div></td>
+            <td><div class="checklist" style="min-height:130px;max-height:260px;min-width:300px;font-size:13px;">${outros.map(o=>`<label><input type="checkbox" class="ed-peca-item-prereq" value="${o.id}" ${prereqsAtuais.includes(o.id)?"checked":""} ${rastrearAtual?"":"disabled"}> ${o.itemNome}</label>`).join("")||'<span class="muted" style="font-size:11px;">(nenhum outro item)</span>'}</div></td>
             <td><button type="button" class="acao-icon danger" data-remover-item-gpeca="${ia.id}" title="Remover item">&#128465;</button></td>
           </tr>`;
         }).join("")}
         </table>
         <button type="button" class="btn btn-sm secondary" data-add-item-gpeca="${peca.id}" style="margin-top:6px;">+ Item</button>` : `
-        <table style="margin-top:8px;"><tr><th>Item</th><th>Rastrear</th><th>Levantar Custo</th><th>Prazo (dias)</th><th>Pre-requisito(s)</th></tr>
+        <table style="margin-top:8px;"><tr><th>Item</th><th>Rastrear</th><th>Levantar Custo</th><th>Prazo (dias)</th><th style="min-width:320px;">Pre-requisito(s)</th></tr>
         ${itensDaPeca.map(ia=>{
           const nomesPrereq = getPrerequisitosAvulso(ia.id).map(id=>{const o=DB.itensAvulsos.find(x=>x.id===id); return o?o.itemNome:null;}).filter(Boolean);
           const rastrearAtual = ia.rastrear!==false;
@@ -6319,6 +6326,7 @@ async function carregarDadosEIniciar(email){
     console.error(e);
     // autenticado mas sem conseguir buscar os dados (ex: RLS, rede) - segue com o que tem localmente
     nuvemConectada = false;
+    registrarErroSync(e);
     atualizarStatusSync("erro");
     DB = loadDB();
     iniciarApp();
