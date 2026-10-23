@@ -435,7 +435,7 @@
     </form>
     <div style="text-align:center; margin-top:8px;"><a href="#" id="loginEsqueciSenhaLink" style="font-size:12px; color:#8A8F87;">Esqueci minha senha</a></div>
     <div id="loginMsg" style="margin-top:10px; font-size:12.5px; min-height:18px;"></div>
-    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 174 - 22/10/2026</div>
+    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 176 - 22/10/2026</div>
     <div id="loginOfflineWrap" class="hidden" style="margin-top:6px;">
       <button id="loginOfflineBtn" style="width:100%; padding:8px; background:transparent; color:#8A8F87; border:1px solid #E1E6DE; border-radius:6px; font-size:12.5px; cursor:pointer;">Continuar sem conexao (usa os dados salvos neste navegador)</button>
     </div>
@@ -472,7 +472,7 @@
     </div>
     <div style="height:3px; width:60px; background:#91C53E; border-radius:2px; margin-bottom:34px;"></div>
     <div id="painelPastasGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(172px, 1fr)); gap:14px;"></div>
-    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 174 - 22/10/2026</p>
+    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 176 - 22/10/2026</p>
   </div>
 </div>
 
@@ -2341,7 +2341,7 @@ async function verificarNuvem(){
 // verifica a nuvem a cada 5 s, ao voltar para a aba/app, ao reconectar e (se o Supabase tiver Realtime ligado) assim que alguem grava
 function iniciarPollingNuvem(){
   if (pollingIniciado) return; pollingIniciado = true;
-  setInterval(verificarNuvem, 5000);
+  setInterval(()=>{ if (!document.hidden) verificarNuvem(); }, 15000);   // so com a aba visivel e a cada 15 s (economiza o limite de trafego do Supabase)
   document.addEventListener("visibilitychange", ()=>{ if (!document.hidden) verificarNuvem(); });
   window.addEventListener("focus", verificarNuvem);
   window.addEventListener("online", verificarNuvem);
@@ -6307,9 +6307,10 @@ async function carregarDadosEIniciar(email){
   mostrarUsuarioLogado(email);
   document.getElementById("loginMsg").innerHTML = '<span style="color:#8A8F87;">Carregando os dados da equipe...</span>';
   try {
+    const tMuitoLento = setTimeout(()=>{ const m = document.getElementById("loginMsg"); if (m) m.innerHTML = '<span style="color:#8A8F87;">Os dados da equipe estao grandes (muitas fotos) e a carga esta lenta. Continue aguardando, pode levar ate 4 minutos. Depois mova as fotos para o armazenamento para ficar rapido.</span>'; }, 25000);
     const tLento = setTimeout(()=>{ const m = document.getElementById("loginMsg"); if (m) m.innerHTML = '<span style="color:#8A8F87;">Carregando os dados da equipe... o servidor esta demorando (pode estar acordando). Aguarde, nao feche a pagina.</span>'; }, 4000);
     let linha;
-    try { linha = await comTimeout(buscarLinhaNuvem(), 45000, "o servidor demorou demais para responder"); } finally { clearTimeout(tLento); }
+    try { linha = await comTimeout(buscarLinhaNuvem(), 240000, "o servidor demorou demais para responder (4 min)"); } finally { clearTimeout(tLento); clearTimeout(tMuitoLento); }
     ultimoTimestampNuvem = linha.atualizado_em;
     const nuvemVazia = !linha.dados || !Object.keys(linha.dados).length;
     const dbLocalAntes = nuvemVazia ? null : loadDB();
