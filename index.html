@@ -166,6 +166,25 @@
   .tabela-itens-lote td { padding:8px 6px; border-bottom:1px solid var(--border); vertical-align:middle; }
   .tabela-itens-lote tr:last-child td { border-bottom:none; }
   .kb-pill .pill { font-size:9px; padding:2px 7px; white-space:normal; display:inline-block; line-height:1.25; }
+  .prod-legenda { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+  .prod-leg { font-size:12px; padding:4px 10px; border-radius:999px; font-weight:600; }
+  .prod-leg.ver { background:#ECEFEA; color:#5C665F; }
+  .prod-leg.preencher { background:#DDF1E4; color:#14462E; border:1px solid #9FD3B0; }
+  .tabela-prod { width:100%; min-width:900px; border-collapse:collapse; table-layout:fixed; font-size:13px; }
+  .tabela-prod th { text-align:left; padding:8px 6px; font-size:12px; vertical-align:bottom; line-height:1.25; white-space:normal; }
+  .tabela-prod th.ver { background:#ECEFEA; color:#5C665F; }
+  .tabela-prod th.preencher { background:#DDF1E4; color:#14462E; border-top:3px solid var(--ok); }
+  .tabela-prod th small { display:block; font-weight:500; font-size:10.5px; opacity:.85; }
+  .tabela-prod td { padding:8px 6px; border-bottom:1px solid var(--border); vertical-align:top; }
+  .tabela-prod td.ver { background:#FAFBF9; }
+  .tabela-prod td.preencher { background:#F3FAF5; }
+  .tabela-prod input.prod-data { width:118px; box-sizing:border-box; font-size:13px; padding:6px 8px; }
+  .tabela-prod .dt { font-weight:600; }
+  .tabela-prod .dt-info { font-size:10.5px; margin-top:2px; }
+  .tabela-prod .dt-info.ruim { color:var(--danger); } .tabela-prod .dt-info.ok { color:var(--ok); } .tabela-prod .dt-info.neutro { color:var(--gray); }
+  .prod-secao-titulo { margin:14px 0 6px; font-size:14px; font-weight:700; color:var(--primary-dark); display:flex; align-items:center; gap:8px; }
+  .prod-secao-titulo i { width:10px; height:10px; border-radius:3px; display:inline-block; }
+  .prod-falta { display:inline-block; margin-top:4px; font-size:10.5px; font-weight:700; color:#B7791F; background:#FFF3D6; padding:1px 7px; border-radius:999px; }
   .btn-edit-grupo { margin-left:10px; font-size:11px !important; padding:2px 8px !important; width:auto !important; height:auto !important; }
   .drag-h { display:inline-block; cursor:grab; touch-action:none; user-select:none; color:var(--gray); font-size:17px; line-height:1; padding:2px 6px 2px 0; vertical-align:middle; }
   .drag-h:hover { color:var(--primary-dark); }
@@ -436,7 +455,7 @@
     </form>
     <div style="text-align:center; margin-top:8px;"><a href="#" id="loginEsqueciSenhaLink" style="font-size:12px; color:#8A8F87;">Esqueci minha senha</a></div>
     <div id="loginMsg" style="margin-top:10px; font-size:12.5px; min-height:18px;"></div>
-    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 177 - 22/10/2026</div>
+    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 178 - 22/10/2026</div>
     <div id="loginOfflineWrap" class="hidden" style="margin-top:6px;">
       <button id="loginOfflineBtn" style="width:100%; padding:8px; background:transparent; color:#8A8F87; border:1px solid #E1E6DE; border-radius:6px; font-size:12.5px; cursor:pointer;">Continuar sem conexao (usa os dados salvos neste navegador)</button>
     </div>
@@ -473,7 +492,7 @@
     </div>
     <div style="height:3px; width:60px; background:#91C53E; border-radius:2px; margin-bottom:34px;"></div>
     <div id="painelPastasGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(172px, 1fr)); gap:14px;"></div>
-    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 177 - 22/10/2026</p>
+    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 178 - 22/10/2026</p>
   </div>
 </div>
 
@@ -487,7 +506,21 @@
     <button type="button" class="ph-navbtn active">Visao geral</button>
   </nav>
   <main class="main">
-    <section class="page active">
+    <section class="page hidden" id="producaoPage">
+      <div class="banner"><h1>Produ&ccedil;&atilde;o</h1><p>Servi&ccedil;os de terceiros, fabrica&ccedil;&atilde;o e montagem interna - o que preencher aqui atualiza o PPCP</p></div>
+      <div class="card">
+        <div class="grid grid-3">
+          <div class="field"><label class="field-label">Filtrar por Pedido</label><select id="prodPedido"></select></div>
+          <div class="field"><label class="field-label">Filtrar por Lote</label><select id="prodLote"></select></div>
+          <div class="field"><label class="field-label">Mostrar</label><select id="prodSecao"><option value="">Tudo (terceiros, fabricacao e montagem)</option><option value="terceiros">So servicos de terceiros</option><option value="fabricacao">So fabricacao</option><option value="montagem">So montagem interna</option></select></div>
+        </div>
+        <label style="display:flex; gap:6px; align-items:center; margin-top:8px; font-size:13px;"><input type="checkbox" id="prodConcluidos"> Mostrar tambem os itens ja concluidos</label>
+        <div class="prod-legenda"><span class="prod-leg ver">&#128065; Cinza = informacao do PPCP (so para consultar)</span><span class="prod-leg preencher">&#9998; Verde = voce preenche</span></div>
+        <div class="resumo-chips" id="prodResumo"></div>
+      </div>
+      <div id="prodLista"></div>
+    </section>
+    <section class="page active" id="placeholderPage">
       <div class="banner"><h1 id="placeholderTitulo">-</h1><p>Tela do setor</p></div>
       <div class="card" style="text-align:center; padding:36px 16px; color:#8A8F87;">
         <div style="font-size:42px; margin-bottom:12px;">&#128736;</div>
@@ -2357,6 +2390,11 @@ function iniciarPollingNuvem(){
 }
 
 function rerenderizarTelaAtual(){
+  if (setorAtualId === "producao" && !document.getElementById("placeholderRoot").classList.contains("hidden")) {
+    const ae = document.activeElement;
+    if (!(ae && ae.classList && ae.classList.contains("prod-data"))) { try { renderProducao(); } catch(e){ console.error(e); } }
+    return;
+  }
   // o gestor pode ter mudado o acesso enquanto a pessoa estava na pasta
   if (setorAtualId) {
     if (nivelAcessoSetor(setorAtualId) === null) {
@@ -2466,7 +2504,7 @@ function rankEtapaItem(nome){
   if (n.includes("emborrachamento")) return 6.05;
   if (n.includes("usinagem")) return 6.0;
   if (n.includes("galvaniza")) return 6.1;
-  if (n.includes("emborrachamento") || n.includes("pintura") || n.includes("terceiro")) return 6.2;
+  if (n.includes("emborrachamento") || n.includes("pintura") || n.includes("terceiro") || (n.includes("servico") && n.includes("funcionamento"))) return 6.2;
   if (n.includes("montagem")) return 8;
   if (n.includes("fabrica") || n.includes("produ")) return 7;
   return 5.3; // item novo/nao mapeado: entra na fase de itens a comprar
@@ -3087,7 +3125,7 @@ function colunaKanbanPorNomeItem(nome){
   if (n.includes("mapa") && n.includes("compra")) return "mapacompras";
   if (n.includes("compra")) return "compras";
   if (n.includes("nesting")) return "nesting";
-  if (n.includes("usinagem") || n.includes("emborrachamento") || n.includes("galvaniza") || n.includes("pintura")) return "terceiros";
+  if (n.includes("usinagem") || n.includes("emborrachamento") || n.includes("galvaniza") || n.includes("pintura") || n.includes("terceiro") || (n.includes("servico") && n.includes("funcionamento"))) return "terceiros";
   if (n.includes("fabrica") || n.includes("produ") || n.includes("montagem")) return "producao";
   return null;
 }
@@ -5567,6 +5605,139 @@ function mostrarErroDeEntrada(erro){
 }
 
 /* =====================================================================
+   PASTA PRODUCAO: servicos de terceiros, fabricacao e montagem interna
+   (usa os mesmos dados do PPCP: o que for preenchido aqui aparece la, e vice-versa)
+   ===================================================================== */
+const PROD_SECOES = [
+  { id:"terceiros", titulo:"Servicos de Terceiros", cor:"#6A1B9A" },
+  { id:"fabricacao", titulo:"Fabricacao", cor:"var(--ok)" },
+  { id:"montagem", titulo:"Montagem Interna", cor:"var(--info)" },
+];
+function secaoProducaoDoItem(nome){
+  const col = colunaKanbanPorNomeItem(nome);
+  if (col === "terceiros") return "terceiros";
+  if (col === "producao") return (nome||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().includes("montagem") ? "montagem" : "fabricacao";
+  return null;
+}
+function renderProducao(){
+  const alertaDias = DB.settings.alertaDias;
+  const selP = document.getElementById("prodPedido"), selL = document.getElementById("prodLote");
+  const antP = selP.value;
+  selP.innerHTML = '<option value="">(todos os pedidos)</option><option value="sem">(lotes sem pedido)</option>' + pedidosComLoteAtivo().map(p=>`<option value="${p.id}">${escaparHtmlPerfil(rotuloPedidoComCliente(p))}</option>`).join("");
+  if ([...selP.options].some(o=>o.value===antP)) selP.value = antP;
+  const lotesDoPedido = lotesOrdenadosPorPedido(DB.lotes.filter(l=>loteCombinaFiltroPedido(l, selP.value) && !loteEstaEncerrado(l)));
+  const antL = selL.value;
+  selL.innerHTML = '<option value="">(todos os lotes)</option>' + lotesDoPedido.map(l=>`<option value="${l.id}">${escaparHtmlPerfil(selP.value ? "Lote "+l.noLote : rotuloLoteComPedido(l))}</option>`).join("");
+  if ([...selL.options].some(o=>o.value===antL)) selL.value = antL;
+  selP.onchange = ()=>{ selL.value = ""; renderProducao(); };
+  selL.onchange = renderProducao;
+  document.getElementById("prodSecao").onchange = renderProducao;
+  document.getElementById("prodConcluidos").onchange = renderProducao;
+  const filtroSecao = document.getElementById("prodSecao").value;
+  const mostrarConcl = document.getElementById("prodConcluidos").checked;
+  const lotes = selL.value ? lotesDoPedido.filter(l=>String(l.id)===selL.value) : lotesDoPedido;
+  const fmt = d => d ? fmtBR(d) : "-";
+  const fmtN = n => Math.abs(n)===1 ? "1 dia" : Math.abs(n)+" dias";
+  let nAguardIni = 0, nAguardReal = 0, nAtrasados = 0, nNaoSolic = 0;
+  let html = "";
+  for (const lote of lotes) {
+    const linhas = [];
+    for (const [itemId, row] of getItensLoteByLote(lote.id)) {
+      const meta = getItem(itemId); if (!meta) continue;
+      const sec = secaoProducaoDoItem(meta.nome); if (!sec) continue;
+      const eq = getEquipamento(meta.equipamentoId);
+      linhas.push({ sec, tipo:"item", nome:meta.nome, origem:(eq?eq.nome:""), row, r:calcularStatusItem(lote, row, alertaDias) });
+    }
+    for (const peca of DB.pecasAvulsas.filter(p=>p.loteId===lote.id)) {
+      for (const ia of DB.itensAvulsos.filter(i=>i.pecaAvulsaId===peca.id && i.rastrear!==false)) {
+        const sec = secaoProducaoDoItem(ia.itemNome); if (!sec) continue;
+        linhas.push({ sec, tipo:"avulso", nome:ia.itemNome, origem:peca.nome+" (peca avulsa)", row:ia, r:calcularStatusItemAvulso(lote, ia, alertaDias) });
+      }
+    }
+    const visiveis = linhas.filter(x=>(!filtroSecao || x.sec===filtroSecao) && (mostrarConcl || !x.row.dataReal));
+    for (const x of linhas) {
+      if (x.row.dataReal) continue;
+      if (!x.row.dataSolicitacao) nNaoSolic++;
+      else { nAguardReal++; if (!x.row.dataInicio) nAguardIni++; if (x.r.diasRestantes!==null && x.r.diasRestantes<0) nAtrasados++; }
+    }
+    if (!visiveis.length) continue;
+    const pedido = getPedido(lote.pedidoId);
+    const dl = calcularDataLimiteLote(lote);
+    html += `<div class="card"><h3 style="margin:0 0 2px;">Lote ${escaparHtmlPerfil(String(lote.noLote))} <span class="muted" style="font-weight:500; font-size:13px;">- ${pedido?("Pedido "+escaparHtmlPerfil(String(pedido.noPedido))+(pedido.cliente?" ("+escaparHtmlPerfil(pedido.cliente)+")":"")):"sem pedido"} - ${escaparHtmlPerfil(nomesEquipamentosLote(lote))}</span></h3>
+      <div class="muted" style="font-size:12px;">Limite de entrega do lote: <b>${dl.dataLimite?fmtBR(dl.dataLimite):"-"}</b></div>`;
+    for (const sec of PROD_SECOES) {
+      const grupo = visiveis.filter(x=>x.sec===sec.id).sort((a,b)=>(rankEtapaItem(a.nome)-rankEtapaItem(b.nome)) || a.nome.localeCompare(b.nome));
+      if (!grupo.length) continue;
+      html += `<div class="prod-secao-titulo"><i style="background:${sec.cor};"></i>${sec.titulo} <span class="muted" style="font-weight:500;">(${grupo.length})</span></div>
+        <div style="overflow-x:auto;"><table class="tabela-prod"><tr>
+          <th style="width:19%;">Item</th>
+          <th class="ver" style="width:13%;">Solicitar ate<small>data limite (PPCP)</small></th>
+          <th class="ver" style="width:13%;">Solicitado em<small>feito pelo PPCP</small></th>
+          <th class="preencher" style="width:15%;">&#9998; Inicio do desenvolvimento<small>VOCE PREENCHE</small></th>
+          <th class="ver" style="width:14%;">Entrega prevista<small>calculada automaticamente</small></th>
+          <th class="preencher" style="width:15%;">&#9998; Entrega real<small>VOCE PREENCHE</small></th>
+          <th style="width:11%;">Situacao</th></tr>`;
+      for (const x of grupo) {
+        const row = x.row, r = x.r;
+        const solic = !!row.dataSolicitacao;
+        let lim = "-";
+        if (r.dataLimiteSolicitacao) {
+          let info = "";
+          if (solic) { const at = diffDays(parseDate(row.dataSolicitacao), r.dataLimiteSolicitacao); info = at>0 ? `<div class="dt-info ruim">solicitado ${fmtN(at)} apos o limite</div>` : `<div class="dt-info ok">solicitado dentro do limite</div>`; }
+          else if (r.diasRestantes!==null) info = r.diasRestantes<0 ? `<div class="dt-info ruim">limite vencido ha ${fmtN(r.diasRestantes)}</div>` : `<div class="dt-info neutro">faltam ${fmtN(r.diasRestantes)}</div>`;
+          lim = `<div class="dt">${fmtBR(r.dataLimiteSolicitacao)}</div>${info}`;
+        }
+        const solTxt = solic ? `<div class="dt">${fmtBR(parseDate(row.dataSolicitacao))}</div>` : '<span class="muted" style="font-size:12px;">ainda nao solicitado pelo PPCP</span>';
+        let prev = "-";
+        if (r.dataPrevista) {
+          let info = "";
+          if (!row.dataReal && r.diasRestantes!==null && solic) info = r.diasRestantes<0 ? `<div class="dt-info ruim">atrasado ha ${fmtN(r.diasRestantes)}</div>` : `<div class="dt-info neutro">faltam ${fmtN(r.diasRestantes)}</div>`;
+          prev = `<div class="dt">${fmtBR(r.dataPrevista)}</div>${info}`;
+        } else prev = '<span class="muted" style="font-size:12px;">aparece apos a solicitacao</span>';
+        const faltaIni = solic && !row.dataInicio && !row.dataReal;
+        const faltaReal = solic && !row.dataReal;
+        const chave = (x.tipo==="avulso" ? "a" : "i") + row.id;
+        html += `<tr>
+          <td><div style="font-weight:600;">${escaparHtmlPerfil(x.nome)}</div><div class="muted" style="font-size:11px;">${escaparHtmlPerfil(x.origem)}</div></td>
+          <td class="ver">${lim}</td>
+          <td class="ver">${solTxt}</td>
+          <td class="preencher"><input type="text" class="prod-data" data-prod="${chave}" data-field="dataInicio" data-iso-inicial="${row.dataInicio||""}" title="Quando a execucao realmente comecou">${faltaIni?'<div><span class="prod-falta">preencher o inicio</span></div>':""}</td>
+          <td class="ver">${prev}</td>
+          <td class="preencher"><input type="text" class="prod-data" data-prod="${chave}" data-field="dataReal" data-iso-inicial="${row.dataReal||""}" title="Quando o item ficou pronto / chegou">${(faltaReal && !faltaIni)?'<div><span class="prod-falta">preencher a entrega</span></div>':""}</td>
+          <td>${pill(r.status)}</td></tr>`;
+      }
+      html += "</table></div>";
+    }
+    html += "</div>";
+  }
+  document.getElementById("prodResumo").innerHTML =
+    `<span class="chip"><span class="muted">Ainda nao solicitados pelo PPCP</span> <b>${nNaoSolic}</b></span>`+
+    `<span class="chip"><span class="muted">Falta preencher o inicio</span> <b>${nAguardIni}</b></span>`+
+    `<span class="chip"><span class="muted">Falta a entrega real</span> <b>${nAguardReal}</b></span>`+
+    (nAtrasados ? `<span class="chip danger"><b>&#9888; ${nAtrasados} atrasado(s)</b></span>` : "");
+  const lista = document.getElementById("prodLista");
+  lista.innerHTML = html || '<div class="card"><p class="muted" style="margin:0;">Nenhum item de terceiros, fabricacao ou montagem interna para esses filtros.</p></div>';
+  lista.querySelectorAll("input.prod-data").forEach(inp=>{
+    ensureDateMask(inp);
+    setDateValue(inp, inp.dataset.isoInicial || null);
+    inp.addEventListener("blur", ()=>{
+      const chave = inp.dataset.prod, field = inp.dataset.field;
+      const id = parseInt(chave.slice(1));
+      const row = chave[0]==="a" ? DB.itensAvulsos.find(x=>x.id===id) : DB.itensLote.find(x=>x.id===id);
+      if (!row) return;
+      const novo = getDateValue(inp);
+      if ((row[field]||null) === (novo||null)) return;
+      const volta = ()=>setDateValue(inp, row[field] || null);
+      if (field==="dataReal" && novo && row.dataSolicitacao && novo < row.dataSolicitacao) { alert("A entrega real nao pode ser anterior a data de solicitacao ("+fmtBR(parseDate(row.dataSolicitacao))+")."); volta(); return; }
+      if (field==="dataInicio" && novo && row.dataSolicitacao && novo < row.dataSolicitacao) { alert("O inicio nao pode ser anterior a data de solicitacao ("+fmtBR(parseDate(row.dataSolicitacao))+")."); volta(); return; }
+      row[field] = novo;
+      saveDB();
+      renderProducao();
+    });
+  });
+}
+
+/* =====================================================================
    ACESSO POR PASTA (sem acesso / visualizador / editor) - liberado pelo gestor
    ===================================================================== */
 let setorAtualId = null;   // pasta de dados aberta agora (null = painel, administracao ou fora de pasta)
@@ -6130,7 +6301,21 @@ function abrirSetorInternoBruto(setorId){
   } else if (setorId === "painelPastas") {
     renderPainelPastas();
     mostrarTelaPrincipal("painelPastas");
+  } else if (setorId === "producao") {
+    document.querySelectorAll("#phSidebarNav .brand-sub").forEach(el=>el.textContent = "Produ\u00e7\u00e3o");
+    document.getElementById("placeholderPage").classList.add("hidden");
+    document.getElementById("placeholderPage").classList.remove("active");
+    document.getElementById("producaoPage").classList.remove("hidden");
+    document.getElementById("producaoPage").classList.add("active");
+    ["prodPedido","prodLote","prodSecao"].forEach(id=>{ document.getElementById(id).value = ""; });
+    document.getElementById("prodConcluidos").checked = false;
+    mostrarTelaPrincipal("placeholderRoot");
+    renderProducao();
   } else {
+    document.getElementById("producaoPage").classList.add("hidden");
+    document.getElementById("producaoPage").classList.remove("active");
+    document.getElementById("placeholderPage").classList.remove("hidden");
+    document.getElementById("placeholderPage").classList.add("active");
     const nomes = { producao:"Produ\u00e7\u00e3o", almoxarifado:"Almoxarifado" };
     document.getElementById("placeholderTitulo").textContent = nomes[setorId] || setorId;
     document.getElementById("placeholderTexto").textContent = "Este setor ainda esta em desenvolvimento.";
