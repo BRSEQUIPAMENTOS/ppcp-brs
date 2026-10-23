@@ -458,7 +458,7 @@
     </form>
     <div style="text-align:center; margin-top:8px;"><a href="#" id="loginEsqueciSenhaLink" style="font-size:12px; color:#8A8F87;">Esqueci minha senha</a></div>
     <div id="loginMsg" style="margin-top:10px; font-size:12.5px; min-height:18px;"></div>
-    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 181 - 23/10/2026</div>
+    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 182 - 23/10/2026</div>
     <div id="loginOfflineWrap" class="hidden" style="margin-top:6px;">
       <button id="loginOfflineBtn" style="width:100%; padding:8px; background:transparent; color:#8A8F87; border:1px solid #E1E6DE; border-radius:6px; font-size:12.5px; cursor:pointer;">Continuar sem conexao (usa os dados salvos neste navegador)</button>
     </div>
@@ -495,7 +495,8 @@
     </div>
     <div style="height:3px; width:60px; background:#91C53E; border-radius:2px; margin-bottom:34px;"></div>
     <div id="painelPastasGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(172px, 1fr)); gap:14px;"></div>
-    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 181 - 23/10/2026</p>
+    <div id="painelMinhasAtividades" style="margin-top:28px;"></div>
+    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 182 - 23/10/2026</p>
   </div>
 </div>
 
@@ -598,58 +599,23 @@
     </section>
 
     <section id="gestaopage-acompanhamento" class="page">
-      <div class="banner"><h1>Acompanhamento de Pedido</h1><p>Registros de status por pedido e relatorio para reuniao</p></div>
-    <div class="card">
-      <h3 style="margin-top:0;">Pedidos e Lotes em acompanhamento</h3>
-      <p class="muted" style="margin-top:0;">Todos os pedidos abertos e seus lotes. Escreva as observacoes direto no campo; elas sao salvas ao sair do campo.</p>
-      <div id="gestaoVisaoGeral"></div>
-    </div>
-    <div class="card">
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-        <h3 style="margin:0;">Acompanhamento de Pedido</h3>
-        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-          <label style="display:flex; align-items:center; gap:6px; font-size:13px; font-weight:400;"><input type="checkbox" class="input-leitura" id="gestaoRelatorioTodosPedidos" style="width:auto;"> Incluir todos os Pedidos</label>
-          <button type="button" class="btn secondary btn-sm btn-leitura" id="gestaoGerarRelatorioBtn">&#128231; Relatorio para e-mail</button>
-          <button type="button" class="btn secondary btn-sm btn-leitura" id="gestaoGerarPdfBtn">&#128196; Gerar PDF</button>
-        </div>
-      </div>
-      <div class="grid grid-2">
-        <div class="field"><label class="field-label">Selecione o Pedido</label><select id="gestaoPedidoSelect"></select></div>
-        <div class="field"><label class="field-label">Prazo de Entrega</label><div id="gestaoPrazoEntrega" style="padding-top:9px; font-weight:600; color:var(--primary-dark);">-</div></div>
-      </div>
-
-      <div id="gestaoLotesWrap" style="margin-top:10px; display:none;"></div>
-
-      <div data-edicao style="margin-top:20px; border-top:1px solid var(--border); padding-top:16px;">
-        <label class="field-label">Novo registro de status (reuniao)</label>
-        <textarea id="gestaoStatusTexto" rows="3" placeholder="Ex: Aguardando compra do motorredutor. @Correia transportadora blindada esta atrasada."></textarea>
-        <div style="display:flex; gap:8px; align-items:center; margin-top:8px;">
-          <select id="gestaoMencaoSelect" style="flex:1;"><option value="">+ Citar equipamento/peca/item...</option></select>
-          <button type="button" class="btn secondary btn-sm" id="gestaoMencaoBtn">Inserir</button>
-        </div>
-        <div class="grid grid-2" style="margin-top:10px;">
-          <div class="field"><label class="field-label">Setor responsavel</label><select id="gestaoSetorSelect"></select></div>
-          <div class="field"><label class="field-label">Adicionar novo setor</label>
-            <div style="display:flex; gap:6px;">
-              <input type="text" id="gestaoNovoSetorInput" placeholder="Ex: Financeiro" style="flex:1;">
-              <button type="button" class="btn secondary btn-sm" id="gestaoNovoSetorBtn">+ Adicionar</button>
-            </div>
+      <div class="banner"><h1>Acompanhamento de Pedido</h1><p>Todos os pedidos, lotes, equipamentos e pecas num lugar so - observacoes e atividades por responsavel</p></div>
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div class="muted" style="font-size:13px;">Abra o pedido, o lote e o equipamento/peca para comentar e criar atividades. As observacoes sao salvas ao sair do campo.</div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="btn secondary btn-sm" id="acompExpandirBtn">Abrir tudo</button>
+            <button type="button" class="btn secondary btn-sm" id="acompRecolherBtn">Recolher tudo</button>
+            <button type="button" class="btn secondary btn-sm btn-leitura" id="gestaoGerarRelatorioBtn">&#128231; Relatorio para e-mail</button>
+            <button type="button" class="btn secondary btn-sm btn-leitura" id="gestaoGerarPdfBtn">&#128196; Gerar PDF</button>
           </div>
         </div>
-        <button class="btn" id="gestaoSalvarStatusBtn" style="margin-top:10px;">Salvar registro</button>
-        <div id="gestaoStatusMsg" style="margin-top:6px; font-size:12.5px;"></div>
       </div>
-
-      <div style="margin-top:20px;">
-        <label class="field-label">Historico de status</label>
-        <div id="gestaoHistoricoWrap"></div>
-      </div>
-      <div style="margin-top:20px;">
-        <label class="field-label">Movimentacoes de pedidos e lotes (inclusoes e exclusoes)</label>
+      <div id="acompanhamentoRoot"></div>
+      <div class="card">
+        <h3 style="margin-top:0;">Movimentacoes de pedidos e lotes (inclusoes e exclusoes)</h3>
         <div id="gestaoLogAcomp"></div>
       </div>
-    </div>
-
     </section>
   </main>
 </div>
@@ -1767,7 +1733,7 @@ let DB = null;
 function seedData(){
   const db = { equipamentos:[], itens:[], prerequisitos:[], pedidos:[], lotes:[], itensLote:[], custos:[],
                cores:["Verde","Cinza","Aluminio","Preto","Laranja","Amarelo","Galvanizado"],
-               pecasAvulsas:[], itensAvulsos:[], prerequisitosAvulsos:[], statusPedido:[],
+               pecasAvulsas:[], itensAvulsos:[], prerequisitosAvulsos:[], statusPedido:[], logAcomp:[], atividadesAcomp:[],
                setoresGestao:["Comercial","Layout","Engenharia","PPCP","Qualidade","Producao","Almoxarifado","Assistencia Tecnica","Expedicao"],
                acessoGestao:[],
                cargasExpedicao:[],
@@ -1775,7 +1741,7 @@ function seedData(){
                funcionariosEngenharia:[], tarefasEngenharia:[], perfis:{}, acessosUsuarios:{}, acessosMigrados:true,
                configEngenharia: { horaInicio:null, horaSaidaIntervalo:null, horaRetornoIntervalo:null, horaEncerramento:null },
                settings:{alertaDias:5},
-               seq:{equipamento:1,item:1,pedido:1,lote:1,itemLote:1,pecaAvulsa:1,itemAvulso:1,statusPedido:1,cargaExpedicao:1,checklistInstancia:1,tarefaEngenharia:1} };
+               seq:{atividadeAcomp:1,equipamento:1,item:1,pedido:1,lote:1,itemLote:1,pecaAvulsa:1,itemAvulso:1,statusPedido:1,cargaExpedicao:1,checklistInstancia:1,tarefaEngenharia:1} };
   const itensPorEquip = itensCompletosPorEquipamento();
   const eqIds = {};
   for (const eq of EQUIPAMENTOS) {
@@ -1907,6 +1873,8 @@ function normalizarDB(db){
   if (!db.prerequisitosAvulsos) db.prerequisitosAvulsos = [];
   if (!db.statusPedido) db.statusPedido = [];
   if (!Array.isArray(db.logAcomp)) db.logAcomp = [];
+  if (!Array.isArray(db.atividadesAcomp)) db.atividadesAcomp = [];
+  if (!db.seq.atividadeAcomp) db.seq.atividadeAcomp = db.atividadesAcomp.reduce((m,x)=>Math.max(m,x.id||0),0) + 1;
   if (!db.setoresGestao) db.setoresGestao = ["Comercial","Layout","Engenharia","PPCP","Qualidade","Producao","Almoxarifado","Assistencia Tecnica","Expedicao"];
   if (!db.acessoGestao) db.acessoGestao = [];
   if (!db.cargasExpedicao) db.cargasExpedicao = [];
@@ -2147,7 +2115,7 @@ async function buscarLinhaNuvem(){
 }
 
 // colecoes em que os registros de pessoas diferentes sao somados (nunca sobrescritos) quando dois aparelhos salvam ao mesmo tempo
-const COLECOES_MESCLAVEIS = ["rncs", "tarefasEngenharia", "checklistInstancias", "atividadesGestor", "demandasEngRnc"];
+const COLECOES_MESCLAVEIS = ["rncs", "tarefasEngenharia", "checklistInstancias", "atividadesGestor", "demandasEngRnc", "atividadesAcomp"];
 function logAcompanhamento(evento, tipo, descricao, pedidoId){
   if (!Array.isArray(DB.logAcomp)) DB.logAcomp = [];
   const agora = new Date().toISOString();
@@ -2245,6 +2213,7 @@ function mesclarDados(nuvem, local){
   }
   if (out.seq) {
     out.seq.rnc = Math.max(out.seq.rnc||0, (maxIdPorChave.rncs||0)+1);
+    out.seq.atividadeAcomp = Math.max(out.seq.atividadeAcomp||0, (maxIdPorChave.atividadesAcomp||0)+1);
     out.seq.demandaEngRnc = Math.max(out.seq.demandaEngRnc||0, (maxIdPorChave.demandasEngRnc||0)+1);
     out.seq.rncNumero = Math.max(out.seq.rncNumero||0, (out.rncs||[]).reduce((m,x)=>Math.max(m,x.sequencia||0),0)+1);
   }
@@ -2313,7 +2282,7 @@ function oferecerRestauracao(perdidos){
   const total = Object.values(perdidos).reduce((n,l)=>n+l.length, 0);
   if (!total) return;
   try { localStorage.setItem("ppcp_recuperacao", JSON.stringify({ em: new Date().toISOString(), perdidos })); } catch(e) {}
-  const nomes = { rncs:"RNC", tarefasEngenharia:"tarefa(s) da Engenharia", checklistInstancias:"checklist(s)", atividadesGestor:"atividade(s) do gestor", demandasEngRnc:"demanda(s) da RNC" };
+  const nomes = { rncs:"RNC", tarefasEngenharia:"tarefa(s) da Engenharia", checklistInstancias:"checklist(s)", atividadesGestor:"atividade(s) do gestor", demandasEngRnc:"demanda(s) da RNC", atividadesAcomp:"atividade(s) do acompanhamento" };
   const resumo = Object.entries(perdidos).map(([k,l])=>`${l.length} ${nomes[k]}`).join(", ");
   mostrarToastEng(`${total} registro(s) sumiram da nuvem`, `${resumo}. Toque aqui para restaurar.`, ()=>restaurarRegistrosPerdidos(perdidos), "&#9888;", "Sistema", 60000);
 }
@@ -3515,6 +3484,7 @@ function renderPedidos(){
         if (nLotes > 0) { alert(`Este pedido tem ${nLotes} lote(s) vinculado(s). Exclua ou reatribua esses lotes antes de excluir o pedido.`); return; }
         if (!confirm(`Excluir o Pedido ${p.noPedido}?`)) return;
         logAcompanhamento("excluido","Pedido",`Pedido ${p.noPedido} excluido${p.cliente?" ("+p.cliente+")":""}.`, id);
+        removerDaColecao("atividadesAcomp", a=>a.pedidoId!==id);
         DB.pedidos = DB.pedidos.filter(pd=>pd.id!==id);
         DB.statusPedido = DB.statusPedido.filter(s=>s.pedidoId!==id);
         DB.cargasExpedicao = DB.cargasExpedicao.filter(c=>c.pedidoId!==id);
@@ -3962,6 +3932,7 @@ function renderLotes(){
     for (const carga of DB.cargasExpedicao) carga.itens = carga.itens.filter(it=>it.loteId!==loteId);
     removerDaColecao("checklistInstancias", c=>c.loteId!==loteId);
     { const pdL = getPedido(lote.pedidoId); logAcompanhamento("excluido","Lote",`Lote ${lote.noLote} excluido${pdL?" do Pedido "+pdL.noPedido:""}.`, lote.pedidoId); }
+    removerDaColecao("atividadesAcomp", a=>a.loteId!==loteId);
     DB.lotes = DB.lotes.filter(l=>l.id!==loteId);
     compactarOrdemLotes(lote.pedidoId);
     saveDB();
@@ -6261,6 +6232,7 @@ function primeiroNomeDoEmail(email){
 }
 
 function renderPainelPastas(){
+  try { renderMinhasAtividadesPainel(); } catch(e) { console.error(e); }
   const logoImg = document.querySelector("#appRoot .brand + img, #appRoot img[alt='BRS Equipamentos Agricolas']");
   if (logoImg) document.getElementById("painelPastasLogo").src = logoImg.src;
 
@@ -6989,28 +6961,7 @@ function renderGestao(){
     linhaSimples("criticos","Itens Criticos", ind.itensCriticos, "var(--danger)") +
     linhaSimples("custo","Custo Teorico Total", fmtBRL(ind.custoTeoricoTotal), "var(--text)");
 
-  const sel = document.getElementById("gestaoPedidoSelect");
-  const prevSel = sel.value;
-  sel.innerHTML = '<option value="">- selecione um Pedido -</option>' + pedidosAbertos().map(p=>`<option value="${p.id}">${p.noPedido} - ${p.cliente||""}</option>`).join("");
-  if ([...sel.options].some(o=>o.value===prevSel)) sel.value = prevSel;
-  sel.onchange = ()=>renderGestaoPedido();
-  renderGestaoPedido();
-
-  popularSelSetorGestao();
-  renderGestaoVisaoGeral();
-  renderGestaoLogAcomp();
-
-  document.getElementById("gestaoSalvarStatusBtn").onclick = salvarStatusPedido;
-  document.getElementById("gestaoMencaoBtn").onclick = ()=>{
-    const nome = document.getElementById("gestaoMencaoSelect").value;
-    if (!nome) return;
-    const ta = document.getElementById("gestaoStatusTexto");
-    const pos = ta.selectionStart ?? ta.value.length;
-    const mencao = "@["+nome+"] ";
-    ta.value = ta.value.slice(0,pos) + mencao + ta.value.slice(pos);
-    ta.focus();
-    ta.selectionStart = ta.selectionEnd = pos + mencao.length;
-  };
+  renderAcompanhamento();
 }
 
 function renderGestaoPedido(){
@@ -7079,36 +7030,165 @@ function renderGestaoPedido(){
 }
 
 function escAttrAcomp(t){ return String(t==null?"":t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-function renderGestaoVisaoGeral(){
-  const wrap = document.getElementById("gestaoVisaoGeral"); if (!wrap) return;
-  const peds = pedidosAbertos();
-  wrap.innerHTML = peds.map(p=>{
+const acompAbertos = new Set();
+function opcoesSetorAcomp(sel){ return '<option value="">- setor -</option>'+SETORES.map(x=>`<option value="${x.id}" ${x.id===sel?"selected":""}>${x.nome}</option>`).join(""); }
+function opcoesResponsavelAcomp(setorId, sel){
+  let emails = Object.values(DB.perfis||{}).filter(p=>p.atual && (!setorId || p.atual.setor===setorId)).map(p=>p.email);
+  if (!emails.length) return '<option value="">(nenhum usuario cadastrado neste setor)</option>';
+  return '<option value="">- responsavel -</option>' + opcoesAtribuicaoHtml(emails).replace(sel?`value="${escaparHtmlPerfil(sel)}"`:"@@@", sel?`value="${escaparHtmlPerfil(sel)}" selected`:"");
+}
+function ctxTextoAtv(a){
+  const ped = a.pedidoId ? DB.pedidos.find(p=>p.id===a.pedidoId) : null;
+  const lot = a.loteId ? DB.lotes.find(l=>l.id===a.loteId) : null;
+  const partes = [];
+  if (!a.pedidoId) partes.push("Sem pedido"); else partes.push("Pedido "+(ped?ped.noPedido:"?"));
+  if (lot) partes.push("Lote "+lot.noLote);
+  if (a.alvoNome) partes.push(a.alvoNome);
+  return partes.join(" - ");
+}
+function atvLinhaHtml(a, mostrarCtx){
+  const prazo = a.prazo ? parseDate(a.prazo) : null;
+  const atrasada = prazo && !a.concluida && prazo < hojeUTC();
+  return `<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; padding:6px 4px; border-bottom:1px solid var(--border); ${a.concluida?"opacity:.6;":""}">
+    <input type="checkbox" style="width:auto;" ${a.concluida?"checked":""} data-acao="atv-concluir" data-id="${a.id}" title="Marcar como concluida">
+    <div style="flex:1; min-width:200px;"><strong style="${a.concluida?"text-decoration:line-through;":""}">${escAttrAcomp(a.titulo)}</strong>${mostrarCtx?`<div class="muted" style="font-size:11.5px;">${escAttrAcomp(ctxTextoAtv(a))}</div>`:""}</div>
+    <span class="pill" style="background:var(--primary);">${escAttrAcomp(nomeSetorPorId(a.setor)||"-")}</span>
+    <span style="font-size:12.5px;">${escAttrAcomp(a.responsavel?nomeExibicao(a.responsavel):"sem responsavel")}</span>
+    ${prazo?`<span style="font-size:12px; color:${atrasada?"var(--danger)":"var(--gray)"};">prazo ${fmtBR(prazo)}${atrasada?" (atrasada)":""}</span>`:""}
+    <button type="button" class="acao-icon danger" data-edicao data-acao="atv-excluir" data-id="${a.id}" title="Excluir atividade">&#128465;</button>
+  </div>`;
+}
+function atvFormHtml(ctxAttrs, chaveForm){
+  return `<div data-edicao style="margin-top:6px;">
+    <button type="button" class="btn secondary btn-sm" data-acao="atv-nova" data-form="${chaveForm}">+ Nova atividade</button>
+    <div class="hidden" data-atvform="${chaveForm}" ${ctxAttrs} style="margin-top:8px; padding:10px; background:#F4F7F1; border-radius:8px;">
+      <div class="grid grid-2">
+        <div class="field" style="grid-column:1/-1;"><label class="field-label">Atividade</label><input type="text" data-f="titulo" placeholder="Ex: Cotar motorredutor"></div>
+        <div class="field"><label class="field-label">Setor responsavel</label><select data-f="setor" data-acao="atv-setor">${opcoesSetorAcomp("")}</select></div>
+        <div class="field"><label class="field-label">Responsavel</label><select data-f="resp">${opcoesResponsavelAcomp("")}</select></div>
+        <div class="field"><label class="field-label">Prazo (opcional)</label><input type="date" data-f="prazo"></div>
+      </div>
+      <button type="button" class="btn btn-sm" data-acao="atv-salvar" data-form="${chaveForm}">Salvar atividade</button>
+      <span class="muted" data-msg="${chaveForm}" style="margin-left:8px; font-size:12px;"></span>
+    </div>
+  </div>`;
+}
+function detalhesAcomp(chave, resumoHtml, corpoHtml, nivel){
+  return `<details data-k="${chave}" ${acompAbertos.has(chave)?"open":""} style="margin:${nivel?6:0}px 0 ${nivel?0:10}px ${nivel?14:0}px; border:1px solid var(--border); border-radius:8px; background:#fff;">
+    <summary style="cursor:pointer; padding:10px 12px; font-weight:600; list-style:none;">${resumoHtml}</summary>
+    <div style="padding:4px 12px 12px;">${corpoHtml}</div></details>`;
+}
+function renderAcompanhamento(){
+  const root = document.getElementById("acompanhamentoRoot"); if (!root) return;
+  const seta = '<span class="acomp-seta" style="display:inline-block; width:14px;">&#9656;</span>';
+  let html = "";
+  for (const p of pedidosAbertos()) {
     const lotes = DB.lotes.filter(l=>l.pedidoId===p.id).sort((a,b)=>(a.ordem||0)-(b.ordem||0));
     const de = parseDate(p.dataEntrada);
     const lim = de && p.prazoPedido ? fmtBR(addPrazo(de,p.prazoPedido)) : "-";
-    return `<div class="card" style="margin-bottom:12px;">
-      <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px;"><strong style="font-size:15px;">Pedido ${p.noPedido}${p.cliente?" - "+escAttrAcomp(p.cliente):""}</strong><span class="muted">Limite de entrega: ${lim}</span></div>
-      <label class="field-label" style="margin-top:8px;">Observacoes do pedido</label>
-      <textarea rows="2" class="input-leitura" data-obs-ped="${p.id}" placeholder="Observacoes deste pedido...">${escAttrAcomp(p.obsAcomp)}</textarea>
-      ${lotes.map(l=>{
-        const nomes = [...(l.equipamentoIds||[]).map(id=>{const e=getEquipamento(id);return e?e.nome:"?";}), ...DB.pecasAvulsas.filter(x=>x.loteId===l.id).map(x=>x.nome)].join(", ") || "sem equipamento/peca";
-        const {dataLimite} = calcularDataLimiteLote(l);
-        return `<div style="margin:10px 0 0 14px; padding-left:10px; border-left:3px solid var(--border);">
-          <strong>Lote ${l.noLote}</strong>${loteEstaEncerrado(l)?' <span class="pill" style="background:var(--gray);">encerrado</span>':''} <span class="muted">- ${escAttrAcomp(nomes)} - limite: ${dataLimite?fmtBR(dataLimite):"-"}</span>
-          <textarea rows="2" class="input-leitura" data-obs-lote="${l.id}" placeholder="Observacoes deste lote..." style="margin-top:4px;">${escAttrAcomp(l.obsAcomp)}</textarea>
-        </div>`;
-      }).join("") || '<p class="muted" style="margin:8px 0 0 14px;">Este pedido ainda nao tem lotes.</p>'}
-    </div>`;
-  }).join("") || '<p class="muted">Nenhum pedido aberto.</p>';
-  wrap.querySelectorAll("[data-obs-ped],[data-obs-lote]").forEach(ta=>{
-    ta.addEventListener("change", ()=>{
-      const ehPed = ta.hasAttribute("data-obs-ped");
-      const obj = ehPed ? DB.pedidos.find(x=>x.id===parseInt(ta.dataset.obsPed)) : DB.lotes.find(x=>x.id===parseInt(ta.dataset.obsLote));
-      if (!obj) return;
-      obj.obsAcomp = ta.value.trim() || null;
+    const nAbertas = DB.atividadesAcomp.filter(a=>a.pedidoId===p.id && !a.concluida).length;
+    let corpo = `<label class="field-label">Observacoes do pedido</label>
+      <textarea rows="2" data-obs="ped" data-id="${p.id}" placeholder="Observacoes deste pedido...">${escAttrAcomp(p.obsAcomp)}</textarea>`;
+    corpo += lotes.map(l=>{
+      const alvos = [...(l.equipamentoIds||[]).map(id=>{const e=getEquipamento(id);return {tipo:"equip",id,nome:e?e.nome:"?",rot:"Equipamento"};}), ...DB.pecasAvulsas.filter(x=>x.loteId===l.id).map(x=>({tipo:"peca",id:x.id,nome:x.nome,rot:"Peca/Conjunto avulso"}))];
+      const {dataLimite} = calcularDataLimiteLote(l);
+      let corpoL = `<label class="field-label">Observacoes do lote</label>
+        <textarea rows="2" data-obs="lote" data-id="${l.id}" placeholder="Observacoes deste lote...">${escAttrAcomp(l.obsAcomp)}</textarea>`;
+      corpoL += alvos.map(al=>{
+        const atv = DB.atividadesAcomp.filter(a=>a.loteId===l.id && a.alvoTipo===al.tipo && a.alvoId===al.id);
+        const ab = atv.filter(a=>!a.concluida).length;
+        const k = `a${l.id}-${al.tipo}${al.id}`;
+        const ctx = `data-ped="${p.id}" data-lote="${l.id}" data-tipo="${al.tipo}" data-alvo="${al.id}" data-nome="${escAttrAcomp(al.nome).replace(/"/g,"&quot;")}"`;
+        return detalhesAcomp(k, `${seta} <span class="pill" style="background:var(--primary-dark);">${al.rot}</span> ${escAttrAcomp(al.nome)} <span class="muted" style="font-weight:400;">- ${ab} atividade(s) aberta(s)</span>`,
+          (atv.map(a=>atvLinhaHtml(a,false)).join("") || '<p class="muted" style="margin:4px 0;">Nenhuma atividade ainda.</p>') + atvFormHtml(ctx, k), 1);
+      }).join("") || '<p class="muted">Este lote nao tem equipamento nem peca.</p>';
+      return detalhesAcomp("l"+l.id, `${seta} Lote ${l.noLote}${loteEstaEncerrado(l)?' <span class="pill" style="background:var(--gray);">encerrado</span>':''} <span class="muted" style="font-weight:400;">- limite de entrega: ${dataLimite?fmtBR(dataLimite):"-"}${l.obsAcomp?" - com observacao":""}</span>`, corpoL, 1);
+    }).join("") || '<p class="muted" style="margin-top:8px;">Este pedido ainda nao tem lotes.</p>';
+    // registro de status (historico)
+    const hist = DB.statusPedido.filter(s=>s.pedidoId===p.id).sort((a,b)=>new Date(b.data)-new Date(a.data));
+    corpo += detalhesAcomp("h"+p.id, `${seta} Historico de status <span class="muted" style="font-weight:400;">(${hist.length})</span>`,
+      `<div data-edicao style="margin-bottom:8px;"><textarea rows="2" data-stx="${p.id}" placeholder="Novo registro de status (reuniao)..."></textarea>
+        <div style="display:flex; gap:8px; margin-top:6px; flex-wrap:wrap;"><select data-stsetor="${p.id}">${[...DB.setoresGestao].sort((a,b)=>a.localeCompare(b,'pt-BR')).map(st=>`<option value="${escAttrAcomp(st).replace(/"/g,"&quot;")}">${escAttrAcomp(st)}</option>`).join("")}</select>
+        <button type="button" class="btn btn-sm" data-acao="status-salvar" data-id="${p.id}">Salvar registro</button></div></div>`+
+      (hist.map(s=>`<div style="padding:6px 0; border-bottom:1px solid var(--border);"><div class="muted" style="font-size:11px;">${new Date(s.data).toLocaleString('pt-BR')} - ${escAttrAcomp(s.autor||"?")} ${s.setor?`<span class="pill" style="background:var(--primary);">${escAttrAcomp(s.setor)}</span>`:""}</div><div>${destacarMencoes(s.texto)}</div></div>`).join("") || '<p class="muted">Nenhum registro ainda.</p>'), 1);
+    html += detalhesAcomp("p"+p.id, `${seta} Pedido ${p.noPedido}${p.cliente?" - "+escAttrAcomp(p.cliente):""} <span class="muted" style="font-weight:400;">- limite: ${lim} - ${lotes.length} lote(s) - ${nAbertas} atividade(s) aberta(s)${p.obsAcomp?" - com observacao":""}</span>`, corpo, 0);
+  }
+  if (!html) html = '<div class="card"><p class="muted">Nenhum pedido aberto.</p></div>';
+  // atividades sem pedido
+  const livres = DB.atividadesAcomp.filter(a=>!a.pedidoId);
+  html += detalhesAcomp("livres", `${seta} Atividades sem pedido <span class="muted" style="font-weight:400;">- ${livres.filter(a=>!a.concluida).length} aberta(s)</span>`,
+    (livres.map(a=>atvLinhaHtml(a,false)).join("") || '<p class="muted" style="margin:4px 0;">Nenhuma atividade ainda.</p>') + atvFormHtml('data-ped="" data-lote="" data-tipo="" data-alvo="" data-nome=""', "livres"), 0);
+  root.innerHTML = html;
+  root.querySelectorAll("details[data-k]").forEach(d=>d.addEventListener("toggle", ()=>{ if (d.open) acompAbertos.add(d.dataset.k); else acompAbertos.delete(d.dataset.k); }));
+  renderGestaoLogAcomp();
+}
+(function(){
+  document.addEventListener("click", (e)=>{
+    const root = document.getElementById("acompanhamentoRoot");
+    if (e.target.id==="acompExpandirBtn" || e.target.id==="acompRecolherBtn") {
+      const abrir = e.target.id==="acompExpandirBtn";
+      document.querySelectorAll("#acompanhamentoRoot details[data-k]").forEach(d=>{ d.open = abrir; if (abrir) acompAbertos.add(d.dataset.k); else acompAbertos.delete(d.dataset.k); });
+      return;
+    }
+    const el = e.target.closest && e.target.closest("[data-acao]");
+    if (!el) return;
+    const acao = el.dataset.acao;
+    if (acao==="atv-nova") { const f = document.querySelector(`[data-atvform="${el.dataset.form}"]`); if (f) f.classList.toggle("hidden"); return; }
+    if (acao==="atv-salvar") {
+      const f = document.querySelector(`[data-atvform="${el.dataset.form}"]`); if (!f) return;
+      const g = n=>f.querySelector(`[data-f="${n}"]`).value;
+      const titulo = g("titulo").trim(), setor = g("setor"), resp = g("resp");
+      const msg = document.querySelector(`[data-msg="${el.dataset.form}"]`);
+      if (!titulo) { msg.style.color="var(--danger)"; msg.textContent="Digite a atividade."; return; }
+      if (!setor) { msg.style.color="var(--danger)"; msg.textContent="Escolha o setor."; return; }
+      if (!resp) { msg.style.color="var(--danger)"; msg.textContent="Escolha o responsavel."; return; }
+      DB.atividadesAcomp.push({ id: DB.seq.atividadeAcomp++, pedidoId: f.dataset.ped?parseInt(f.dataset.ped):null, loteId: f.dataset.lote?parseInt(f.dataset.lote):null,
+        alvoTipo: f.dataset.tipo||null, alvoId: f.dataset.alvo?parseInt(f.dataset.alvo):null, alvoNome: f.dataset.nome||"", titulo, setor, responsavel: resp, prazo: g("prazo")||null,
+        criadoEm: new Date().toISOString(), criadoPor: emailUsuarioAtual||"", concluida:false, concluidaEm:null });
+      acompAbertos.add(el.dataset.form);
+      saveDB(); renderAcompanhamento(); return;
+    }
+    if (acao==="atv-concluir") {
+      const a = DB.atividadesAcomp.find(x=>x.id===parseInt(el.dataset.id)); if (!a) return;
+      a.concluida = el.checked; a.concluidaEm = el.checked ? new Date().toISOString() : null;
       saveDB();
-    });
+      if (document.getElementById("acompanhamentoRoot") && document.getElementById("acompanhamentoRoot").contains(el)) renderAcompanhamento(); else renderPainelPastas();
+      return;
+    }
+    if (acao==="atv-excluir") {
+      const id = parseInt(el.dataset.id); const a = DB.atividadesAcomp.find(x=>x.id===id); if (!a) return;
+      if (!confirm(`Excluir a atividade "${a.titulo}"?`)) return;
+      removerDaColecao("atividadesAcomp", x=>x.id!==id); saveDB(); renderAcompanhamento(); return;
+    }
+    if (acao==="status-salvar") {
+      const pid = parseInt(el.dataset.id);
+      const ta = document.querySelector(`[data-stx="${pid}"]`); const texto = ta.value.trim();
+      if (!texto) { alert("Digite algum texto."); return; }
+      DB.statusPedido.push({ id: DB.seq.statusPedido++, pedidoId: pid, texto, setor: document.querySelector(`[data-stsetor="${pid}"]`).value, data: new Date().toISOString(), autor: emailUsuarioAtual });
+      acompAbertos.add("h"+pid); saveDB(); renderAcompanhamento(); return;
+    }
   });
+  document.addEventListener("change", (e)=>{
+    const el = e.target;
+    if (el.dataset && el.dataset.acao==="atv-setor") {
+      const f = el.closest("[data-atvform]"); const r = f.querySelector('[data-f="resp"]'); r.innerHTML = opcoesResponsavelAcomp(el.value); return;
+    }
+    if (el.dataset && el.dataset.acao==="atv-concluir") return;
+    if (el.dataset && el.dataset.obs) {
+      const id = parseInt(el.dataset.id);
+      const obj = el.dataset.obs==="ped" ? DB.pedidos.find(x=>x.id===id) : DB.lotes.find(x=>x.id===id);
+      if (!obj) return; obj.obsAcomp = el.value.trim() || null; saveDB();
+    }
+  });
+})();
+function renderMinhasAtividadesPainel(){
+  const w = document.getElementById("painelMinhasAtividades"); if (!w) return;
+  const eu = chavePerfil(emailUsuarioAtual);
+  const minhas = (DB.atividadesAcomp||[]).filter(a=>chavePerfil(a.responsavel)===eu && !a.concluida)
+    .sort((a,b)=>String(a.prazo||"9999").localeCompare(String(b.prazo||"9999")));
+  if (!minhas.length) { w.innerHTML = ""; return; }
+  w.innerHTML = `<div class="card" style="margin:0;"><h3 style="margin-top:0;">Minhas atividades <span class="pill" style="background:var(--accent);">${minhas.length}</span></h3>`+
+    minhas.map(a=>atvLinhaHtml(a,true).replace(/<button[^>]*atv-excluir[^>]*>.*?<\/button>/,"")).join("")+`</div>`;
 }
 function renderGestaoLogAcomp(){
   const w = document.getElementById("gestaoLogAcomp"); if (!w) return;
@@ -7205,28 +7285,33 @@ function itensSolicitadosNaSemana(){
   return resultado.sort((a,b)=>b.data-a.data);
 }
 
+function htmlAtividadesRelatorio(lista){
+  if (!lista.length) return "";
+  return `<ul style="margin:4px 0 8px 18px; padding:0;">`+lista.map(a=>`<li>${a.concluida?"[concluida] ":""}<strong>${escaparHtmlSimples(a.titulo)}</strong> - ${escaparHtmlSimples(nomeSetorPorId(a.setor)||"-")} / ${escaparHtmlSimples(a.responsavel?nomeExibicao(a.responsavel):"sem responsavel")}${a.prazo?" - prazo "+fmtBR(parseDate(a.prazo)):""}</li>`).join("")+`</ul>`;
+}
 function gerarSecaoPedido(pedido){
-  let html = `<h3 style="color:#14462E;">Pedido ${pedido.noPedido} - ${pedido.cliente||""}</h3>`;
+  let html = `<h3 style="color:#14462E;">Pedido ${pedido.noPedido} - ${escaparHtmlSimples(pedido.cliente||"")}</h3>`;
   const dataEntrada = parseDate(pedido.dataEntrada);
   const prazoEntregaData = dataEntrada && pedido.prazoPedido ? addPrazo(dataEntrada, pedido.prazoPedido) : null;
   html += `<p><strong>Prazo de entrega:</strong> ${prazoEntregaData?fmtBR(prazoEntregaData):"-"}</p>`;
-
+  if (pedido.obsAcomp) html += `<p><strong>Observacoes:</strong> ${escaparHtmlSimples(pedido.obsAcomp).replace(/\n/g,"<br>")}</p>`;
   const lotesDoPedido = DB.lotes.filter(l=>l.pedidoId===pedido.id);
-  html += `<table style="border-collapse:collapse; width:100%;"><tr style="background:#14462E; color:#fff;"><th style="padding:6px; text-align:left;">Lote</th><th style="padding:6px; text-align:left;">Equipamento/Peca</th><th style="padding:6px; text-align:left;">Limite de entrega</th></tr>`;
   for (const lote of lotesDoPedido) {
     const {dataLimite} = calcularDataLimiteLote(lote);
-    const nomes = [...(lote.equipamentoIds||[]).map(id=>{const e=getEquipamento(id); return e?e.nome:"?";}), ...DB.pecasAvulsas.filter(p=>p.loteId===lote.id).map(p=>p.nome)];
-    html += `<tr><td style="padding:6px; border-bottom:1px solid #ddd;">${lote.noLote}</td><td style="padding:6px; border-bottom:1px solid #ddd;">${nomes.join(", ")||"-"}</td><td style="padding:6px; border-bottom:1px solid #ddd;">${dataLimite?fmtBR(dataLimite):"-"}</td></tr>`;
+    html += `<div style="margin:10px 0 0 10px; padding-left:8px; border-left:3px solid #D3DDCB;"><strong>Lote ${lote.noLote}</strong> - limite de entrega: ${dataLimite?fmtBR(dataLimite):"-"}${loteEstaEncerrado(lote)?" (encerrado)":""}`;
+    if (lote.obsAcomp) html += `<br><em>Obs.:</em> ${escaparHtmlSimples(lote.obsAcomp).replace(/\n/g,"<br>")}`;
+    const alvos = [...(lote.equipamentoIds||[]).map(id=>{const e=getEquipamento(id);return {tipo:"equip",id,nome:e?e.nome:"?"};}), ...DB.pecasAvulsas.filter(x=>x.loteId===lote.id).map(x=>({tipo:"peca",id:x.id,nome:x.nome}))];
+    for (const al of alvos) {
+      const atv = DB.atividadesAcomp.filter(a=>a.loteId===lote.id && a.alvoTipo===al.tipo && a.alvoId===al.id);
+      html += `<div style="margin-left:10px;">&bull; ${escaparHtmlSimples(al.nome)}${atv.length?"":" <span style='color:#8A8F87;'>(sem atividades)</span>"}${htmlAtividadesRelatorio(atv)}</div>`;
+    }
+    html += `</div>`;
   }
-  html += `</table>`;
   if (!lotesDoPedido.length) html += `<p style="color:#8A8F87;">Nenhum Lote cadastrado para este Pedido.</p>`;
-
-  const historico = DB.statusPedido.filter(s=>s.pedidoId===pedido.id).sort((a,b)=>new Date(b.data)-new Date(a.data)).slice(0,5);
+  const historico = DB.statusPedido.filter(s=>s.pedidoId===pedido.id && s.setor!=="Sistema").sort((a,b)=>new Date(b.data)-new Date(a.data)).slice(0,5);
   if (historico.length) {
     html += `<h4 style="color:#14462E; margin-top:14px; margin-bottom:6px;">Ultimos registros de status</h4>`;
-    for (const s of historico) {
-      html += `<p style="margin:4px 0;"><strong>${new Date(s.data).toLocaleDateString('pt-BR')}</strong>${s.setor?` [${s.setor}]`:""} - ${escaparHtmlSimples(s.texto)}</p>`;
-    }
+    for (const s of historico) html += `<p style="margin:4px 0;"><strong>${new Date(s.data).toLocaleDateString('pt-BR')}</strong>${s.setor?` [${s.setor}]`:""} - ${escaparHtmlSimples(s.texto)}</p>`;
   }
   return html;
 }
@@ -7262,29 +7347,15 @@ function gerarSecaoIndicadoresPPCP(){
 }
 
 function gerarRelatorioHtml(){
-  const todosPedidos = document.getElementById("gestaoRelatorioTodosPedidos").checked;
-  const pedidoId = parseInt(document.getElementById("gestaoPedidoSelect").value);
-  const pedido = DB.pedidos.find(p=>p.id===pedidoId);
   const dataHoje = fmtBR(hojeUTC());
-
   let html = `<div style="font-family:Arial,sans-serif; font-size:14px; color:#222;">`;
   html += `<h2 style="color:#14462E;">Relatorio de Acompanhamento - ${dataHoje}</h2>`;
-
-  if (todosPedidos) {
-    if (DB.pedidos.length) {
-      for (const p of DB.pedidos) {
-        html += gerarSecaoPedido(p);
-        html += `<hr style="border:none; border-top:1px solid #ddd; margin:18px 0;">`;
-      }
-    } else {
-      html += `<p style="color:#8A8F87;">Nenhum Pedido cadastrado ainda.</p>`;
-    }
-  } else if (pedido) {
-    html += gerarSecaoPedido(pedido);
-  } else {
-    html += `<p style="color:#8A8F87;">(Nenhum Pedido especifico selecionado - selecione um Pedido acima, ou marque "Incluir todos os Pedidos".)</p>`;
-  }
-
+  const peds = pedidosAbertos();
+  if (peds.length) {
+    for (const p of peds) { html += gerarSecaoPedido(p); html += `<hr style="border:none; border-top:1px solid #ddd; margin:18px 0;">`; }
+  } else html += `<p style="color:#8A8F87;">Nenhum Pedido aberto.</p>`;
+  const livres = DB.atividadesAcomp.filter(a=>!a.pedidoId);
+  html += `<h3 style="color:#14462E;">Atividades sem pedido</h3>` + (livres.length ? htmlAtividadesRelatorio(livres) : `<p style="color:#8A8F87;">Nenhuma.</p>`);
   html += gerarSecaoIndicadoresPPCP();
   html += `</div>`;
   return html;
