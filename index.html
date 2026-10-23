@@ -166,6 +166,9 @@
   .tabela-itens-lote td { padding:8px 6px; border-bottom:1px solid var(--border); vertical-align:middle; }
   .tabela-itens-lote tr:last-child td { border-bottom:none; }
   .kb-pill .pill { font-size:9px; padding:2px 7px; white-space:normal; display:inline-block; line-height:1.25; }
+  .drag-h { display:inline-block; cursor:grab; touch-action:none; user-select:none; color:var(--gray); font-size:17px; line-height:1; padding:2px 6px 2px 0; vertical-align:middle; }
+  .drag-h:hover { color:var(--primary-dark); }
+  tr.arrastando td { background:#E8F3EC; box-shadow:0 2px 8px rgba(0,0,0,.18); }
   .tabela-itens-lote .th-sub { font-weight:400; font-size:10.5px; opacity:.8; }
   .tabela-itens-lote .dt { font-weight:600; }
   .tabela-itens-lote .dt-info { font-size:11px; margin-top:2px; }
@@ -432,7 +435,7 @@
     </form>
     <div style="text-align:center; margin-top:8px;"><a href="#" id="loginEsqueciSenhaLink" style="font-size:12px; color:#8A8F87;">Esqueci minha senha</a></div>
     <div id="loginMsg" style="margin-top:10px; font-size:12.5px; min-height:18px;"></div>
-    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 171 - 22/10/2026</div>
+    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 172 - 22/10/2026</div>
     <div id="loginOfflineWrap" class="hidden" style="margin-top:6px;">
       <button id="loginOfflineBtn" style="width:100%; padding:8px; background:transparent; color:#8A8F87; border:1px solid #E1E6DE; border-radius:6px; font-size:12.5px; cursor:pointer;">Continuar sem conexao (usa os dados salvos neste navegador)</button>
     </div>
@@ -469,7 +472,7 @@
     </div>
     <div style="height:3px; width:60px; background:#91C53E; border-radius:2px; margin-bottom:34px;"></div>
     <div id="painelPastasGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(172px, 1fr)); gap:14px;"></div>
-    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 171 - 22/10/2026</p>
+    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 172 - 22/10/2026</p>
   </div>
 </div>
 
@@ -4610,6 +4613,49 @@ function celulasPrazoItem(r, row, tipo){
 }
 
 const itensDetAbertos = new Set();
+// ordem manual dos itens (arrastar pela "maozinha"): guarda ordemManual em cada item; sem ela vale a ordem padrao
+function aplicarOrdemManual(lista, rowDe){
+  if (!lista.some(x=>rowDe(x).ordemManual)) return lista;
+  const idx = new Map(lista.map((x,i)=>[x,i]));
+  return lista.slice().sort((a,b)=>{ const oa = rowDe(a).ordemManual, ob = rowDe(b).ordemManual; if (oa && ob) return oa-ob; if (oa) return -1; if (ob) return 1; return idx.get(a)-idx.get(b); });
+}
+function ligarArrastarItens(lista){
+  lista.querySelectorAll(".drag-h").forEach(h=>{
+    h.addEventListener("pointerdown", (ev)=>{
+      if (ev.button !== undefined && ev.button !== 0) return;
+      const tr = h.closest("tr"); const corpo = tr.parentNode;
+      ev.preventDefault();
+      try { h.setPointerCapture(ev.pointerId); } catch(e){}
+      tr.classList.add("arrastando");
+      const mover = (e)=>{
+        const el = document.elementFromPoint(e.clientX, e.clientY);
+        const alvo = el && el.closest ? el.closest("tr[data-drag-id]") : null;
+        if (!alvo || alvo === tr || alvo.parentNode !== corpo) return;
+        const r = alvo.getBoundingClientRect();
+        if (e.clientY < r.top + r.height/2) corpo.insertBefore(tr, alvo); else corpo.insertBefore(tr, alvo.nextSibling);
+      };
+      const fim = ()=>{
+        h.removeEventListener("pointermove", mover); h.removeEventListener("pointerup", fim); h.removeEventListener("pointercancel", fim);
+        tr.classList.remove("arrastando");
+        const linhas = [...corpo.querySelectorAll("tr[data-drag-id]")];
+        linhas.forEach((l,i)=>{
+          const id = parseInt(l.dataset.dragId);
+          const row = l.dataset.dragTipo==="avulso" ? DB.itensAvulsos.find(x=>x.id===id) : DB.itensLote.find(x=>x.id===id);
+          if (row) row.ordemManual = i+1;
+        });
+        saveDB();
+        renderItensLoteBody();
+      };
+      h.addEventListener("pointermove", mover); h.addEventListener("pointerup", fim); h.addEventListener("pointercancel", fim);
+    });
+  });
+  lista.querySelectorAll("[data-reset-ordem]").forEach(b=>b.addEventListener("click", ()=>{
+    const [tipo, id, loteId] = b.dataset.resetOrdem.split("|");
+    if (tipo==="eq") { for (const r of DB.itensLote) if (r.loteId===parseInt(loteId)) { const m = getItem(r.itemId); if (m && m.equipamentoId===parseInt(id)) delete r.ordemManual; } }
+    else { for (const r of DB.itensAvulsos) if (r.pecaAvulsaId===parseInt(id)) delete r.ordemManual; }
+    saveDB(); renderItensLoteBody();
+  }));
+}
 function renderItensLoteBody(){
   const loteId = parseInt(document.getElementById("loteItensSelect").value);
   const lote = DB.lotes.find(l=>l.id===loteId);
@@ -4676,7 +4722,7 @@ function renderItensUmLote(lote, resumoEl, lista, unico){
     for (const equipId of (lote.equipamentoIds||[])) {
       if (!porEquip.has(equipId)) continue;
       const eq = getEquipamento(equipId);
-      const idsOrdenados = ordenarItensPorPrereq(lote.id, porEquip.get(equipId));
+      const idsOrdenados = aplicarOrdemManual(ordenarItensPorPrereq(lote.id, porEquip.get(equipId)), id=>itensMap.get(id));
       const kEq = lote.id+"|eq-"+equipId;
       const nConcEq = idsOrdenados.filter(id=>itensMap.get(id).dataReal).length;
       html += `<details class="itens-det" data-key="${kEq}" ${(itensDetAbertos.has(kEq)||filtroEquipPeca===("eq-"+equipId))?"open":""}><summary class="itens-grupo-titulo"><small>Equipamento</small>${eq?eq.nome:"?"}<span class="itens-cont">${nConcEq}/${idsOrdenados.length} itens concluidos</span></summary><div class="tabela-itens-lote-wrap"><table class="tabela-itens-lote">`+
@@ -4685,8 +4731,8 @@ function renderItensUmLote(lote, resumoEl, lista, unico){
         const row = itensMap.get(itemId);
         const meta = getItem(itemId);
         const r = calcularStatusItem(lote, row, alertaDias);
-        html += `<tr>
-          <td><div class="name">${meta.nome}</div><div class="sub">prazo ${row.prazoOverride!=null?row.prazoOverride+"d (ajustado)":meta.prazoDias+"d"} - acumulado ${r.prazoAcumulado}d</div></td>
+        html += `<tr data-drag-id="${row.id}" data-drag-tipo="item">
+          <td><div class="name"><span class="drag-h" data-edicao title="Segure e arraste para mudar a ordem">&#9776;</span>${meta.nome}</div><div class="sub">prazo ${row.prazoOverride!=null?row.prazoOverride+"d (ajustado)":meta.prazoDias+"d"} - acumulado ${r.prazoAcumulado}d</div></td>
           <td><input type="text" class="date-mask" data-item="${row.id}" data-field="dataSolicitacao" data-iso-inicial="${row.dataSolicitacao||""}" title="Quando voce solicitou/pediu este item"></td>
           ${celulasPrazoItem(r, row, "item")}
           <td><input type="text" class="date-mask" data-item="${row.id}" data-field="dataReal" data-iso-inicial="${row.dataReal||""}" title="Quando o item realmente chegou ou foi concluido"></td>
@@ -4694,7 +4740,7 @@ function renderItensUmLote(lote, resumoEl, lista, unico){
         </tr>`;
         if (r.alertaPrerequisito) alertas.push(`${eq?eq.nome:"?"} - ${meta.nome}: ${r.alertaPrerequisito}`);
       }
-      html += "</table></div></details>";
+      html += "</table>" + (idsOrdenados.some(id=>itensMap.get(id).ordemManual) ? `<div style="margin-top:6px;"><button type="button" class="btn secondary btn-sm" data-edicao data-reset-ordem="eq|${equipId}|${lote.id}">Restaurar ordem padrao</button></div>` : "") + "</div></details>";
     }
     html += "</div>";
   }
@@ -4702,22 +4748,22 @@ function renderItensUmLote(lote, resumoEl, lista, unico){
   if (pecasAvulsasDoLote.length) {
     html += '<div class="card"><h4>Pecas/Conjuntos Avulsos</h4>';
     for (const peca of pecasAvulsasDoLote) {
-      const itensDaPeca = ordenarItensAvulsos(DB.itensAvulsos.filter(i=>i.pecaAvulsaId===peca.id && i.rastrear!==false));
+      const itensDaPeca = aplicarOrdemManual(ordenarItensAvulsos(DB.itensAvulsos.filter(i=>i.pecaAvulsaId===peca.id && i.rastrear!==false)), x=>x);
       const kPc = lote.id+"|peca-"+peca.id;
       const nConcPc = itensDaPeca.filter(i=>i.dataReal).length;
       html += `<details class="itens-det" data-key="${kPc}" ${(itensDetAbertos.has(kPc)||filtroEquipPeca===("peca-"+peca.id))?"open":""}><summary class="itens-grupo-titulo peca"><small>Peca/Conjunto Avulso</small>${peca.nome}<span class="itens-cont">${nConcPc}/${itensDaPeca.length} itens concluidos</span></summary><div class="tabela-itens-lote-wrap"><table class="tabela-itens-lote">`+
         "<tr><th>Item</th><th>Solicitacao realizada em</th><th>Solicitar ate<div class=\"th-sub\">(data limite)</div></th><th>Inicio do desenvolvimento</th><th>Entrega prevista<div class=\"th-sub\">(inicio ou solicitacao + prazo)</div></th><th>Entrega em<div class=\"th-sub\">(data real)</div></th><th>Situacao</th></tr>";
       for (const ia of itensDaPeca) {
         const r = calcularStatusItemAvulso(lote, ia, alertaDias);
-        html += `<tr>
-          <td><div class="name">${ia.itemNome}</div><div class="sub">prazo ${ia.prazoDias}d - acumulado ${r.prazoAcumulado}d</div></td>
+        html += `<tr data-drag-id="${ia.id}" data-drag-tipo="avulso">
+          <td><div class="name"><span class="drag-h" data-edicao title="Segure e arraste para mudar a ordem">&#9776;</span>${ia.itemNome}</div><div class="sub">prazo ${ia.prazoDias}d - acumulado ${r.prazoAcumulado}d</div></td>
           <td><input type="text" class="date-mask-avulso" data-item-avulso="${ia.id}" data-field="dataSolicitacao" data-iso-inicial="${ia.dataSolicitacao||""}"></td>
           ${celulasPrazoItem(r, ia, "avulso")}
           <td><input type="text" class="date-mask-avulso" data-item-avulso="${ia.id}" data-field="dataReal" data-iso-inicial="${ia.dataReal||""}"></td>
           <td>${pill(r.status)}</td>
         </tr>`;
       }
-      html += "</table></div></details>";
+      html += "</table>" + (itensDaPeca.some(x=>x.ordemManual) ? `<div style="margin-top:6px;"><button type="button" class="btn secondary btn-sm" data-edicao data-reset-ordem="peca|${peca.id}|${lote.id}">Restaurar ordem padrao</button></div>` : "") + "</div></details>";
     }
     html += "</div>";
   }
@@ -4725,6 +4771,7 @@ function renderItensUmLote(lote, resumoEl, lista, unico){
   if (alertas.length) html += `<div class="warn-box">&#9888; ${alertas.join("<br>&#9888; ")}</div>`;
 
   lista.innerHTML = html;
+  ligarArrastarItens(lista);
   lista.querySelectorAll("details.itens-det").forEach(d=>d.addEventListener("toggle", ()=>{ if (d.open) itensDetAbertos.add(d.dataset.key); else itensDetAbertos.delete(d.dataset.key); }));
 
   lista.querySelectorAll("input.date-mask-avulso").forEach(inp=>{
