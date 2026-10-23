@@ -458,7 +458,7 @@
     </form>
     <div style="text-align:center; margin-top:8px;"><a href="#" id="loginEsqueciSenhaLink" style="font-size:12px; color:#8A8F87;">Esqueci minha senha</a></div>
     <div id="loginMsg" style="margin-top:10px; font-size:12.5px; min-height:18px;"></div>
-    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 180 - 22/10/2026</div>
+    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 181 - 23/10/2026</div>
     <div id="loginOfflineWrap" class="hidden" style="margin-top:6px;">
       <button id="loginOfflineBtn" style="width:100%; padding:8px; background:transparent; color:#8A8F87; border:1px solid #E1E6DE; border-radius:6px; font-size:12.5px; cursor:pointer;">Continuar sem conexao (usa os dados salvos neste navegador)</button>
     </div>
@@ -495,7 +495,7 @@
     </div>
     <div style="height:3px; width:60px; background:#91C53E; border-radius:2px; margin-bottom:34px;"></div>
     <div id="painelPastasGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(172px, 1fr)); gap:14px;"></div>
-    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 180 - 22/10/2026</p>
+    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 181 - 23/10/2026</p>
   </div>
 </div>
 
@@ -600,6 +600,11 @@
     <section id="gestaopage-acompanhamento" class="page">
       <div class="banner"><h1>Acompanhamento de Pedido</h1><p>Registros de status por pedido e relatorio para reuniao</p></div>
     <div class="card">
+      <h3 style="margin-top:0;">Pedidos e Lotes em acompanhamento</h3>
+      <p class="muted" style="margin-top:0;">Todos os pedidos abertos e seus lotes. Escreva as observacoes direto no campo; elas sao salvas ao sair do campo.</p>
+      <div id="gestaoVisaoGeral"></div>
+    </div>
+    <div class="card">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
         <h3 style="margin:0;">Acompanhamento de Pedido</h3>
         <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
@@ -613,7 +618,7 @@
         <div class="field"><label class="field-label">Prazo de Entrega</label><div id="gestaoPrazoEntrega" style="padding-top:9px; font-weight:600; color:var(--primary-dark);">-</div></div>
       </div>
 
-      <div id="gestaoLotesWrap" style="margin-top:10px;"></div>
+      <div id="gestaoLotesWrap" style="margin-top:10px; display:none;"></div>
 
       <div data-edicao style="margin-top:20px; border-top:1px solid var(--border); padding-top:16px;">
         <label class="field-label">Novo registro de status (reuniao)</label>
@@ -638,6 +643,10 @@
       <div style="margin-top:20px;">
         <label class="field-label">Historico de status</label>
         <div id="gestaoHistoricoWrap"></div>
+      </div>
+      <div style="margin-top:20px;">
+        <label class="field-label">Movimentacoes de pedidos e lotes (inclusoes e exclusoes)</label>
+        <div id="gestaoLogAcomp"></div>
       </div>
     </div>
 
@@ -1897,6 +1906,7 @@ function normalizarDB(db){
   db.itensAvulsos.forEach(ia=>{ if (ia.rastrear===undefined) ia.rastrear = true; });
   if (!db.prerequisitosAvulsos) db.prerequisitosAvulsos = [];
   if (!db.statusPedido) db.statusPedido = [];
+  if (!Array.isArray(db.logAcomp)) db.logAcomp = [];
   if (!db.setoresGestao) db.setoresGestao = ["Comercial","Layout","Engenharia","PPCP","Qualidade","Producao","Almoxarifado","Assistencia Tecnica","Expedicao"];
   if (!db.acessoGestao) db.acessoGestao = [];
   if (!db.cargasExpedicao) db.cargasExpedicao = [];
@@ -2138,6 +2148,16 @@ async function buscarLinhaNuvem(){
 
 // colecoes em que os registros de pessoas diferentes sao somados (nunca sobrescritos) quando dois aparelhos salvam ao mesmo tempo
 const COLECOES_MESCLAVEIS = ["rncs", "tarefasEngenharia", "checklistInstancias", "atividadesGestor", "demandasEngRnc"];
+function logAcompanhamento(evento, tipo, descricao, pedidoId){
+  if (!Array.isArray(DB.logAcomp)) DB.logAcomp = [];
+  const agora = new Date().toISOString();
+  DB.logAcomp.push({ id: agora+"-"+Math.random().toString(36).slice(2,7), data: agora, autor: (typeof emailUsuarioAtual!=="undefined"?emailUsuarioAtual:"")||"", evento, tipo, descricao });
+  if (DB.logAcomp.length > 2000) DB.logAcomp.splice(0, DB.logAcomp.length-2000);
+  // tambem aparece no historico de status do pedido (quando o pedido ainda existe)
+  if (pedidoId && evento!=="excluido" || (pedidoId && tipo==="Lote")) {
+    if (DB.pedidos.some(p=>p.id===pedidoId)) DB.statusPedido.push({ id: DB.seq.statusPedido++, pedidoId, texto: descricao, setor: "Sistema", data: agora, autor: (typeof emailUsuarioAtual!=="undefined"?emailUsuarioAtual:"") });
+  }
+}
 function registrarRemovidos(chave, ids){
   if (!DB.removidos) DB.removidos = {};
   const lista = DB.removidos[chave] || (DB.removidos[chave] = []);
@@ -2227,6 +2247,11 @@ function mesclarDados(nuvem, local){
     out.seq.rnc = Math.max(out.seq.rnc||0, (maxIdPorChave.rncs||0)+1);
     out.seq.demandaEngRnc = Math.max(out.seq.demandaEngRnc||0, (maxIdPorChave.demandasEngRnc||0)+1);
     out.seq.rncNumero = Math.max(out.seq.rncNumero||0, (out.rncs||[]).reduce((m,x)=>Math.max(m,x.sequencia||0),0)+1);
+  }
+  { // log de acompanhamento: uniao dos dois lados
+    const mp = new Map();
+    for (const x of [...(Array.isArray(nuvem.logAcomp)?nuvem.logAcomp:[]), ...(Array.isArray(local.logAcomp)?local.logAcomp:[])]) if (x && x.id!=null && !mp.has(x.id)) mp.set(x.id, x);
+    out.logAcomp = [...mp.values()];
   }
   { // RNCs excluidas: historico, uniao dos dois lados (nunca se perde)
     const mp = new Map();
@@ -3422,6 +3447,7 @@ function renderPedidos(){
       cor: document.getElementById("pedCor").value || null,
     };
     DB.pedidos.push(pedido);
+    logAcompanhamento("adicionado","Pedido",`Pedido ${noPedido} adicionado${pedido.cliente?" ("+pedido.cliente+")":""}.`, pedido.id);
     saveDB();
     msgEl.innerHTML = `<span style="color:var(--ok)">Pedido ${noPedido} criado!</span>`;
     document.getElementById("pedNoPedido").value = "";
@@ -3488,6 +3514,7 @@ function renderPedidos(){
         const nLotes = DB.lotes.filter(l=>l.pedidoId===id).length;
         if (nLotes > 0) { alert(`Este pedido tem ${nLotes} lote(s) vinculado(s). Exclua ou reatribua esses lotes antes de excluir o pedido.`); return; }
         if (!confirm(`Excluir o Pedido ${p.noPedido}?`)) return;
+        logAcompanhamento("excluido","Pedido",`Pedido ${p.noPedido} excluido${p.cliente?" ("+p.cliente+")":""}.`, id);
         DB.pedidos = DB.pedidos.filter(pd=>pd.id!==id);
         DB.statusPedido = DB.statusPedido.filter(s=>s.pedidoId!==id);
         DB.cargasExpedicao = DB.cargasExpedicao.filter(c=>c.pedidoId!==id);
@@ -3878,6 +3905,7 @@ function renderLotes(){
       id: DB.seq.lote++, pedidoId, noLote, ordem: proximaOrdemLote(pedidoId), prazoDias: null, pausas: [], equipamentoIds, itensPedidoPorEquip, descricoesPorEquip, quantidadesPorEquip, custosEstimadosPorEquip,
     };
     DB.lotes.push(lote);
+    { const pdL = getPedido(pedidoId); logAcompanhamento("adicionado","Lote",`Lote ${noLote} adicionado${pdL?" ao Pedido "+pdL.noPedido:""}.`, pedidoId); }
     const novasLinhasLote = [];
     for (const {itemId, prazoOverride, prerequisitosOverride, levantarCusto} of selecionados) { const nl = {id:DB.seq.itemLote++, loteId:lote.id, itemId, dataSolicitacao:null, dataReal:null, prazoOverride, prerequisitosOverride, levantarCusto}; DB.itensLote.push(nl); novasLinhasLote.push(nl); }
     limparCacheCalc(); engCriarTarefasDoPpcp(lote, novasLinhasLote);
@@ -3933,6 +3961,7 @@ function renderLotes(){
     DB.pecasAvulsas = DB.pecasAvulsas.filter(p=>p.loteId!==loteId);
     for (const carga of DB.cargasExpedicao) carga.itens = carga.itens.filter(it=>it.loteId!==loteId);
     removerDaColecao("checklistInstancias", c=>c.loteId!==loteId);
+    { const pdL = getPedido(lote.pedidoId); logAcompanhamento("excluido","Lote",`Lote ${lote.noLote} excluido${pdL?" do Pedido "+pdL.noPedido:""}.`, lote.pedidoId); }
     DB.lotes = DB.lotes.filter(l=>l.id!==loteId);
     compactarOrdemLotes(lote.pedidoId);
     saveDB();
@@ -6968,6 +6997,8 @@ function renderGestao(){
   renderGestaoPedido();
 
   popularSelSetorGestao();
+  renderGestaoVisaoGeral();
+  renderGestaoLogAcomp();
 
   document.getElementById("gestaoSalvarStatusBtn").onclick = salvarStatusPedido;
   document.getElementById("gestaoMencaoBtn").onclick = ()=>{
@@ -7045,6 +7076,44 @@ function renderGestaoPedido(){
       <div style="white-space:pre-wrap; margin-top:4px;">${destacarMencoes(s.texto)}</div>
     </div>`;
   }).join("") : '<p class="muted">Nenhum registro ainda.</p>';
+}
+
+function escAttrAcomp(t){ return String(t==null?"":t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function renderGestaoVisaoGeral(){
+  const wrap = document.getElementById("gestaoVisaoGeral"); if (!wrap) return;
+  const peds = pedidosAbertos();
+  wrap.innerHTML = peds.map(p=>{
+    const lotes = DB.lotes.filter(l=>l.pedidoId===p.id).sort((a,b)=>(a.ordem||0)-(b.ordem||0));
+    const de = parseDate(p.dataEntrada);
+    const lim = de && p.prazoPedido ? fmtBR(addPrazo(de,p.prazoPedido)) : "-";
+    return `<div class="card" style="margin-bottom:12px;">
+      <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px;"><strong style="font-size:15px;">Pedido ${p.noPedido}${p.cliente?" - "+escAttrAcomp(p.cliente):""}</strong><span class="muted">Limite de entrega: ${lim}</span></div>
+      <label class="field-label" style="margin-top:8px;">Observacoes do pedido</label>
+      <textarea rows="2" class="input-leitura" data-obs-ped="${p.id}" placeholder="Observacoes deste pedido...">${escAttrAcomp(p.obsAcomp)}</textarea>
+      ${lotes.map(l=>{
+        const nomes = [...(l.equipamentoIds||[]).map(id=>{const e=getEquipamento(id);return e?e.nome:"?";}), ...DB.pecasAvulsas.filter(x=>x.loteId===l.id).map(x=>x.nome)].join(", ") || "sem equipamento/peca";
+        const {dataLimite} = calcularDataLimiteLote(l);
+        return `<div style="margin:10px 0 0 14px; padding-left:10px; border-left:3px solid var(--border);">
+          <strong>Lote ${l.noLote}</strong>${loteEstaEncerrado(l)?' <span class="pill" style="background:var(--gray);">encerrado</span>':''} <span class="muted">- ${escAttrAcomp(nomes)} - limite: ${dataLimite?fmtBR(dataLimite):"-"}</span>
+          <textarea rows="2" class="input-leitura" data-obs-lote="${l.id}" placeholder="Observacoes deste lote..." style="margin-top:4px;">${escAttrAcomp(l.obsAcomp)}</textarea>
+        </div>`;
+      }).join("") || '<p class="muted" style="margin:8px 0 0 14px;">Este pedido ainda nao tem lotes.</p>'}
+    </div>`;
+  }).join("") || '<p class="muted">Nenhum pedido aberto.</p>';
+  wrap.querySelectorAll("[data-obs-ped],[data-obs-lote]").forEach(ta=>{
+    ta.addEventListener("change", ()=>{
+      const ehPed = ta.hasAttribute("data-obs-ped");
+      const obj = ehPed ? DB.pedidos.find(x=>x.id===parseInt(ta.dataset.obsPed)) : DB.lotes.find(x=>x.id===parseInt(ta.dataset.obsLote));
+      if (!obj) return;
+      obj.obsAcomp = ta.value.trim() || null;
+      saveDB();
+    });
+  });
+}
+function renderGestaoLogAcomp(){
+  const w = document.getElementById("gestaoLogAcomp"); if (!w) return;
+  const lista = [...(DB.logAcomp||[])].sort((a,b)=>String(b.data).localeCompare(String(a.data))).slice(0,100);
+  w.innerHTML = lista.length ? '<table><tr><th>Data</th><th>Evento</th><th>Detalhe</th><th>Usuario</th></tr>'+lista.map(x=>`<tr><td>${new Date(x.data).toLocaleString('pt-BR')}</td><td><span class="pill" style="background:${x.evento==="excluido"?"var(--danger)":"var(--ok)"};">${x.tipo} ${x.evento}</span></td><td>${escAttrAcomp(x.descricao)}</td><td>${escAttrAcomp(x.autor||"-")}</td></tr>`).join("")+'</table>' : '<p class="muted">Nenhuma movimentacao registrada ainda.</p>';
 }
 
 let statusPedidoEditandoId = null;
