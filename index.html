@@ -166,6 +166,7 @@
   .tabela-itens-lote td { padding:8px 6px; border-bottom:1px solid var(--border); vertical-align:middle; }
   .tabela-itens-lote tr:last-child td { border-bottom:none; }
   .kb-pill .pill { font-size:9px; padding:2px 7px; white-space:normal; display:inline-block; line-height:1.25; }
+  .btn-edit-grupo { margin-left:10px; font-size:11px !important; padding:2px 8px !important; width:auto !important; height:auto !important; }
   .drag-h { display:inline-block; cursor:grab; touch-action:none; user-select:none; color:var(--gray); font-size:17px; line-height:1; padding:2px 6px 2px 0; vertical-align:middle; }
   .drag-h:hover { color:var(--primary-dark); }
   tr.arrastando td { background:#E8F3EC; box-shadow:0 2px 8px rgba(0,0,0,.18); }
@@ -435,7 +436,7 @@
     </form>
     <div style="text-align:center; margin-top:8px;"><a href="#" id="loginEsqueciSenhaLink" style="font-size:12px; color:#8A8F87;">Esqueci minha senha</a></div>
     <div id="loginMsg" style="margin-top:10px; font-size:12.5px; min-height:18px;"></div>
-    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 176 - 22/10/2026</div>
+    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 177 - 22/10/2026</div>
     <div id="loginOfflineWrap" class="hidden" style="margin-top:6px;">
       <button id="loginOfflineBtn" style="width:100%; padding:8px; background:transparent; color:#8A8F87; border:1px solid #E1E6DE; border-radius:6px; font-size:12.5px; cursor:pointer;">Continuar sem conexao (usa os dados salvos neste navegador)</button>
     </div>
@@ -472,7 +473,7 @@
     </div>
     <div style="height:3px; width:60px; background:#91C53E; border-radius:2px; margin-bottom:34px;"></div>
     <div id="painelPastasGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(172px, 1fr)); gap:14px;"></div>
-    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 176 - 22/10/2026</p>
+    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 177 - 22/10/2026</p>
   </div>
 </div>
 
@@ -996,6 +997,40 @@
 <div id="faixaLeitura" class="faixa-leitura hidden"></div>
 <div id="toastAviso" class="hidden" style="position:fixed; bottom:56px; left:50%; transform:translateX(-50%); z-index:990; background:#14462E; color:#fff; padding:10px 18px; border-radius:8px; font-size:13px; max-width:90vw; text-align:center; box-shadow:0 4px 14px rgba(0,0,0,.25);"></div>
 
+      <div id="gerenciarOverlay" class="hidden" style="position:fixed; inset:0; background:rgba(20,70,46,.5); z-index:940; display:flex; align-items:flex-start; justify-content:center; padding:20px 10px; overflow-y:auto;">
+        <div style="background:#fff; border-radius:10px; padding:18px; width:1100px; max-width:100%;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;"><h3 id="gerenciarTitulo" style="margin:0;">Editar Lote</h3><button type="button" class="btn secondary btn-sm" id="gerenciarFecharBtn">Fechar &#10005;</button></div>
+          
+          <p class="muted">Clique no lapis de um equipamento ou peca pra editar tudo de uma vez (Item do Pedido, Descricao, Quantidade, Custo, itens rastreados, prazos e pre-requisitos). Sem clicar em editar, nada pode ser alterado.</p>
+          <div class="grid hidden" style="grid-template-columns:minmax(0,520px);">
+            <div class="field"><label class="field-label">Filtrar por Pedido</label><select id="pedidoGerenciarSelect"></select></div>
+            <div class="field"><label class="field-label">Filtrar por Lote</label><select id="loteGerenciarSelect"></select></div>
+          </div>
+
+          <div id="gerenciarEquipamentosBox" style="margin-top:16px; border:1px solid var(--border); border-radius:8px; padding:14px;">
+            <h4 style="margin-top:0;">Equipamentos deste Lote</h4>
+            <div id="gerenciarEquipamentosWrap"></div>
+          </div>
+
+          <div id="gerenciarPecasAvulsasBox" style="margin-top:16px; border:1px solid var(--border); border-radius:8px; padding:14px;">
+            <h4 style="margin-top:0;">Pecas/Conjuntos Avulsos deste Lote</h4>
+            <div id="gerenciarPecasAvulsasWrap"></div>
+          </div>
+
+          <p id="gerenciarNenhumLoteMsg" class="muted hidden">Selecione um Lote acima para ver e gerenciar seus equipamentos e pecas/conjuntos avulsos.</p>
+
+          <div id="gerenciarAddEquipWrap" style="margin-top:20px; background:var(--bg-soft); border-radius:8px; padding:14px;">
+            <h4 style="margin-top:0;">Adicionar novo equipamento ou peca a este Lote</h4>
+            <label class="field-label">Equipamento</label>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <select id="gerenciarNovoEquipSelect" style="flex:1;"></select>
+              <button type="button" class="btn secondary btn-sm" id="gerenciarAddEquipBtn" style="flex-shrink:0;">+ Adicionar equipamento</button>
+            </div>
+            <button type="button" class="btn secondary btn-sm" id="gerenciarAddPecaAvulsaBtn" style="margin-top:10px;">+ Adicionar peca/conjunto avulso</button>
+          </div>
+        </div>
+      </div>
+
 <div id="adminAcessosOverlay" class="hidden" style="position:fixed; inset:0; background:rgba(20,70,46,.5); z-index:950; display:flex; align-items:center; justify-content:center;">
   <div style="background:#fff; border-radius:10px; padding:20px; width:460px; max-width:94vw; max-height:92vh; overflow-y:auto;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
@@ -1306,7 +1341,6 @@
       <div class="tabbar">
         <button class="tabbtn active" data-tab="lista">Lotes Ativos</button>
         <button class="tabbtn" data-tab="lotesencerrados">Lotes Encerrados</button>
-        <button class="tabbtn" data-tab="gerenciar" data-edicao>Gerenciar Lote</button>
         <button class="tabbtn" data-tab="novo" data-edicao>+ Novo Lote</button>
       </div>
 
@@ -1350,38 +1384,6 @@
         </div>
       </div>
 
-      <div class="tabpage" id="tab-gerenciar" data-edicao>
-        <div class="card">
-          <h3>Gerenciar equipamentos, pecas e itens de um Lote existente</h3>
-          <p class="muted">Clique no lapis de um equipamento ou peca pra editar tudo de uma vez (Item do Pedido, Descricao, Quantidade, Custo, itens rastreados, prazos e pre-requisitos). Sem clicar em editar, nada pode ser alterado.</p>
-          <div class="grid" style="grid-template-columns:minmax(0,520px);">
-            <div class="field"><label class="field-label">Filtrar por Pedido</label><select id="pedidoGerenciarSelect"></select></div>
-            <div class="field"><label class="field-label">Filtrar por Lote</label><select id="loteGerenciarSelect"></select></div>
-          </div>
-
-          <div id="gerenciarEquipamentosBox" style="margin-top:16px; border:1px solid var(--border); border-radius:8px; padding:14px;">
-            <h4 style="margin-top:0;">Equipamentos deste Lote</h4>
-            <div id="gerenciarEquipamentosWrap"></div>
-          </div>
-
-          <div id="gerenciarPecasAvulsasBox" style="margin-top:16px; border:1px solid var(--border); border-radius:8px; padding:14px;">
-            <h4 style="margin-top:0;">Pecas/Conjuntos Avulsos deste Lote</h4>
-            <div id="gerenciarPecasAvulsasWrap"></div>
-          </div>
-
-          <p id="gerenciarNenhumLoteMsg" class="muted hidden">Selecione um Lote acima para ver e gerenciar seus equipamentos e pecas/conjuntos avulsos.</p>
-
-          <div id="gerenciarAddEquipWrap" style="margin-top:20px; background:var(--bg-soft); border-radius:8px; padding:14px;">
-            <h4 style="margin-top:0;">Adicionar novo equipamento ou peca a este Lote</h4>
-            <label class="field-label">Equipamento</label>
-            <div style="display:flex; gap:8px; align-items:center;">
-              <select id="gerenciarNovoEquipSelect" style="flex:1;"></select>
-              <button type="button" class="btn secondary btn-sm" id="gerenciarAddEquipBtn" style="flex-shrink:0;">+ Adicionar equipamento</button>
-            </div>
-            <button type="button" class="btn secondary btn-sm" id="gerenciarAddPecaAvulsaBtn" style="margin-top:10px;">+ Adicionar peca/conjunto avulso</button>
-          </div>
-        </div>
-      </div>
     </section>
 
     <!-- ============================= ITENS DO LOTE ============================= -->
@@ -3614,6 +3616,16 @@ function renderLotesEncerrados(){
   }));
 }
 
+function abrirEdicaoLote(loteId, tipo, id){
+  if (!window.abrirGerenciarLote) renderLotes();
+  window.abrirGerenciarLote(loteId, tipo, id);
+}
+document.addEventListener("click", (e)=>{
+  if (e.target && e.target.id === "gerenciarFecharBtn") {
+    document.getElementById("gerenciarOverlay").classList.add("hidden");
+    try { renderItensLote(); } catch(x){}
+  }
+});
 function renderLotes(){
   renderLotesEncerrados();
   populateEquipamentoSelects();
@@ -4530,6 +4542,19 @@ function renderLotes(){
 
   selLote.onchange = ()=>{ gerenciarEquipEditando = null; gerenciarPecaEditando = null; gerenciarMenuAberto = null; renderGerenciarPainel(); };
   popularSelLote();
+  // abre a janela de edicao do lote (a partir de Itens do Lote); tipo/id opcionais: ja abre aquele equipamento/peca em edicao
+  window.abrirGerenciarLote = (loteId, tipo, id)=>{
+    selPedidoGerenciar.value = "";
+    popularSelLote();
+    selLote.value = String(loteId);
+    gerenciarEquipEditando = (tipo==="eq") ? id : null;
+    gerenciarPecaEditando = (tipo==="peca") ? id : null;
+    gerenciarMenuAberto = null;
+    const lote = DB.lotes.find(l=>l.id===loteId);
+    document.getElementById("gerenciarTitulo").textContent = "Editar Lote " + (lote ? lote.noLote : "");
+    renderGerenciarPainel();
+    document.getElementById("gerenciarOverlay").classList.remove("hidden");
+  };
 }
 
 /* =====================================================================
@@ -4691,6 +4716,7 @@ function renderItensUmLote(lote, resumoEl, lista, unico){
     `<span class="chip"><span class="muted">Data Limite de Entrega</span> <b>${dataLimite?fmtBR(dataLimite):"-"}</b>${dl.diasPausa>0?` <i class="muted">(original ${fmtBR(dl.dataLimiteOriginal)} + ${dl.diasPausa}d pausados)</i>`:""}</span>`+
     `<span class="chip"><span class="muted">Caminho dos itens</span> <b>${prazoLote!==null?prazoLote+" dias":"-"}</b></span>`+
     (dl.inviavelDias>0 ? `<span class="chip danger"><b>&#9888; Prazo inviavel: faltam ${dl.inviavelDias} dia(s)</b></span>` : "")+
+    `<button type="button" class="btn secondary btn-sm" data-edicao data-edit-lote="${lote.id}" title="Editar o lote: adicionar ou remover equipamento/peca, alterar itens, prazos e pre-requisitos">&#9998; Editar lote</button>`+
     (todosItensConcluidos(lote) ? `<button class="btn" id="btnEncerrarLoteItens" style="background:var(--ok); color:#fff; padding:4px 12px;">Encerrar lote</button>` : "");
   { const be = resumoEl.querySelector("#btnEncerrarLoteItens"); if (be) be.onclick = ()=>perguntarEncerrarLote(lote); }
 
@@ -4713,7 +4739,7 @@ function renderItensUmLote(lote, resumoEl, lista, unico){
   let html = "";
   if (itensMap.size===0 && !pecasAvulsasDoLote.length) {
     lista.innerHTML = '<p class="muted">Nenhum item cadastrado para este Lote ainda. '+
-      'Va em "Lotes" &gt; Lotes Ativos &gt; "Gerenciar itens de um Lote existente", ou adicione uma Peca/Conjunto Avulso ao criar o Lote.</p>';
+      'Use o botao "Editar lote" acima para adicionar um equipamento ou uma Peca/Conjunto Avulso.</p>';
     return;
   }
 
@@ -4732,7 +4758,7 @@ function renderItensUmLote(lote, resumoEl, lista, unico){
       const idsOrdenados = aplicarOrdemManual(ordenarItensPorPrereq(lote.id, porEquip.get(equipId)), id=>itensMap.get(id));
       const kEq = lote.id+"|eq-"+equipId;
       const nConcEq = idsOrdenados.filter(id=>itensMap.get(id).dataReal).length;
-      html += `<details class="itens-det" data-key="${kEq}" ${(itensDetAbertos.has(kEq)||filtroEquipPeca===("eq-"+equipId))?"open":""}><summary class="itens-grupo-titulo"><small>Equipamento</small>${eq?eq.nome:"?"}<span class="itens-cont">${nConcEq}/${idsOrdenados.length} itens concluidos</span></summary><div class="tabela-itens-lote-wrap"><table class="tabela-itens-lote">`+
+      html += `<details class="itens-det" data-key="${kEq}" ${(itensDetAbertos.has(kEq)||filtroEquipPeca===("eq-"+equipId))?"open":""}><summary class="itens-grupo-titulo"><small>Equipamento</small>${eq?eq.nome:"?"}<button type="button" class="acao-icon btn-edit-grupo" data-edicao data-edit-grupo="eq|${equipId}|${lote.id}" title="Editar dados, itens, prazos e pre-requisitos">&#9998; Editar</button><span class="itens-cont">${nConcEq}/${idsOrdenados.length} itens concluidos</span></summary><div class="tabela-itens-lote-wrap"><table class="tabela-itens-lote">`+
         "<tr><th>Item</th><th>Solicitacao realizada em</th><th>Solicitar ate<div class=\"th-sub\">(data limite)</div></th><th>Inicio do desenvolvimento</th><th>Entrega prevista<div class=\"th-sub\">(inicio ou solicitacao + prazo)</div></th><th>Entrega em<div class=\"th-sub\">(data real)</div></th><th>Situacao</th></tr>";
       for (const itemId of idsOrdenados) {
         const row = itensMap.get(itemId);
@@ -4758,7 +4784,7 @@ function renderItensUmLote(lote, resumoEl, lista, unico){
       const itensDaPeca = aplicarOrdemManual(ordenarItensAvulsos(DB.itensAvulsos.filter(i=>i.pecaAvulsaId===peca.id && i.rastrear!==false)), x=>x);
       const kPc = lote.id+"|peca-"+peca.id;
       const nConcPc = itensDaPeca.filter(i=>i.dataReal).length;
-      html += `<details class="itens-det" data-key="${kPc}" ${(itensDetAbertos.has(kPc)||filtroEquipPeca===("peca-"+peca.id))?"open":""}><summary class="itens-grupo-titulo peca"><small>Peca/Conjunto Avulso</small>${peca.nome}<span class="itens-cont">${nConcPc}/${itensDaPeca.length} itens concluidos</span></summary><div class="tabela-itens-lote-wrap"><table class="tabela-itens-lote">`+
+      html += `<details class="itens-det" data-key="${kPc}" ${(itensDetAbertos.has(kPc)||filtroEquipPeca===("peca-"+peca.id))?"open":""}><summary class="itens-grupo-titulo peca"><small>Peca/Conjunto Avulso</small>${peca.nome}<button type="button" class="acao-icon btn-edit-grupo" data-edicao data-edit-grupo="peca|${peca.id}|${lote.id}" title="Editar dados, itens, prazos e pre-requisitos">&#9998; Editar</button><span class="itens-cont">${nConcPc}/${itensDaPeca.length} itens concluidos</span></summary><div class="tabela-itens-lote-wrap"><table class="tabela-itens-lote">`+
         "<tr><th>Item</th><th>Solicitacao realizada em</th><th>Solicitar ate<div class=\"th-sub\">(data limite)</div></th><th>Inicio do desenvolvimento</th><th>Entrega prevista<div class=\"th-sub\">(inicio ou solicitacao + prazo)</div></th><th>Entrega em<div class=\"th-sub\">(data real)</div></th><th>Situacao</th></tr>";
       for (const ia of itensDaPeca) {
         const r = calcularStatusItemAvulso(lote, ia, alertaDias);
@@ -4779,6 +4805,12 @@ function renderItensUmLote(lote, resumoEl, lista, unico){
 
   lista.innerHTML = html;
   ligarArrastarItens(lista);
+  lista.querySelectorAll("[data-edit-grupo]").forEach(b=>b.addEventListener("click", (ev)=>{
+    ev.preventDefault(); ev.stopPropagation();
+    const [tipo, id, loteId] = b.dataset.editGrupo.split("|");
+    abrirEdicaoLote(parseInt(loteId), tipo, parseInt(id));
+  }));
+  resumoEl.querySelectorAll("[data-edit-lote]").forEach(b=>b.addEventListener("click", ()=>abrirEdicaoLote(parseInt(b.dataset.editLote))));
   lista.querySelectorAll("details.itens-det").forEach(d=>d.addEventListener("toggle", ()=>{ if (d.open) itensDetAbertos.add(d.dataset.key); else itensDetAbertos.delete(d.dataset.key); }));
 
   lista.querySelectorAll("input.date-mask-avulso").forEach(inp=>{
