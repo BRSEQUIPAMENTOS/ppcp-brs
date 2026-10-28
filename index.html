@@ -458,7 +458,7 @@
     </form>
     <div style="text-align:center; margin-top:8px;"><a href="#" id="loginEsqueciSenhaLink" style="font-size:12px; color:#8A8F87;">Esqueci minha senha</a></div>
     <div id="loginMsg" style="margin-top:10px; font-size:12.5px; min-height:18px;"></div>
-    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 184 - 28/10/2026</div>
+    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 185 - 28/10/2026</div>
     <div id="loginOfflineWrap" class="hidden" style="margin-top:6px;">
       <button id="loginOfflineBtn" style="width:100%; padding:8px; background:transparent; color:#8A8F87; border:1px solid #E1E6DE; border-radius:6px; font-size:12.5px; cursor:pointer;">Continuar sem conexao (usa os dados salvos neste navegador)</button>
     </div>
@@ -496,7 +496,7 @@
     <div style="height:3px; width:60px; background:#91C53E; border-radius:2px; margin-bottom:34px;"></div>
     <div id="painelPastasGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(172px, 1fr)); gap:14px;"></div>
     <div id="painelMinhasAtividades" style="margin-top:28px;"></div>
-    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 184 - 28/10/2026</p>
+    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 185 - 28/10/2026</p>
   </div>
 </div>
 
@@ -7051,10 +7051,12 @@ function obsBotoesHtml(tipo,id){
   return `<div data-edicao style="display:flex; gap:8px; margin-top:4px;"><button type="button" class="btn secondary btn-sm" data-acao="obs-hist" data-obs="${tipo}" data-id="${id}" title="Guarda este texto no historico e limpa o campo">&#128203; Enviar ao historico</button><button type="button" class="btn secondary btn-sm" data-acao="obs-apagar" data-obs="${tipo}" data-id="${id}">&#128465; Apagar</button></div>`;
 }
 function atvHistHtml(a){
+  if (souMasterAcomp() && acompEditId === a.id) return atvLinhaHtml(a,false);
   const prazo = a.prazo ? fmtBR(parseDate(a.prazo)) : "sem prazo";
   const hist = (a.historicoPrazo||[]).map(h=>`${h.de?fmtBR(parseDate(h.de)):"sem prazo"} &rarr; ${h.para?fmtBR(parseDate(h.para)):"sem prazo"} (${new Date(h.em).toLocaleDateString('pt-BR')}${h.motivo?": "+escAttrAcomp(h.motivo):""})`).join("; ");
   return `<div style="padding:6px 0; border-bottom:1px solid var(--border);">
-    <div><strong>${escAttrAcomp(a.titulo)}</strong> <span class="pill" style="background:${a.concluida?"var(--ok)":"var(--warning)"};">${a.concluida?"concluida"+(a.concluidaEm?" em "+new Date(a.concluidaEm).toLocaleDateString('pt-BR'):""):"aberta"}</span></div>
+    <div><strong>${escAttrAcomp(a.titulo)}</strong> <span class="pill" style="background:${a.concluida?"var(--ok)":"var(--warning)"};">${a.concluida?"concluida"+(a.concluidaEm?" em "+new Date(a.concluidaEm).toLocaleDateString('pt-BR'):""):"aberta"}</span>
+      ${souMasterAcomp()?` <button type="button" class="acao-icon" data-acao="atv-editar" data-id="${a.id}" title="Editar / remanejar (master)">&#9998;</button><button type="button" class="acao-icon danger" data-acao="atv-excluir" data-id="${a.id}" title="Excluir (master)">&#128465;</button>`:""}</div>
     <div class="muted" style="font-size:12px;">${escAttrAcomp(ctxTextoAtv(a))} - ${escAttrAcomp(nomeSetorPorId(a.setor)||"-")} / ${escAttrAcomp(a.responsavel?nomeExibicao(a.responsavel):"sem responsavel")} - prazo: ${prazo} - criada em ${new Date(a.criadoEm).toLocaleDateString('pt-BR')}</div>
     ${hist?`<div style="font-size:11.5px; color:var(--warning);">Remanejamentos: ${hist}</div>`:""}
   </div>`;
@@ -7087,7 +7089,7 @@ function atvLinhaHtml(a, mostrarCtx){
     ${prazo?`<span style="font-size:12px; color:${atrasada?"var(--danger)":"var(--gray)"};">prazo ${fmtBR(prazo)}${atrasada?" (atrasada)":""}</span>`:""}
     ${hist.length?`<span class="pill" style="background:var(--warning);" title="${escAttrAcomp(histTxt).replace(/"/g,"&quot;")}">remanejada ${hist.length}x</span>`:""}
     ${master?`<button type="button" class="acao-icon" data-acao="atv-editar" data-id="${a.id}" title="Editar / remanejar data (master)">&#9998;</button>`:""}
-    ${mostrarCtx?"":`<button type="button" class="acao-icon danger" data-edicao data-acao="atv-excluir" data-id="${a.id}" title="Excluir atividade">&#128465;</button>`}
+    ${(mostrarCtx||!souMasterAcomp())?"":`<button type="button" class="acao-icon danger" data-edicao data-acao="atv-excluir" data-id="${a.id}" title="Excluir atividade">&#128465;</button>`}
   </div>`;
 }
 function atvFormHtml(ctxAttrs, chaveForm){
@@ -7133,8 +7135,9 @@ function renderAcompanhamento(){
         const ab = atv.filter(a=>!a.concluida).length;
         const k = `a${l.id}-${al.tipo}${al.id}`;
         const ctx = `data-ped="${p.id}" data-lote="${l.id}" data-tipo="${al.tipo}" data-alvo="${al.id}" data-nome="${escAttrAcomp(al.nome).replace(/"/g,"&quot;")}"`;
-        return detalhesAcomp(k, `${seta} <span class="pill" style="background:var(--primary-dark);">${al.rot}</span> Lote ${l.noLote} - ${escAttrAcomp(al.nome)} <span class="muted" style="font-weight:400;">- ${ab} atividade(s) aberta(s)</span>`,
-          (atv.map(a=>atvLinhaHtml(a,false)).join("") || '<p class="muted" style="margin:4px 0;">Nenhuma atividade ainda.</p>') + atvFormHtml(ctx, k), 1);
+        const conteudo = (atv.map(a=>atvLinhaHtml(a,false)).join("") || '<p class="muted" style="margin:4px 0;">Nenhuma atividade ainda.</p>') + atvFormHtml(ctx, k);
+        if (alvos.length === 1) return `<div style="margin-top:6px;"><div class="muted" style="font-size:12px; font-weight:600;">Atividades - ${ab} aberta(s)</div>${conteudo}</div>`;
+        return detalhesAcomp(k, `${seta} <span class="pill" style="background:var(--primary-dark);">${al.rot}</span> Lote ${l.noLote} - ${escAttrAcomp(al.nome)} <span class="muted" style="font-weight:400;">- ${ab} atividade(s) aberta(s)</span>`, conteudo, 1);
       }).join("") || '<p class="muted">Este lote nao tem equipamento nem peca.</p>';
       corpoL += `<label class="field-label" style="margin-top:12px;">Observacoes do lote ${l.noLote}</label>
         <textarea rows="2" data-obs="lote" data-id="${l.id}" placeholder="Observacoes deste lote...">${escAttrAcomp(l.obsAcomp)}</textarea>${obsBotoesHtml("lote",l.id)}`;
@@ -7150,13 +7153,10 @@ function renderAcompanhamento(){
     const entH = x=>`<div style="padding:6px 0; border-bottom:1px solid var(--border);"><div class="muted" style="font-size:11px;">${new Date(x.data).toLocaleString('pt-BR')} - ${escAttrAcomp(x.autor||"?")} ${x.loteId?`<span class="pill" style="background:var(--primary-dark);">Lote ${(DB.lotes.find(l=>l.id===x.loteId)||{}).noLote||"?"}</span>`:""} ${x.setor&&x.tipo!=="obs"?`<span class="pill" style="background:var(--primary);">${escAttrAcomp(x.setor)}</span>`:""}${souMasterAcomp()&&x.tipo==="obs"?` <button type="button" class="acao-icon danger" data-acao="hist-excluir" data-id="${x.id}" title="Excluir (master)">&#128465;</button>`:""}</div><div style="white-space:pre-wrap;">${destacarMencoes(x.texto)}</div></div>`;
     const tit = t=>`<h4 style="margin:14px 0 4px; color:var(--primary-dark);">${t}</h4>`;
     const vazio = '<p class="muted" style="margin:2px 0;">Nada ainda.</p>';
-    corpo += detalhesAcomp("h"+p.id, `${seta} Historico <span class="muted" style="font-weight:400;">(${atvH.length} atividade(s), ${obsH.length} observacao(oes), ${stH.length} registro(s) de status)</span>`,
-      `<div data-edicao style="margin-bottom:8px;"><label class="field-label">Novo registro de status (reuniao)</label><textarea rows="2" data-stx="${p.id}" placeholder="Novo registro de status (reuniao)..."></textarea>
-        <div style="display:flex; gap:8px; margin-top:6px; flex-wrap:wrap;"><select data-stsetor="${p.id}">${[...DB.setoresGestao].sort((a,b)=>a.localeCompare(b,'pt-BR')).map(st=>`<option value="${escAttrAcomp(st).replace(/"/g,"&quot;")}">${escAttrAcomp(st)}</option>`).join("")}</select>
-        <button type="button" class="btn btn-sm" data-acao="status-salvar" data-id="${p.id}">Salvar registro</button></div></div>`+
+    corpo += detalhesAcomp("h"+p.id, `${seta} Historico <span class="muted" style="font-weight:400;">(${atvH.length} atividade(s), ${obsH.length} observacao(oes))</span>`,
       tit("Atividades")+(atvH.map(atvHistHtml).join("")||vazio)+
       tit("Observacoes enviadas ao historico")+(obsH.map(entH).join("")||vazio)+
-      tit("Registros de status")+(stH.map(entH).join("")||vazio)+
+      (stH.length?tit("Registros de status (anteriores)")+stH.map(entH).join(""):"")+
       tit("Movimentacoes do sistema")+(sisH.map(entH).join("")||vazio), 1);
     html += detalhesAcomp("p"+p.id, `${seta} Pedido ${p.noPedido}${p.cliente?" - "+escAttrAcomp(p.cliente):""} <span class="muted" style="font-weight:400;">- limite: ${lim} - ${lotes.length} lote(s) - ${nAbertas} atividade(s) aberta(s)${p.obsAcomp?" - com observacao":""}</span>`, corpo, 0);
   }
@@ -7235,6 +7235,7 @@ function renderAcompanhamento(){
       acompEditId = null; saveDB(); renderAcompanhamento(); return;
     }
     if (acao==="atv-excluir") {
+      if (!souMasterAcomp()) return;
       const id = parseInt(el.dataset.id); const a = DB.atividadesAcomp.find(x=>x.id===id); if (!a) return;
       if (!confirm(`Excluir a atividade "${a.titulo}"?`)) return;
       removerDaColecao("atividadesAcomp", x=>x.id!==id); saveDB(); renderAcompanhamento(); return;
