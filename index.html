@@ -458,7 +458,7 @@
     </form>
     <div style="text-align:center; margin-top:8px;"><a href="#" id="loginEsqueciSenhaLink" style="font-size:12px; color:#8A8F87;">Esqueci minha senha</a></div>
     <div id="loginMsg" style="margin-top:10px; font-size:12.5px; min-height:18px;"></div>
-    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 182 - 23/10/2026</div>
+    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 184 - 28/10/2026</div>
     <div id="loginOfflineWrap" class="hidden" style="margin-top:6px;">
       <button id="loginOfflineBtn" style="width:100%; padding:8px; background:transparent; color:#8A8F87; border:1px solid #E1E6DE; border-radius:6px; font-size:12.5px; cursor:pointer;">Continuar sem conexao (usa os dados salvos neste navegador)</button>
     </div>
@@ -496,7 +496,7 @@
     <div style="height:3px; width:60px; background:#91C53E; border-radius:2px; margin-bottom:34px;"></div>
     <div id="painelPastasGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(172px, 1fr)); gap:14px;"></div>
     <div id="painelMinhasAtividades" style="margin-top:28px;"></div>
-    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 182 - 23/10/2026</p>
+    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 184 - 28/10/2026</p>
   </div>
 </div>
 
@@ -7046,16 +7046,48 @@ function ctxTextoAtv(a){
   if (a.alvoNome) partes.push(a.alvoNome);
   return partes.join(" - ");
 }
+let acompEditId = null;
+function obsBotoesHtml(tipo,id){
+  return `<div data-edicao style="display:flex; gap:8px; margin-top:4px;"><button type="button" class="btn secondary btn-sm" data-acao="obs-hist" data-obs="${tipo}" data-id="${id}" title="Guarda este texto no historico e limpa o campo">&#128203; Enviar ao historico</button><button type="button" class="btn secondary btn-sm" data-acao="obs-apagar" data-obs="${tipo}" data-id="${id}">&#128465; Apagar</button></div>`;
+}
+function atvHistHtml(a){
+  const prazo = a.prazo ? fmtBR(parseDate(a.prazo)) : "sem prazo";
+  const hist = (a.historicoPrazo||[]).map(h=>`${h.de?fmtBR(parseDate(h.de)):"sem prazo"} &rarr; ${h.para?fmtBR(parseDate(h.para)):"sem prazo"} (${new Date(h.em).toLocaleDateString('pt-BR')}${h.motivo?": "+escAttrAcomp(h.motivo):""})`).join("; ");
+  return `<div style="padding:6px 0; border-bottom:1px solid var(--border);">
+    <div><strong>${escAttrAcomp(a.titulo)}</strong> <span class="pill" style="background:${a.concluida?"var(--ok)":"var(--warning)"};">${a.concluida?"concluida"+(a.concluidaEm?" em "+new Date(a.concluidaEm).toLocaleDateString('pt-BR'):""):"aberta"}</span></div>
+    <div class="muted" style="font-size:12px;">${escAttrAcomp(ctxTextoAtv(a))} - ${escAttrAcomp(nomeSetorPorId(a.setor)||"-")} / ${escAttrAcomp(a.responsavel?nomeExibicao(a.responsavel):"sem responsavel")} - prazo: ${prazo} - criada em ${new Date(a.criadoEm).toLocaleDateString('pt-BR')}</div>
+    ${hist?`<div style="font-size:11.5px; color:var(--warning);">Remanejamentos: ${hist}</div>`:""}
+  </div>`;
+}
+function souMasterAcomp(){ return chavePerfil(emailUsuarioAtual) === chavePerfil(USUARIO_MASTER); }
 function atvLinhaHtml(a, mostrarCtx){
   const prazo = a.prazo ? parseDate(a.prazo) : null;
   const atrasada = prazo && !a.concluida && prazo < hojeUTC();
+  const master = souMasterAcomp() && !mostrarCtx;
+  const hist = a.historicoPrazo || [];
+  if (master && acompEditId === a.id) {
+    return `<div style="padding:10px; margin:6px 0; background:#FFF8E6; border:1px solid #F0D58C; border-radius:8px;">
+      <div class="grid grid-2">
+        <div class="field" style="grid-column:1/-1;"><label class="field-label">Atividade</label><input type="text" data-e="titulo" value="${escAttrAcomp(a.titulo).replace(/"/g,"&quot;")}"></div>
+        <div class="field"><label class="field-label">Setor responsavel</label><select data-e="setor" data-acao="atv-setor">${opcoesSetorAcomp(a.setor)}</select></div>
+        <div class="field"><label class="field-label">Responsavel</label><select data-e="resp">${opcoesResponsavelAcomp(a.setor)}</select></div>
+        <div class="field"><label class="field-label">Prazo (para remanejar, mude a data)</label><input type="date" data-e="prazo" value="${a.prazo||""}"></div>
+        <div class="field"><label class="field-label">Motivo do remanejamento (se mudar a data)</label><input type="text" data-e="motivo" placeholder="Ex: fornecedor atrasou"></div>
+      </div>
+      <button type="button" class="btn btn-sm" data-acao="atv-edit-salvar" data-id="${a.id}">Salvar alteracoes</button>
+      <button type="button" class="btn secondary btn-sm" data-acao="atv-edit-cancelar">Cancelar</button>
+    </div>`;
+  }
+  const histTxt = hist.map(h=>`${h.de?fmtBR(parseDate(h.de)):"sem prazo"} -> ${h.para?fmtBR(parseDate(h.para)):"sem prazo"} (${new Date(h.em).toLocaleDateString('pt-BR')}${h.motivo?": "+h.motivo:""})`).join("\n");
   return `<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; padding:6px 4px; border-bottom:1px solid var(--border); ${a.concluida?"opacity:.6;":""}">
     <input type="checkbox" style="width:auto;" ${a.concluida?"checked":""} data-acao="atv-concluir" data-id="${a.id}" title="Marcar como concluida">
     <div style="flex:1; min-width:200px;"><strong style="${a.concluida?"text-decoration:line-through;":""}">${escAttrAcomp(a.titulo)}</strong>${mostrarCtx?`<div class="muted" style="font-size:11.5px;">${escAttrAcomp(ctxTextoAtv(a))}</div>`:""}</div>
     <span class="pill" style="background:var(--primary);">${escAttrAcomp(nomeSetorPorId(a.setor)||"-")}</span>
     <span style="font-size:12.5px;">${escAttrAcomp(a.responsavel?nomeExibicao(a.responsavel):"sem responsavel")}</span>
     ${prazo?`<span style="font-size:12px; color:${atrasada?"var(--danger)":"var(--gray)"};">prazo ${fmtBR(prazo)}${atrasada?" (atrasada)":""}</span>`:""}
-    <button type="button" class="acao-icon danger" data-edicao data-acao="atv-excluir" data-id="${a.id}" title="Excluir atividade">&#128465;</button>
+    ${hist.length?`<span class="pill" style="background:var(--warning);" title="${escAttrAcomp(histTxt).replace(/"/g,"&quot;")}">remanejada ${hist.length}x</span>`:""}
+    ${master?`<button type="button" class="acao-icon" data-acao="atv-editar" data-id="${a.id}" title="Editar / remanejar data (master)">&#9998;</button>`:""}
+    ${mostrarCtx?"":`<button type="button" class="acao-icon danger" data-edicao data-acao="atv-excluir" data-id="${a.id}" title="Excluir atividade">&#128465;</button>`}
   </div>`;
 }
 function atvFormHtml(ctxAttrs, chaveForm){
@@ -7074,8 +7106,12 @@ function atvFormHtml(ctxAttrs, chaveForm){
   </div>`;
 }
 function detalhesAcomp(chave, resumoHtml, corpoHtml, nivel){
-  return `<details data-k="${chave}" ${acompAbertos.has(chave)?"open":""} style="margin:${nivel?6:0}px 0 ${nivel?0:10}px ${nivel?14:0}px; border:1px solid var(--border); border-radius:8px; background:#fff;">
-    <summary style="cursor:pointer; padding:10px 12px; font-weight:600; list-style:none;">${resumoHtml}</summary>
+  const estilo = nivel===0
+    ? "margin:0 0 26px; border:2px solid #14462E; border-left:10px solid #14462E; border-radius:10px; background:#fff; box-shadow:0 3px 10px rgba(20,70,46,.18);"
+    : `margin:6px 0 0 14px; border:1px solid var(--border); border-radius:8px; background:#fff;`;
+  const estSum = nivel===0 ? "cursor:pointer; padding:14px 14px; font-weight:700; font-size:15px; list-style:none; background:#E4EEDC; color:#14462E; border-radius:8px 8px 0 0;" : "cursor:pointer; padding:10px 12px; font-weight:600; list-style:none;";
+  return `<details data-k="${chave}" ${acompAbertos.has(chave)?"open":""} style="${estilo}">
+    <summary style="${estSum}">${resumoHtml}</summary>
     <div style="padding:4px 12px 12px;">${corpoHtml}</div></details>`;
 }
 function renderAcompanhamento(){
@@ -7088,29 +7124,40 @@ function renderAcompanhamento(){
     const lim = de && p.prazoPedido ? fmtBR(addPrazo(de,p.prazoPedido)) : "-";
     const nAbertas = DB.atividadesAcomp.filter(a=>a.pedidoId===p.id && !a.concluida).length;
     let corpo = `<label class="field-label">Observacoes do pedido</label>
-      <textarea rows="2" data-obs="ped" data-id="${p.id}" placeholder="Observacoes deste pedido...">${escAttrAcomp(p.obsAcomp)}</textarea>`;
+      <textarea rows="2" data-obs="ped" data-id="${p.id}" placeholder="Observacoes deste pedido...">${escAttrAcomp(p.obsAcomp)}</textarea>${obsBotoesHtml("ped",p.id)}`;
     corpo += lotes.map(l=>{
       const alvos = [...(l.equipamentoIds||[]).map(id=>{const e=getEquipamento(id);return {tipo:"equip",id,nome:e?e.nome:"?",rot:"Equipamento"};}), ...DB.pecasAvulsas.filter(x=>x.loteId===l.id).map(x=>({tipo:"peca",id:x.id,nome:x.nome,rot:"Peca/Conjunto avulso"}))];
       const {dataLimite} = calcularDataLimiteLote(l);
-      let corpoL = `<label class="field-label">Observacoes do lote</label>
-        <textarea rows="2" data-obs="lote" data-id="${l.id}" placeholder="Observacoes deste lote...">${escAttrAcomp(l.obsAcomp)}</textarea>`;
-      corpoL += alvos.map(al=>{
+      let corpoL = alvos.map(al=>{
         const atv = DB.atividadesAcomp.filter(a=>a.loteId===l.id && a.alvoTipo===al.tipo && a.alvoId===al.id);
         const ab = atv.filter(a=>!a.concluida).length;
         const k = `a${l.id}-${al.tipo}${al.id}`;
         const ctx = `data-ped="${p.id}" data-lote="${l.id}" data-tipo="${al.tipo}" data-alvo="${al.id}" data-nome="${escAttrAcomp(al.nome).replace(/"/g,"&quot;")}"`;
-        return detalhesAcomp(k, `${seta} <span class="pill" style="background:var(--primary-dark);">${al.rot}</span> ${escAttrAcomp(al.nome)} <span class="muted" style="font-weight:400;">- ${ab} atividade(s) aberta(s)</span>`,
+        return detalhesAcomp(k, `${seta} <span class="pill" style="background:var(--primary-dark);">${al.rot}</span> Lote ${l.noLote} - ${escAttrAcomp(al.nome)} <span class="muted" style="font-weight:400;">- ${ab} atividade(s) aberta(s)</span>`,
           (atv.map(a=>atvLinhaHtml(a,false)).join("") || '<p class="muted" style="margin:4px 0;">Nenhuma atividade ainda.</p>') + atvFormHtml(ctx, k), 1);
       }).join("") || '<p class="muted">Este lote nao tem equipamento nem peca.</p>';
-      return detalhesAcomp("l"+l.id, `${seta} Lote ${l.noLote}${loteEstaEncerrado(l)?' <span class="pill" style="background:var(--gray);">encerrado</span>':''} <span class="muted" style="font-weight:400;">- limite de entrega: ${dataLimite?fmtBR(dataLimite):"-"}${l.obsAcomp?" - com observacao":""}</span>`, corpoL, 1);
+      corpoL += `<label class="field-label" style="margin-top:12px;">Observacoes do lote ${l.noLote}</label>
+        <textarea rows="2" data-obs="lote" data-id="${l.id}" placeholder="Observacoes deste lote...">${escAttrAcomp(l.obsAcomp)}</textarea>${obsBotoesHtml("lote",l.id)}`;
+      const nomesLote = alvos.map(x=>escAttrAcomp(x.nome)).join(" + ") || "sem equipamento";
+      return detalhesAcomp("l"+l.id, `${seta} Lote ${l.noLote} - ${nomesLote}${loteEstaEncerrado(l)?' <span class="pill" style="background:var(--gray);">encerrado</span>':''} <span class="muted" style="font-weight:400;">- limite de entrega: ${dataLimite?fmtBR(dataLimite):"-"}${l.obsAcomp?" - com observacao":""}</span>`, corpoL, 1);
     }).join("") || '<p class="muted" style="margin-top:8px;">Este pedido ainda nao tem lotes.</p>';
-    // registro de status (historico)
-    const hist = DB.statusPedido.filter(s=>s.pedidoId===p.id).sort((a,b)=>new Date(b.data)-new Date(a.data));
-    corpo += detalhesAcomp("h"+p.id, `${seta} Historico de status <span class="muted" style="font-weight:400;">(${hist.length})</span>`,
-      `<div data-edicao style="margin-bottom:8px;"><textarea rows="2" data-stx="${p.id}" placeholder="Novo registro de status (reuniao)..."></textarea>
+    // historico: atividades, observacoes arquivadas, registros de status e movimentacoes do sistema (separados)
+    const todos = DB.statusPedido.filter(x=>x.pedidoId===p.id).sort((a,b)=>new Date(b.data)-new Date(a.data));
+    const obsH = todos.filter(x=>x.tipo==="obs");
+    const sisH = todos.filter(x=>x.tipo!=="obs" && x.setor==="Sistema");
+    const stH = todos.filter(x=>x.tipo!=="obs" && x.setor!=="Sistema");
+    const atvH = DB.atividadesAcomp.filter(a=>a.pedidoId===p.id).sort((a,b)=>String(b.criadoEm).localeCompare(String(a.criadoEm)));
+    const entH = x=>`<div style="padding:6px 0; border-bottom:1px solid var(--border);"><div class="muted" style="font-size:11px;">${new Date(x.data).toLocaleString('pt-BR')} - ${escAttrAcomp(x.autor||"?")} ${x.loteId?`<span class="pill" style="background:var(--primary-dark);">Lote ${(DB.lotes.find(l=>l.id===x.loteId)||{}).noLote||"?"}</span>`:""} ${x.setor&&x.tipo!=="obs"?`<span class="pill" style="background:var(--primary);">${escAttrAcomp(x.setor)}</span>`:""}${souMasterAcomp()&&x.tipo==="obs"?` <button type="button" class="acao-icon danger" data-acao="hist-excluir" data-id="${x.id}" title="Excluir (master)">&#128465;</button>`:""}</div><div style="white-space:pre-wrap;">${destacarMencoes(x.texto)}</div></div>`;
+    const tit = t=>`<h4 style="margin:14px 0 4px; color:var(--primary-dark);">${t}</h4>`;
+    const vazio = '<p class="muted" style="margin:2px 0;">Nada ainda.</p>';
+    corpo += detalhesAcomp("h"+p.id, `${seta} Historico <span class="muted" style="font-weight:400;">(${atvH.length} atividade(s), ${obsH.length} observacao(oes), ${stH.length} registro(s) de status)</span>`,
+      `<div data-edicao style="margin-bottom:8px;"><label class="field-label">Novo registro de status (reuniao)</label><textarea rows="2" data-stx="${p.id}" placeholder="Novo registro de status (reuniao)..."></textarea>
         <div style="display:flex; gap:8px; margin-top:6px; flex-wrap:wrap;"><select data-stsetor="${p.id}">${[...DB.setoresGestao].sort((a,b)=>a.localeCompare(b,'pt-BR')).map(st=>`<option value="${escAttrAcomp(st).replace(/"/g,"&quot;")}">${escAttrAcomp(st)}</option>`).join("")}</select>
         <button type="button" class="btn btn-sm" data-acao="status-salvar" data-id="${p.id}">Salvar registro</button></div></div>`+
-      (hist.map(s=>`<div style="padding:6px 0; border-bottom:1px solid var(--border);"><div class="muted" style="font-size:11px;">${new Date(s.data).toLocaleString('pt-BR')} - ${escAttrAcomp(s.autor||"?")} ${s.setor?`<span class="pill" style="background:var(--primary);">${escAttrAcomp(s.setor)}</span>`:""}</div><div>${destacarMencoes(s.texto)}</div></div>`).join("") || '<p class="muted">Nenhum registro ainda.</p>'), 1);
+      tit("Atividades")+(atvH.map(atvHistHtml).join("")||vazio)+
+      tit("Observacoes enviadas ao historico")+(obsH.map(entH).join("")||vazio)+
+      tit("Registros de status")+(stH.map(entH).join("")||vazio)+
+      tit("Movimentacoes do sistema")+(sisH.map(entH).join("")||vazio), 1);
     html += detalhesAcomp("p"+p.id, `${seta} Pedido ${p.noPedido}${p.cliente?" - "+escAttrAcomp(p.cliente):""} <span class="muted" style="font-weight:400;">- limite: ${lim} - ${lotes.length} lote(s) - ${nAbertas} atividade(s) aberta(s)${p.obsAcomp?" - com observacao":""}</span>`, corpo, 0);
   }
   if (!html) html = '<div class="card"><p class="muted">Nenhum pedido aberto.</p></div>';
@@ -7155,6 +7202,38 @@ function renderAcompanhamento(){
       if (document.getElementById("acompanhamentoRoot") && document.getElementById("acompanhamentoRoot").contains(el)) renderAcompanhamento(); else renderPainelPastas();
       return;
     }
+    if (acao==="obs-hist" || acao==="obs-apagar") {
+      const id = parseInt(el.dataset.id); const ped = el.dataset.obs==="ped";
+      const obj = ped ? DB.pedidos.find(x=>x.id===id) : DB.lotes.find(x=>x.id===id); if (!obj) return;
+      if (!obj.obsAcomp) { alert("Nao ha observacao escrita."); return; }
+      if (acao==="obs-apagar") { if (!confirm("Apagar esta observacao?")) return; }
+      else {
+        const pid = ped ? id : obj.pedidoId;
+        DB.statusPedido.push({ id: DB.seq.statusPedido++, pedidoId: pid, loteId: ped?null:id, tipo:"obs", texto: obj.obsAcomp, setor: ped?"Observacao do pedido":"Observacao do lote", data: new Date().toISOString(), autor: emailUsuarioAtual });
+        acompAbertos.add("h"+pid);
+      }
+      obj.obsAcomp = null; saveDB(); renderAcompanhamento(); return;
+    }
+    if (acao==="hist-excluir") {
+      if (!souMasterAcomp() || !confirm("Excluir esta observacao do historico?")) return;
+      DB.statusPedido = DB.statusPedido.filter(x=>x.id!==parseInt(el.dataset.id)); saveDB(); renderAcompanhamento(); return;
+    }
+    if (acao==="atv-editar") { acompEditId = parseInt(el.dataset.id); renderAcompanhamento(); return; }
+    if (acao==="atv-edit-cancelar") { acompEditId = null; renderAcompanhamento(); return; }
+    if (acao==="atv-edit-salvar") {
+      if (!souMasterAcomp()) return;
+      const a = DB.atividadesAcomp.find(x=>x.id===parseInt(el.dataset.id)); if (!a) return;
+      const box = el.parentElement; const g = n=>box.querySelector(`[data-e="${n}"]`).value;
+      const titulo = g("titulo").trim(); if (!titulo) { alert("Digite a atividade."); return; }
+      const novoPrazo = g("prazo") || null;
+      if ((a.prazo||null) !== novoPrazo) {
+        if (!a.historicoPrazo) a.historicoPrazo = [];
+        a.historicoPrazo.push({ de: a.prazo||null, para: novoPrazo, em: new Date().toISOString(), por: emailUsuarioAtual||"", motivo: g("motivo").trim() });
+        a.prazo = novoPrazo;
+      }
+      a.titulo = titulo; a.setor = g("setor") || a.setor; a.responsavel = g("resp") || a.responsavel;
+      acompEditId = null; saveDB(); renderAcompanhamento(); return;
+    }
     if (acao==="atv-excluir") {
       const id = parseInt(el.dataset.id); const a = DB.atividadesAcomp.find(x=>x.id===id); if (!a) return;
       if (!confirm(`Excluir a atividade "${a.titulo}"?`)) return;
@@ -7171,7 +7250,7 @@ function renderAcompanhamento(){
   document.addEventListener("change", (e)=>{
     const el = e.target;
     if (el.dataset && el.dataset.acao==="atv-setor") {
-      const f = el.closest("[data-atvform]"); const r = f.querySelector('[data-f="resp"]'); r.innerHTML = opcoesResponsavelAcomp(el.value); return;
+      const f = el.closest("[data-atvform]") || el.parentElement.parentElement; const r = f.querySelector('[data-f="resp"],[data-e="resp"]'); r.innerHTML = opcoesResponsavelAcomp(el.value); return;
     }
     if (el.dataset && el.dataset.acao==="atv-concluir") return;
     if (el.dataset && el.dataset.obs) {
@@ -7188,7 +7267,7 @@ function renderMinhasAtividadesPainel(){
     .sort((a,b)=>String(a.prazo||"9999").localeCompare(String(b.prazo||"9999")));
   if (!minhas.length) { w.innerHTML = ""; return; }
   w.innerHTML = `<div class="card" style="margin:0;"><h3 style="margin-top:0;">Minhas atividades <span class="pill" style="background:var(--accent);">${minhas.length}</span></h3>`+
-    minhas.map(a=>atvLinhaHtml(a,true).replace(/<button[^>]*atv-excluir[^>]*>.*?<\/button>/,"")).join("")+`</div>`;
+    minhas.map(a=>atvLinhaHtml(a,true)).join("")+`</div>`;
 }
 function renderGestaoLogAcomp(){
   const w = document.getElementById("gestaoLogAcomp"); if (!w) return;
@@ -7308,7 +7387,7 @@ function gerarSecaoPedido(pedido){
     html += `</div>`;
   }
   if (!lotesDoPedido.length) html += `<p style="color:#8A8F87;">Nenhum Lote cadastrado para este Pedido.</p>`;
-  const historico = DB.statusPedido.filter(s=>s.pedidoId===pedido.id && s.setor!=="Sistema").sort((a,b)=>new Date(b.data)-new Date(a.data)).slice(0,5);
+  const historico = DB.statusPedido.filter(s=>s.pedidoId===pedido.id && s.setor!=="Sistema" && s.tipo!=="obs").sort((a,b)=>new Date(b.data)-new Date(a.data)).slice(0,5);
   if (historico.length) {
     html += `<h4 style="color:#14462E; margin-top:14px; margin-bottom:6px;">Ultimos registros de status</h4>`;
     for (const s of historico) html += `<p style="margin:4px 0;"><strong>${new Date(s.data).toLocaleDateString('pt-BR')}</strong>${s.setor?` [${s.setor}]`:""} - ${escaparHtmlSimples(s.texto)}</p>`;
