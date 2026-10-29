@@ -458,7 +458,7 @@
     </form>
     <div style="text-align:center; margin-top:8px;"><a href="#" id="loginEsqueciSenhaLink" style="font-size:12px; color:#8A8F87;">Esqueci minha senha</a></div>
     <div id="loginMsg" style="margin-top:10px; font-size:12.5px; min-height:18px;"></div>
-    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 188 - 29/10/2026</div>
+    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 189 - 29/10/2026</div>
     <div id="loginOfflineWrap" class="hidden" style="margin-top:6px;">
       <button id="loginOfflineBtn" style="width:100%; padding:8px; background:transparent; color:#8A8F87; border:1px solid #E1E6DE; border-radius:6px; font-size:12.5px; cursor:pointer;">Continuar sem conexao (usa os dados salvos neste navegador)</button>
     </div>
@@ -496,7 +496,7 @@
     <div style="height:3px; width:60px; background:#91C53E; border-radius:2px; margin-bottom:34px;"></div>
     <div id="painelPastasGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(172px, 1fr)); gap:14px;"></div>
     <div id="painelMinhasAtividades" style="margin-top:28px;"></div>
-    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 188 - 29/10/2026</p>
+    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 189 - 29/10/2026</p>
   </div>
 </div>
 
@@ -7126,6 +7126,32 @@ function detalhesAcomp(chave, resumoHtml, corpoHtml, nivel){
     <summary style="${estSum}">${resumoHtml}</summary>
     <div style="padding:4px 12px 12px;">${corpoHtml}</div></details>`;
 }
+// itens do equipamento/peca na ordem de fabricacao definida pelo PPCP (mesma ordem de Itens do Lote)
+function itensNaOrdemFabricacao(lote, al){
+  const alertaDias = DB.settings.alertaDias, out = [];
+  if (al.tipo==="equip") {
+    const mapa = getItensLoteByLote(lote.id);
+    const ids = [...mapa.keys()].filter(id=>{ const m=getItem(id); return m && m.equipamentoId===al.id; });
+    for (const id of aplicarOrdemManual(ordenarItensPorPrereq(lote.id, ids), i=>mapa.get(i))) {
+      const row = mapa.get(id), meta = getItem(id), r = calcularStatusItem(lote, row, alertaDias);
+      out.push({ nome: meta.nome, limite: r.dataLimiteSolicitacao, solic: parseDate(row.dataSolicitacao), prev: r.dataPrevista, real: parseDate(row.dataReal), status: r.status });
+    }
+  } else {
+    for (const ia of aplicarOrdemManual(ordenarItensAvulsos(DB.itensAvulsos.filter(i=>i.pecaAvulsaId===al.id && i.rastrear!==false)), x=>x)) {
+      const r = calcularStatusItemAvulso(lote, ia, alertaDias);
+      out.push({ nome: ia.itemNome, limite: r.dataLimiteSolicitacao, solic: parseDate(ia.dataSolicitacao), prev: r.dataPrevista, real: parseDate(ia.dataReal), status: r.status });
+    }
+  }
+  return out;
+}
+function itensOrdemHtml(lote, al){
+  const itens = itensNaOrdemFabricacao(lote, al);
+  if (!itens.length) return "";
+  const f = d=>d?fmtBR(d):"-";
+  return `<div style="margin:8px 0;"><div class="muted" style="font-size:12px; font-weight:600;">Itens na ordem de fabricacao (definida pelo PPCP)</div>
+    <table class="tabela-itens-lote" style="font-size:12.5px;"><tr><th style="width:34px;">#</th><th>Item</th><th>Solicitar ate</th><th>Solicitado</th><th>Previsao</th><th>Real</th><th>Situacao</th></tr>`+
+    itens.map((x,i)=>`<tr><td>${i+1}</td><td>${escAttrAcomp(x.nome)}</td><td>${f(x.limite)}</td><td>${f(x.solic)}</td><td>${f(x.prev)}</td><td>${f(x.real)}</td><td>${pill(x.status)}</td></tr>`).join("")+`</table></div>`;
+}
 function migrarObsAcomp(){
   let mudou = false;
   const hoje = fmtISO(hojeUTC());
@@ -7161,13 +7187,13 @@ function renderAcompanhamento(){
         const ab = atv.length;
         const k = `a${l.id}-${al.tipo}${al.id}`;
         const ctx = `data-ped="${p.id}" data-lote="${l.id}" data-tipo="${al.tipo}" data-alvo="${al.id}" data-nome="${escAttrAcomp(al.nome).replace(/"/g,"&quot;")}"`;
-        const conteudo = (atv.map(a=>atvLinhaHtml(a,false)).join("") || '<p class="muted" style="margin:4px 0;">Nenhuma atividade ainda.</p>') + atvFormHtml(ctx, k);
+        const conteudo = itensOrdemHtml(l, al) + (atv.map(a=>atvLinhaHtml(a,false)).join("") || '<p class="muted" style="margin:4px 0;">Nenhuma atividade ainda.</p>') + atvFormHtml(ctx, k);
         if (alvos.length === 1) return `<div style="margin-top:6px;"><div class="muted" style="font-size:12px; font-weight:600;">Atividades - ${ab} aberta(s)</div>${conteudo}</div>`;
         return detalhesAcomp(k, `${seta} <span class="pill" style="background:var(--primary-dark);">${al.rot}</span> Lote ${l.noLote} - ${escAttrAcomp(al.nome)} <span class="muted" style="font-weight:400;">- ${ab} atividade(s) aberta(s)</span>`, conteudo, 1);
       }).join("") || '<p class="muted">Este lote nao tem equipamento nem peca.</p>';
       corpoL += obsBlocoHtml("lote",l.id);
       const nomesLote = alvos.map(x=>escAttrAcomp(x.nome)).join(" + ") || "sem equipamento";
-      return detalhesAcomp("l"+l.id, `${seta} Lote ${l.noLote} - ${nomesLote}${loteEstaEncerrado(l)?' <span class="pill" style="background:var(--gray);">encerrado</span>':''} <span class="muted" style="font-weight:400;">- limite de entrega: ${dataLimite?fmtBR(dataLimite):"-"}</span>`, corpoL, 1);
+      return detalhesAcomp("l"+l.id, `${seta} Lote ${l.noLote} - ${nomesLote}${loteEstaEncerrado(l)?' <span class="pill" style="background:var(--gray);">encerrado</span>':''} <span class="muted" style="font-weight:400;">- <strong>ordem de fabricacao: ${l.ordem?l.ordem+"o":"nao definida"}</strong> - limite de entrega: ${dataLimite?fmtBR(dataLimite):"-"}</span>`, corpoL, 1);
     }).join("") || '<p class="muted" style="margin-top:8px;">Este pedido ainda nao tem lotes.</p>';
     // historico: atividades, observacoes arquivadas, registros de status e movimentacoes do sistema (separados)
     const todos = DB.statusPedido.filter(x=>x.pedidoId===p.id).sort((a,b)=>new Date(b.data)-new Date(a.data));
@@ -7451,12 +7477,13 @@ function gerarSecaoPedido(pedido){
   const lotesDoPedido = DB.lotes.filter(l=>l.pedidoId===pedido.id);
   for (const lote of lotesDoPedido) {
     const {dataLimite} = calcularDataLimiteLote(lote);
-    html += `<div style="margin:10px 0 0 10px; padding-left:8px; border-left:3px solid #D3DDCB;"><strong>Lote ${lote.noLote}</strong> - limite de entrega: ${dataLimite?fmtBR(dataLimite):"-"}${loteEstaEncerrado(lote)?" (encerrado)":""}`;
+    html += `<div style="margin:10px 0 0 10px; padding-left:8px; border-left:3px solid #D3DDCB;"><strong>Lote ${lote.noLote}</strong> - ordem de fabricacao: ${lote.ordem?lote.ordem+"o":"nao definida"} - limite de entrega: ${dataLimite?fmtBR(dataLimite):"-"}${loteEstaEncerrado(lote)?" (encerrado)":""}`;
     if (lote.obsAcomp || obsSalvas(pedido.id,lote.id)) html += `<br><em>Obs.:</em>${lote.obsAcomp?" "+escaparHtmlSimples(lote.obsAcomp).replace(/\n/g,"<br>"):""}${obsSalvas(pedido.id,lote.id)}`;
     const alvos = [...(lote.equipamentoIds||[]).map(id=>{const e=getEquipamento(id);return {tipo:"equip",id,nome:e?e.nome:"?"};}), ...DB.pecasAvulsas.filter(x=>x.loteId===lote.id).map(x=>({tipo:"peca",id:x.id,nome:x.nome}))];
     for (const al of alvos) {
       const atv = DB.atividadesAcomp.filter(a=>a.loteId===lote.id && a.alvoTipo===al.tipo && a.alvoId===al.id);
-      html += `<div style="margin-left:10px;">&bull; ${escaparHtmlSimples(al.nome)}${atv.length?"":" <span style='color:#8A8F87;'>(sem atividades)</span>"}${htmlAtividadesRelatorio(atv)}</div>`;
+      const ordIt = itensNaOrdemFabricacao(lote, al).map((x,i)=>`${i+1}. ${escaparHtmlSimples(x.nome)}`).join("; ");
+      html += `<div style="margin-left:10px;">&bull; ${escaparHtmlSimples(al.nome)}${atv.length?"":" <span style='color:#8A8F87;'>(sem atividades)</span>"}${ordIt?`<div style="font-size:12px; color:#555;">Ordem de fabricacao dos itens: ${ordIt}</div>`:""}${htmlAtividadesRelatorio(atv)}</div>`;
     }
     html += `</div>`;
   }
