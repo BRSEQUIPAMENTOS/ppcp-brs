@@ -458,7 +458,7 @@
     </form>
     <div style="text-align:center; margin-top:8px;"><a href="#" id="loginEsqueciSenhaLink" style="font-size:12px; color:#8A8F87;">Esqueci minha senha</a></div>
     <div id="loginMsg" style="margin-top:10px; font-size:12.5px; min-height:18px;"></div>
-    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 194 - 04/11/2026</div>
+    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 195 - 04/11/2026</div>
     <div id="loginOfflineWrap" class="hidden" style="margin-top:6px;">
       <button id="loginOfflineBtn" style="width:100%; padding:8px; background:transparent; color:#8A8F87; border:1px solid #E1E6DE; border-radius:6px; font-size:12.5px; cursor:pointer;">Continuar sem conexao (usa os dados salvos neste navegador)</button>
     </div>
@@ -496,7 +496,7 @@
     <div style="height:3px; width:60px; background:#91C53E; border-radius:2px; margin-bottom:34px;"></div>
     <div id="painelPastasGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(172px, 1fr)); gap:14px;"></div>
     <div id="painelMinhasAtividades" style="margin-top:28px;"></div>
-    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 194 - 04/11/2026</p>
+    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 195 - 04/11/2026</p>
   </div>
 </div>
 
@@ -7242,6 +7242,17 @@ function desagruparAcomp(gid){
 function loteBlocoHtml(l, p, seta){
   const alvos = [...(l.equipamentoIds||[]).map(id=>{const e=getEquipamento(id);return {tipo:"equip",id,nome:e?e.nome:"?",rot:"Equipamento"};}), ...DB.pecasAvulsas.filter(x=>x.loteId===l.id).map(x=>({tipo:"peca",id:x.id,nome:x.nome,rot:"Peca/Conjunto avulso"}))];
   const {dataLimite} = calcularDataLimiteLote(l);
+  const nomesLote = alvos.map(x=>escAttrAcomp(x.nome)).join(" + ") || "sem equipamento";
+  const resumoLote = `${seta} Lote ${l.noLote} - ${nomesLote}${loteEstaEncerrado(l)?' <span class="pill" style="background:var(--gray);">encerrado</span>':''} <span class="muted" style="font-weight:400;">- <strong>ordem de fabricacao: ${l.ordem?l.ordem+"o":"nao definida"}</strong> - limite de entrega: ${dataLimite?fmtBR(dataLimite):"-"}</span>`;
+  if (alvos.length === 1) {
+    // lote com um so equipamento/peca: as atividades ficam direto no lote (sem outro nivel)
+    const al = alvos[0];
+    const atv = DB.atividadesAcomp.filter(a=>a.loteId===l.id && !a.grupoId && !a.grupoItemId && !a.concluida && (!a.alvoTipo || (a.alvoTipo===al.tipo && a.alvoId===al.id)));
+    const ctx = `data-ped="${p.id}" data-lote="${l.id}" data-tipo="${al.tipo}" data-alvo="${al.id}" data-nome="${escAttrAcomp(al.nome).replace(/"/g,"&quot;")}"`;
+    const corpo1 = `<div style="margin-top:6px;"><div class="muted" style="font-size:12px; font-weight:600;">Atividades - ${atv.length} aberta(s)</div>`+
+      (atv.map(a=>atvLinhaHtml(a,false)).join("") || '<p class="muted" style="margin:4px 0;">Nenhuma atividade ainda.</p>') + atvFormHtml(ctx, `a${l.id}-${al.tipo}${al.id}`) + `</div>` + obsBlocoHtml("lote",l.id);
+    return detalhesAcomp("l"+l.id, resumoLote, corpo1, 1);
+  }
   const gerais = DB.atividadesAcomp.filter(a=>a.loteId===l.id && !a.alvoTipo && !a.grupoId && !a.concluida);
   let corpoL = `<div style="margin-top:6px;"><div class="muted" style="font-size:12px; font-weight:600;">Atividades do lote (gerais) - ${gerais.length} aberta(s)</div>`+
     (gerais.map(a=>atvLinhaHtml(a,false)).join("") || '<p class="muted" style="margin:4px 0;">Nenhuma atividade ainda.</p>') +
@@ -7258,8 +7269,7 @@ function loteBlocoHtml(l, p, seta){
     return detalhesAcomp(k, `${seta} <span class="pill" style="background:var(--primary-dark);">${al.rot}</span> Lote ${l.noLote} - ${escAttrAcomp(al.nome)}${grupoItemDoAlvo(l.id,al.tipo,al.id)?' <span class="pill" style="background:var(--accent);">em grupo</span>':''} <span class="muted" style="font-weight:400;">- ${ab} atividade(s) aberta(s)</span>`, conteudo, 1);
   }).join("") || '<p class="muted">Este lote nao tem equipamento nem peca.</p>';
   corpoL += obsBlocoHtml("lote",l.id);
-  const nomesLote = alvos.map(x=>escAttrAcomp(x.nome)).join(" + ") || "sem equipamento";
-  return detalhesAcomp("l"+l.id, `${seta} Lote ${l.noLote} - ${nomesLote}${loteEstaEncerrado(l)?' <span class="pill" style="background:var(--gray);">encerrado</span>':''} <span class="muted" style="font-weight:400;">- <strong>ordem de fabricacao: ${l.ordem?l.ordem+"o":"nao definida"}</strong> - limite de entrega: ${dataLimite?fmtBR(dataLimite):"-"}</span>`, corpoL, 1);
+  return detalhesAcomp("l"+l.id, resumoLote, corpoL, 1);
 }
 function grupoBlocoHtml(gid, membros, p, seta){
   const atv = DB.atividadesAcomp.filter(a=>a.grupoId===gid && !a.concluida);
