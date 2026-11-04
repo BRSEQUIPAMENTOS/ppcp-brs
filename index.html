@@ -458,7 +458,7 @@
     </form>
     <div style="text-align:center; margin-top:8px;"><a href="#" id="loginEsqueciSenhaLink" style="font-size:12px; color:#8A8F87;">Esqueci minha senha</a></div>
     <div id="loginMsg" style="margin-top:10px; font-size:12.5px; min-height:18px;"></div>
-    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 192 - 02/11/2026</div>
+    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 193 - 04/11/2026</div>
     <div id="loginOfflineWrap" class="hidden" style="margin-top:6px;">
       <button id="loginOfflineBtn" style="width:100%; padding:8px; background:transparent; color:#8A8F87; border:1px solid #E1E6DE; border-radius:6px; font-size:12.5px; cursor:pointer;">Continuar sem conexao (usa os dados salvos neste navegador)</button>
     </div>
@@ -496,7 +496,7 @@
     <div style="height:3px; width:60px; background:#91C53E; border-radius:2px; margin-bottom:34px;"></div>
     <div id="painelPastasGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(172px, 1fr)); gap:14px;"></div>
     <div id="painelMinhasAtividades" style="margin-top:28px;"></div>
-    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 192 - 02/11/2026</p>
+    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 193 - 04/11/2026</p>
   </div>
 </div>
 
@@ -1734,7 +1734,7 @@ let DB = null;
 function seedData(){
   const db = { equipamentos:[], itens:[], prerequisitos:[], pedidos:[], lotes:[], itensLote:[], custos:[],
                cores:["Verde","Cinza","Aluminio","Preto","Laranja","Amarelo","Galvanizado"],
-               pecasAvulsas:[], itensAvulsos:[], prerequisitosAvulsos:[], statusPedido:[], logAcomp:[], atividadesAcomp:[],
+               pecasAvulsas:[], itensAvulsos:[], prerequisitosAvulsos:[], statusPedido:[], logAcomp:[], atividadesAcomp:[], gruposItensAcomp:[],
                setoresGestao:["Comercial","Layout","Engenharia","PPCP","Qualidade","Producao","Almoxarifado","Assistencia Tecnica","Expedicao"],
                acessoGestao:[],
                cargasExpedicao:[],
@@ -1875,6 +1875,7 @@ function normalizarDB(db){
   if (!db.statusPedido) db.statusPedido = [];
   if (!Array.isArray(db.logAcomp)) db.logAcomp = [];
   if (!Array.isArray(db.atividadesAcomp)) db.atividadesAcomp = [];
+  if (!Array.isArray(db.gruposItensAcomp)) db.gruposItensAcomp = [];
   if (!db.seq.atividadeAcomp) db.seq.atividadeAcomp = db.atividadesAcomp.reduce((m,x)=>Math.max(m,x.id||0),0) + 1;
   if (!db.setoresGestao) db.setoresGestao = ["Comercial","Layout","Engenharia","PPCP","Qualidade","Producao","Almoxarifado","Assistencia Tecnica","Expedicao"];
   if (!db.acessoGestao) db.acessoGestao = [];
@@ -7049,15 +7050,16 @@ function ctxTextoAtv(a){
   if (!a.pedidoId) partes.push("Sem pedido"); else partes.push("Pedido "+(ped?ped.noPedido:"?"));
   if (lot) partes.push("Lote "+lot.noLote);
   if (a.grupoId) partes.push("Lotes "+nomesGrupoAcomp(a.grupoId)+" (agrupados)");
+  if (a.grupoItemId) partes.push(nomesGrupoItem(a.grupoItemId)+" (agrupados)");
   if (a.alvoNome) partes.push(a.alvoNome);
   return partes.join(" - ");
 }
 let acompEditId = null;
 function obsBlocoHtml(tipo,id){
   const hoje = fmtISO(hojeUTC());
-  const lista = DB.statusPedido.filter(x=>x.tipo==="obs" && (tipo==="ped" ? (x.pedidoId===id && !x.loteId && !x.grupoId) : tipo==="grupo" ? x.grupoId===id : x.loteId===id))
+  const lista = DB.statusPedido.filter(x=>x.tipo==="obs" && (tipo==="ped" ? (x.pedidoId===id && !x.loteId && !x.grupoId) : tipo==="grupo" ? x.grupoId===id : tipo==="gitem" ? x.grupoItemId===id : x.loteId===id))
     .sort((a,b)=>String(b.dataObs||b.data).localeCompare(String(a.dataObs||a.data)));
-  return `<div data-obsbloco="${tipo}-${id}" style="margin-top:8px;"><label class="field-label">Observacoes ${tipo==="ped"?"do pedido":tipo==="grupo"?"do grupo de lotes":"do lote"}</label>
+  return `<div data-obsbloco="${tipo}-${id}" style="margin-top:8px;"><label class="field-label">Observacoes ${tipo==="ped"?"do pedido":tipo==="grupo"?"do grupo de lotes":tipo==="gitem"?"do grupo de equipamentos/pecas":"do lote"}</label>
     <div data-edicao><textarea rows="2" data-onovo placeholder="Escreva a observacao..."></textarea>
     <div style="display:flex; gap:8px; margin-top:4px; align-items:center; flex-wrap:wrap;"><label style="font-size:12px; font-weight:600;">Data <input type="date" data-obsdata style="width:auto;" value="${hoje}"></label>
     <button type="button" class="btn btn-sm" data-acao="obs-salvar-inline" data-obs="${tipo}" data-id="${id}">&#128190; Salvar</button></div></div>`+
@@ -7167,10 +7169,54 @@ function zerarAcompanhamentoUmaVez(){
   if (DB.acompResetEm || !souMasterAcomp()) return;
   if (!confirm("Apagar TODAS as informacoes do Acompanhamento de Pedido (atividades, observacoes, registros e movimentacoes) para comecar do zero?\n\nIsso nao pode ser desfeito. Dica: antes, use 'Exportar backup'.")) return;
   removerDaColecao("atividadesAcomp", ()=>false);
-  DB.statusPedido = []; DB.logAcomp = [];
+  DB.statusPedido = []; DB.logAcomp = []; DB.gruposItensAcomp = [];
   DB.pedidos.forEach(p=>{ p.obsAcomp = null; }); DB.lotes.forEach(l=>{ l.obsAcomp = null; });
   DB.acompResetEm = new Date().toISOString();
   saveDB();
+}
+// ---- grupos de equipamentos/pecas (podem ser de lotes diferentes do mesmo pedido)
+function alvoValidoAcomp(m){
+  const l = DB.lotes.find(x=>x.id===m.loteId); if (!l) return null;
+  if (m.tipo==="equip") { if (!(l.equipamentoIds||[]).includes(m.id)) return null; const e = getEquipamento(m.id); return { lote:l, nome: e?e.nome:"?" }; }
+  const pc = DB.pecasAvulsas.find(x=>x.id===m.id && x.loteId===l.id); return pc ? { lote:l, nome: pc.nome } : null;
+}
+function rotuloMembroAcomp(m){ const v = alvoValidoAcomp(m); return v ? `Lote ${v.lote.noLote} - ${v.nome}` : "(removido)"; }
+function nomesGrupoItem(gid){ const g = (DB.gruposItensAcomp||[]).find(x=>x.id===gid); return g ? g.membros.map(rotuloMembroAcomp).join(" + ") : ""; }
+function grupoItemDoAlvo(loteId, tipo, id){ return (DB.gruposItensAcomp||[]).find(g=>g.membros.some(m=>m.loteId===loteId && m.tipo===tipo && m.id===id)) || null; }
+// desfaz o grupo: atividades e observacoes viram copias para cada equipamento/peca que estava nele
+function desagruparItensAcomp(gid){
+  const g = (DB.gruposItensAcomp||[]).find(x=>x.id===gid); if (!g) return;
+  const membros = g.membros.map(m=>({ m, v: alvoValidoAcomp(m) })).filter(x=>x.v);
+  const agora = new Date().toISOString();
+  const atvs = DB.atividadesAcomp.filter(a=>a.grupoItemId===gid);
+  for (const a of atvs) for (const {m,v} of membros) {
+    DB.atividadesAcomp.push(Object.assign({}, JSON.parse(JSON.stringify(a)), { id: DB.seq.atividadeAcomp++, grupoItemId: null, grupoId: null, loteId: m.loteId, alvoTipo: m.tipo, alvoId: m.id, alvoNome: v.nome, criadoEm: agora }));
+  }
+  if (atvs.length) { const ids = new Set(atvs.map(a=>a.id)); removerDaColecao("atividadesAcomp", a=>!ids.has(a.id)); }
+  const obs = DB.statusPedido.filter(x=>x.grupoItemId===gid);
+  for (const x of obs) for (const {m} of membros) DB.statusPedido.push(Object.assign({}, x, { id: DB.seq.statusPedido++, grupoItemId: null, loteId: m.loteId, setor: "Observacao do lote" }));
+  if (obs.length) DB.statusPedido = DB.statusPedido.filter(x=>x.grupoItemId!==gid);
+  DB.gruposItensAcomp = DB.gruposItensAcomp.filter(x=>x.id!==gid);
+}
+function limparGruposItens(){
+  let mudou = false;
+  for (const g of [...(DB.gruposItensAcomp||[])]) {
+    const validos = g.membros.filter(m=>alvoValidoAcomp(m));
+    if (validos.length !== g.membros.length) { g.membros = validos; mudou = true; }
+    if (validos.length < 2) { desagruparItensAcomp(g.id); mudou = true; }
+  }
+  return mudou;
+}
+function gitemBlocoHtml(g, p, seta){
+  const atv = DB.atividadesAcomp.filter(a=>a.grupoItemId===g.id && !a.concluida);
+  const lin = g.membros.map(m=>{ const v = alvoValidoAcomp(m); const {dataLimite} = calcularDataLimiteLote(v.lote); return `<tr><td>Lote ${escAttrAcomp(v.lote.noLote)}</td><td>${m.tipo==="equip"?"Equipamento":"Peca/Conjunto avulso"}</td><td>${escAttrAcomp(v.nome)}</td><td>${v.lote.ordem?v.lote.ordem+"o":"nao definida"}</td><td>${dataLimite?fmtBR(dataLimite):"-"}</td></tr>`; }).join("");
+  let corpo = `<table class="tabela-itens-lote" style="font-size:12.5px;"><tr><th>Lote</th><th>Tipo</th><th>Equipamento/Peca</th><th>Ordem de fabricacao</th><th>Limite de entrega</th></tr>${lin}</table>`;
+  corpo += `<div style="margin-top:8px;"><div class="muted" style="font-size:12px; font-weight:600;">Atividades do grupo (valem para todos) - ${atv.length} aberta(s)</div>`+
+    (atv.map(a=>atvLinhaHtml(a,false)).join("") || '<p class="muted" style="margin:4px 0;">Nenhuma atividade ainda.</p>')+
+    atvFormHtml(`data-ped="${p.id}" data-lote="" data-gitem="${g.id}" data-tipo="" data-alvo="" data-nome=""`, "gi"+g.id)+`</div>`;
+  corpo += obsBlocoHtml("gitem", g.id);
+  corpo += `<div data-edicao style="margin:10px 0;"><button type="button" class="btn secondary btn-sm" data-acao="desagrupar-itens" data-gid="${g.id}">Desagrupar equipamentos/pecas</button></div>`;
+  return detalhesAcomp("gi"+g.id, `${seta} <span class="pill" style="background:var(--accent);">Grupo</span> ${escAttrAcomp(nomesGrupoItem(g.id))} <span class="muted" style="font-weight:400;">- ${atv.length} atividade(s) aberta(s) do grupo</span>`, corpo, 1);
 }
 function agruparLotesAcomp(pedidoId, ids){
   const gid = Math.max(0, ...DB.lotes.map(l=>l.grupoAcomp||0)) + 1;
@@ -7206,7 +7252,7 @@ function loteBlocoHtml(l, p, seta){
     const k = `a${l.id}-${al.tipo}${al.id}`;
     const ctx = `data-ped="${p.id}" data-lote="${l.id}" data-tipo="${al.tipo}" data-alvo="${al.id}" data-nome="${escAttrAcomp(al.nome).replace(/"/g,"&quot;")}"`;
     const conteudo = (atv.map(a=>atvLinhaHtml(a,false)).join("") || '<p class="muted" style="margin:4px 0;">Nenhuma atividade ainda.</p>') + atvFormHtml(ctx, k);
-    return detalhesAcomp(k, `${seta} <span class="pill" style="background:var(--primary-dark);">${al.rot}</span> Lote ${l.noLote} - ${escAttrAcomp(al.nome)} <span class="muted" style="font-weight:400;">- ${ab} atividade(s) aberta(s)</span>`, conteudo, 1);
+    return detalhesAcomp(k, `${seta} <span class="pill" style="background:var(--primary-dark);">${al.rot}</span> Lote ${l.noLote} - ${escAttrAcomp(al.nome)}${grupoItemDoAlvo(l.id,al.tipo,al.id)?' <span class="pill" style="background:var(--accent);">em grupo</span>':''} <span class="muted" style="font-weight:400;">- ${ab} atividade(s) aberta(s)</span>`, conteudo, 1);
   }).join("") || '<p class="muted">Este lote nao tem equipamento nem peca.</p>';
   corpoL += obsBlocoHtml("lote",l.id);
   const nomesLote = alvos.map(x=>escAttrAcomp(x.nome)).join(" + ") || "sem equipamento";
@@ -7226,6 +7272,7 @@ function grupoBlocoHtml(gid, membros, p, seta){
 }
 function renderAcompanhamento(){
   zerarAcompanhamentoUmaVez();
+  if (limparGruposItens()) saveDB();
   const root = document.getElementById("acompanhamentoRoot"); if (!root) return;
   const seta = '<span class="acomp-seta" style="display:inline-block; width:14px;">&#9656;</span>';
   let html = "";
@@ -7247,6 +7294,13 @@ function renderAcompanhamento(){
     }
     const livresParaGrupo = lotes.filter(l=>!(l.grupoAcomp && lotes.filter(x=>x.grupoAcomp===l.grupoAcomp).length>=2));
     if (livresParaGrupo.length >= 2) corpo += `<div data-edicao style="margin:8px 0;"><button type="button" class="btn secondary btn-sm" data-acao="agrupar" data-ped="${p.id}">&#128279; Agrupar lotes</button></div>`;
+    const gruposPed = (DB.gruposItensAcomp||[]).filter(g=>g.pedidoId===p.id);
+    const alvosLivres = []; for (const l of lotes) {
+      for (const id of (l.equipamentoIds||[])) if (!grupoItemDoAlvo(l.id,"equip",id)) alvosLivres.push(1);
+      for (const x of DB.pecasAvulsas.filter(x=>x.loteId===l.id)) if (!grupoItemDoAlvo(l.id,"peca",x.id)) alvosLivres.push(1);
+    }
+    if (alvosLivres.length >= 2) corpo += `<div data-edicao style="margin:8px 0;"><button type="button" class="btn secondary btn-sm" data-acao="agrupar-itens" data-ped="${p.id}">&#128279; Agrupar equipamentos/pecas</button></div>`;
+    corpo += gruposPed.map(g=>gitemBlocoHtml(g,p,seta)).join("");
     corpo += unidades.join("") || '<p class="muted" style="margin-top:8px;">Este pedido ainda nao tem lotes.</p>';
     // historico: atividades, observacoes arquivadas, registros de status e movimentacoes do sistema (separados)
     const todos = DB.statusPedido.filter(x=>x.pedidoId===p.id).sort((a,b)=>new Date(b.data)-new Date(a.data));
@@ -7254,7 +7308,7 @@ function renderAcompanhamento(){
     const sisH = todos.filter(x=>x.tipo!=="obs" && x.setor==="Sistema");
     const stH = todos.filter(x=>x.tipo!=="obs" && x.setor!=="Sistema");
     const atvH = DB.atividadesAcomp.filter(a=>a.pedidoId===p.id && a.concluida).sort((a,b)=>String(b.criadoEm).localeCompare(String(a.criadoEm)));
-    const entH = x=>`<div style="padding:6px 0; border-bottom:1px solid var(--border);"><div class="muted" style="font-size:11px;">${x.dataObs?"<strong>"+fmtBR(parseDate(x.dataObs))+"</strong> (salva em "+new Date(x.data).toLocaleDateString('pt-BR')+")":new Date(x.data).toLocaleString('pt-BR')} - ${escAttrAcomp(x.autor||"?")} ${x.loteId?`<span class="pill" style="background:var(--primary-dark);">Lote ${(DB.lotes.find(l=>l.id===x.loteId)||{}).noLote||"?"}</span>`:""}${x.grupoId?`<span class="pill" style="background:var(--primary-dark);">Lotes ${escAttrAcomp(nomesGrupoAcomp(x.grupoId)||"(grupo desfeito)")}</span>`:""} ${x.setor&&x.tipo!=="obs"?`<span class="pill" style="background:var(--primary);">${escAttrAcomp(x.setor)}</span>`:""}${souMasterAcomp()&&x.tipo==="obs"?` <button type="button" class="acao-icon" data-acao="obs-editar" data-id="${x.id}" title="Editar ou excluir (master)">&#9998;</button>`:""}</div><div style="white-space:pre-wrap;">${destacarMencoes(x.texto)}</div></div>`;
+    const entH = x=>`<div style="padding:6px 0; border-bottom:1px solid var(--border);"><div class="muted" style="font-size:11px;">${x.dataObs?"<strong>"+fmtBR(parseDate(x.dataObs))+"</strong> (salva em "+new Date(x.data).toLocaleDateString('pt-BR')+")":new Date(x.data).toLocaleString('pt-BR')} - ${escAttrAcomp(x.autor||"?")} ${x.loteId?`<span class="pill" style="background:var(--primary-dark);">Lote ${(DB.lotes.find(l=>l.id===x.loteId)||{}).noLote||"?"}</span>`:""}${x.grupoId?`<span class="pill" style="background:var(--primary-dark);">Lotes ${escAttrAcomp(nomesGrupoAcomp(x.grupoId)||"(grupo desfeito)")}</span>`:""}${x.grupoItemId?`<span class="pill" style="background:var(--primary-dark);">${escAttrAcomp(nomesGrupoItem(x.grupoItemId)||"(grupo desfeito)")}</span>`:""} ${x.setor&&x.tipo!=="obs"?`<span class="pill" style="background:var(--primary);">${escAttrAcomp(x.setor)}</span>`:""}${souMasterAcomp()&&x.tipo==="obs"?` <button type="button" class="acao-icon" data-acao="obs-editar" data-id="${x.id}" title="Editar ou excluir (master)">&#9998;</button>`:""}</div><div style="white-space:pre-wrap;">${destacarMencoes(x.texto)}</div></div>`;
     const tit = t=>`<h4 style="margin:14px 0 4px; color:var(--primary-dark);">${t}</h4>`;
     const vazio = '<p class="muted" style="margin:2px 0;">Nada ainda.</p>';
     corpo += detalhesAcomp("h"+p.id, `${seta} Historico <span class="muted" style="font-weight:400;">(${atvH.length} atividade(s) concluida(s), ${obsH.length} observacao(oes))</span>`,
@@ -7302,6 +7356,30 @@ function renderAcompanhamento(){
       const gid = agruparLotesAcomp(pid, ids); acompAbertos.add("g"+gid);
       fecharModalAcomp(); saveDB(); renderAcompanhamento(); return;
     }
+    if (acao==="agrupar-itens") {
+      const pid = parseInt(el.dataset.ped); const linhas = [];
+      for (const l of DB.lotes.filter(x=>x.pedidoId===pid).sort((a,b)=>(a.ordem||1e9)-(b.ordem||1e9))) {
+        for (const id of (l.equipamentoIds||[])) if (!grupoItemDoAlvo(l.id,"equip",id)) { const e=getEquipamento(id); linhas.push({v:`${l.id}|equip|${id}`, t:`Lote ${l.noLote} - ${e?e.nome:"?"} (equipamento)`}); }
+        for (const x of DB.pecasAvulsas.filter(x=>x.loteId===l.id)) if (!grupoItemDoAlvo(l.id,"peca",x.id)) linhas.push({v:`${l.id}|peca|${x.id}`, t:`Lote ${l.noLote} - ${x.nome} (peca/conjunto)`});
+      }
+      abrirModalAcomp("Agrupar equipamentos/pecas", `<div data-agrupar-itens="${pid}"><p class="muted" style="margin-top:0;">Marque 2 ou mais equipamentos/pecas (de qualquer lote deste pedido) que terao as mesmas atividades e observacoes. Da para desagrupar depois.</p>`+
+        linhas.map(x=>`<label style="display:block; padding:4px 0;"><input type="checkbox" style="width:auto;" value="${x.v}"> ${escAttrAcomp(x.t)}</label>`).join("")+
+        `<button type="button" class="btn btn-sm" data-acao="agrupar-itens-ok" style="margin-top:10px;">Agrupar</button> <span class="muted" data-agmsg style="font-size:12px;"></span></div>`);
+      return;
+    }
+    if (acao==="agrupar-itens-ok") {
+      const f = el.closest("[data-agrupar-itens]"); const pid = parseInt(f.dataset.agruparItens);
+      const membros = [...f.querySelectorAll("input:checked")].map(i=>{ const [l,t,id] = i.value.split("|"); return { loteId: parseInt(l), tipo: t, id: parseInt(id) }; });
+      if (membros.length < 2) { const m=f.querySelector("[data-agmsg]"); m.style.color="var(--danger)"; m.textContent="Marque pelo menos 2."; return; }
+      if (!DB.gruposItensAcomp) DB.gruposItensAcomp = [];
+      const gid = Math.max(0, ...DB.gruposItensAcomp.map(g=>g.id)) + 1;
+      DB.gruposItensAcomp.push({ id: gid, pedidoId: pid, membros, criadoEm: new Date().toISOString() });
+      acompAbertos.add("gi"+gid); fecharModalAcomp(); saveDB(); renderAcompanhamento(); return;
+    }
+    if (acao==="desagrupar-itens") {
+      if (!confirm("Desagrupar? As atividades e observacoes do grupo serao copiadas para cada equipamento/peca.")) return;
+      desagruparItensAcomp(parseInt(el.dataset.gid)); saveDB(); renderAcompanhamento(); return;
+    }
     if (acao==="desagrupar") {
       const gid = parseInt(el.dataset.gid);
       if (!confirm("Desagrupar estes lotes? As atividades e observacoes do grupo serao copiadas para cada lote.")) return;
@@ -7309,8 +7387,8 @@ function renderAcompanhamento(){
     }
     if (acao==="atv-nova") {
       const d = el.dataset, k = d.form;
-      abrirModalAcomp("Nova atividade", `<div data-atvform="${k}" data-ped="${d.ped||""}" data-lote="${d.lote||""}" data-grupo="${d.grupo||""}" data-tipo="${d.tipo||""}" data-alvo="${d.alvo||""}" data-nome="${(d.nome||"").replace(/"/g,"&quot;")}">
-        <p class="muted" style="margin-top:0;">${d.ped?escAttrAcomp(ctxTextoAtv({pedidoId:parseInt(d.ped), loteId:d.lote?parseInt(d.lote):null, grupoId:d.grupo?parseInt(d.grupo):null, alvoNome:d.nome})):"Atividade sem pedido"}</p>
+      abrirModalAcomp("Nova atividade", `<div data-atvform="${k}" data-ped="${d.ped||""}" data-lote="${d.lote||""}" data-grupo="${d.grupo||""}" data-gitem="${d.gitem||""}" data-tipo="${d.tipo||""}" data-alvo="${d.alvo||""}" data-nome="${(d.nome||"").replace(/"/g,"&quot;")}">
+        <p class="muted" style="margin-top:0;">${d.ped?escAttrAcomp(ctxTextoAtv({pedidoId:parseInt(d.ped), loteId:d.lote?parseInt(d.lote):null, grupoId:d.grupo?parseInt(d.grupo):null, grupoItemId:d.gitem?parseInt(d.gitem):null, alvoNome:d.nome})):"Atividade sem pedido"}</p>
         <div class="grid grid-2">
           <div class="field" style="grid-column:1/-1;"><label class="field-label">Atividade</label><input type="text" data-f="titulo" placeholder="Ex: Cotar motorredutor"></div>
           <div class="field"><label class="field-label">Setor responsavel</label><select data-f="setor" data-acao="atv-setor">${opcoesSetorAcomp("")}</select></div>
@@ -7327,10 +7405,10 @@ function renderAcompanhamento(){
       if (!texto) { alert("Escreva a observacao."); return; }
       const dataObs = bloco.querySelector("[data-obsdata]").value || fmtISO(hojeUTC());
       const tipoO = el.dataset.obs; const ped = tipoO==="ped"; const id = parseInt(el.dataset.id);
-      const grp = tipoO==="grupo";
-      const lote = (ped||grp) ? null : DB.lotes.find(l=>l.id===id);
-      const pid = ped ? id : grp ? ((DB.lotes.find(l=>l.grupoAcomp===id)||{}).pedidoId) : (lote&&lote.pedidoId);
-      DB.statusPedido.push({ id: DB.seq.statusPedido++, pedidoId: pid, loteId: lote?lote.id:null, grupoId: grp?id:null, tipo:"obs", dataObs, texto, setor: grp?"Observacao do grupo":lote?"Observacao do lote":"Observacao do pedido", data: new Date().toISOString(), autor: emailUsuarioAtual });
+      const grp = tipoO==="grupo", gi = tipoO==="gitem";
+      const lote = (ped||grp||gi) ? null : DB.lotes.find(l=>l.id===id);
+      const pid = ped ? id : grp ? ((DB.lotes.find(l=>l.grupoAcomp===id)||{}).pedidoId) : gi ? ((DB.gruposItensAcomp.find(g=>g.id===id)||{}).pedidoId) : (lote&&lote.pedidoId);
+      DB.statusPedido.push({ id: DB.seq.statusPedido++, pedidoId: pid, loteId: lote?lote.id:null, grupoId: grp?id:null, grupoItemId: gi?id:null, tipo:"obs", dataObs, texto, setor: (grp||gi)?"Observacao do grupo":lote?"Observacao do lote":"Observacao do pedido", data: new Date().toISOString(), autor: emailUsuarioAtual });
       acompAbertos.add("h"+pid); saveDB(); renderAcompanhamento(); return;
     }
     if (acao==="obs-nova" || acao==="obs-editar") {
@@ -7343,7 +7421,7 @@ function renderAcompanhamento(){
       const pedidoId = editando ? reg.pedidoId : (ped ? id : lote.pedidoId);
       const pd = DB.pedidos.find(x=>x.id===pedidoId);
       abrirModalAcomp(editando?"Editar observacao":"Nova observacao", `<div data-obsform data-pedido="${pedidoId}" data-lote="${lote?lote.id:""}" data-reg="${editando?reg.id:""}">
-        <p class="muted" style="margin-top:0;">${pd?"Pedido "+pd.noPedido:""}${lote?" - Lote "+escAttrAcomp(lote.noLote):""}${editando&&reg.grupoId?" - Lotes "+escAttrAcomp(nomesGrupoAcomp(reg.grupoId))+" (agrupados)":""}</p>
+        <p class="muted" style="margin-top:0;">${pd?"Pedido "+pd.noPedido:""}${lote?" - Lote "+escAttrAcomp(lote.noLote):""}${editando&&reg.grupoId?" - Lotes "+escAttrAcomp(nomesGrupoAcomp(reg.grupoId))+" (agrupados)":""}${editando&&reg.grupoItemId?" - "+escAttrAcomp(nomesGrupoItem(reg.grupoItemId))+" (agrupados)":""}</p>
         <div class="field"><label class="field-label">Data da observacao</label><input type="date" data-o="data" value="${editando&&reg.dataObs?reg.dataObs:fmtISO(hojeUTC())}" style="width:auto;"></div>
         <div class="field"><label class="field-label">Observacao</label><textarea rows="4" data-o="texto">${editando?escAttrAcomp(reg.texto):""}</textarea></div>
         <button type="button" class="btn btn-sm" data-acao="obs-salvar">Salvar</button>${editando?` <button type="button" class="btn secondary btn-sm" data-acao="hist-excluir" data-id="${reg.id}" style="color:var(--danger);">Excluir observacao</button>`:""} <span class="muted" data-obsmsg style="font-size:12px;"></span></div>`);
@@ -7373,7 +7451,7 @@ function renderAcompanhamento(){
       if (!setor) { msg.style.color="var(--danger)"; msg.textContent="Escolha o setor."; return; }
       if (!resp) { msg.style.color="var(--danger)"; msg.textContent="Escolha o responsavel."; return; }
       DB.atividadesAcomp.push({ id: DB.seq.atividadeAcomp++, pedidoId: f.dataset.ped?parseInt(f.dataset.ped):null, loteId: f.dataset.lote?parseInt(f.dataset.lote):null,
-        grupoId: f.dataset.grupo?parseInt(f.dataset.grupo):null, alvoTipo: f.dataset.tipo||null, alvoId: f.dataset.alvo?parseInt(f.dataset.alvo):null, alvoNome: f.dataset.nome||"", titulo, setor, responsavel: resp, prazo: g("prazo")||null,
+        grupoId: f.dataset.grupo?parseInt(f.dataset.grupo):null, grupoItemId: f.dataset.gitem?parseInt(f.dataset.gitem):null, alvoTipo: f.dataset.tipo||null, alvoId: f.dataset.alvo?parseInt(f.dataset.alvo):null, alvoNome: f.dataset.nome||"", titulo, setor, responsavel: resp, prazo: g("prazo")||null,
         criadoEm: new Date().toISOString(), criadoPor: emailUsuarioAtual||"", concluida:false, concluidaEm:null });
       acompAbertos.add(el.dataset.form); if (f.dataset.ped) acompAbertos.add("h"+f.dataset.ped);
       fecharModalAcomp(); saveDB(); renderAcompanhamento(); return;
@@ -7590,6 +7668,10 @@ function gerarSecaoPedido(pedido){
   const obsSalvas = (pid, lid)=>DB.statusPedido.filter(x=>x.tipo==="obs" && x.pedidoId===pid && (lid ? x.loteId===lid : !x.loteId)).sort((a,b)=>String(b.dataObs||b.data).localeCompare(String(a.dataObs||a.data))).map(x=>`<br>&bull; ${x.dataObs?fmtBR(parseDate(x.dataObs)):new Date(x.data).toLocaleDateString('pt-BR')} - ${escaparHtmlSimples(x.texto).replace(/\n/g,"<br>")}`).join("");
   if (pedido.obsAcomp || obsSalvas(pedido.id,null)) html += `<p><strong>Observacoes:</strong>${pedido.obsAcomp?" "+escaparHtmlSimples(pedido.obsAcomp).replace(/\n/g,"<br>"):""}${obsSalvas(pedido.id,null)}</p>`;
   const lotesDoPedido = DB.lotes.filter(l=>l.pedidoId===pedido.id);
+  for (const g of (DB.gruposItensAcomp||[]).filter(g=>g.pedidoId===pedido.id)) {
+    const obsGI = DB.statusPedido.filter(x=>x.tipo==="obs" && x.grupoItemId===g.id).sort((a,b)=>String(b.dataObs||b.data).localeCompare(String(a.dataObs||a.data))).map(x=>`<br>&bull; ${x.dataObs?fmtBR(parseDate(x.dataObs)):new Date(x.data).toLocaleDateString('pt-BR')} - ${escaparHtmlSimples(x.texto).replace(/\n/g,"<br>")}`).join("");
+    html += `<div style="margin:10px 0 0 4px; padding:6px 8px; background:#F1F6EC; border-left:3px solid #91C53E;"><strong>Equipamentos/pecas agrupados: ${escaparHtmlSimples(nomesGrupoItem(g.id))}</strong>${obsGI?`<br><em>Obs. do grupo:</em>${obsGI}`:""}${htmlAtividadesRelatorio(DB.atividadesAcomp.filter(a=>a.grupoItemId===g.id))}</div>`;
+  }
   const gruposVistos = new Set();
   for (const lote of lotesDoPedido) {
     if (lote.grupoAcomp && !gruposVistos.has(lote.grupoAcomp) && lotesDoPedido.filter(x=>x.grupoAcomp===lote.grupoAcomp).length>=2) {
