@@ -458,7 +458,7 @@
     </form>
     <div style="text-align:center; margin-top:8px;"><a href="#" id="loginEsqueciSenhaLink" style="font-size:12px; color:#8A8F87;">Esqueci minha senha</a></div>
     <div id="loginMsg" style="margin-top:10px; font-size:12.5px; min-height:18px;"></div>
-    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 193 - 04/11/2026</div>
+    <div style="margin-top:8px; font-size:10.5px; color:#9AA79F; text-align:center;">Versao 194 - 04/11/2026</div>
     <div id="loginOfflineWrap" class="hidden" style="margin-top:6px;">
       <button id="loginOfflineBtn" style="width:100%; padding:8px; background:transparent; color:#8A8F87; border:1px solid #E1E6DE; border-radius:6px; font-size:12.5px; cursor:pointer;">Continuar sem conexao (usa os dados salvos neste navegador)</button>
     </div>
@@ -496,7 +496,7 @@
     <div style="height:3px; width:60px; background:#91C53E; border-radius:2px; margin-bottom:34px;"></div>
     <div id="painelPastasGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(172px, 1fr)); gap:14px;"></div>
     <div id="painelMinhasAtividades" style="margin-top:28px;"></div>
-    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 193 - 04/11/2026</p>
+    <p style="margin:30px 0 0; font-size:11px; color:#9AA79F;">Versao 194 - 04/11/2026</p>
   </div>
 </div>
 
@@ -7246,6 +7246,9 @@ function loteBlocoHtml(l, p, seta){
   let corpoL = `<div style="margin-top:6px;"><div class="muted" style="font-size:12px; font-weight:600;">Atividades do lote (gerais) - ${gerais.length} aberta(s)</div>`+
     (gerais.map(a=>atvLinhaHtml(a,false)).join("") || '<p class="muted" style="margin:4px 0;">Nenhuma atividade ainda.</p>') +
     atvFormHtml(`data-ped="${p.id}" data-lote="${l.id}" data-tipo="" data-alvo="" data-nome=""`, "lt"+l.id) + `</div>`;
+  const livresL = alvos.filter(al=>!grupoItemDoAlvo(l.id, al.tipo, al.id));
+  if (livresL.length >= 2) corpoL += `<div data-edicao style="margin:8px 0;"><button type="button" class="btn secondary btn-sm" data-acao="agrupar-itens" data-ped="${p.id}" data-lote="${l.id}">&#128279; Agrupar equipamentos/pecas deste lote</button></div>`;
+  corpoL += (DB.gruposItensAcomp||[]).filter(g=>g.membros.length && g.membros.every(m=>m.loteId===l.id)).map(g=>gitemBlocoHtml(g,p,seta)).join("");
   corpoL += alvos.map(al=>{
     const atv = DB.atividadesAcomp.filter(a=>a.loteId===l.id && a.alvoTipo===al.tipo && a.alvoId===al.id && !a.concluida);
     const ab = atv.length;
@@ -7294,12 +7297,7 @@ function renderAcompanhamento(){
     }
     const livresParaGrupo = lotes.filter(l=>!(l.grupoAcomp && lotes.filter(x=>x.grupoAcomp===l.grupoAcomp).length>=2));
     if (livresParaGrupo.length >= 2) corpo += `<div data-edicao style="margin:8px 0;"><button type="button" class="btn secondary btn-sm" data-acao="agrupar" data-ped="${p.id}">&#128279; Agrupar lotes</button></div>`;
-    const gruposPed = (DB.gruposItensAcomp||[]).filter(g=>g.pedidoId===p.id);
-    const alvosLivres = []; for (const l of lotes) {
-      for (const id of (l.equipamentoIds||[])) if (!grupoItemDoAlvo(l.id,"equip",id)) alvosLivres.push(1);
-      for (const x of DB.pecasAvulsas.filter(x=>x.loteId===l.id)) if (!grupoItemDoAlvo(l.id,"peca",x.id)) alvosLivres.push(1);
-    }
-    if (alvosLivres.length >= 2) corpo += `<div data-edicao style="margin:8px 0;"><button type="button" class="btn secondary btn-sm" data-acao="agrupar-itens" data-ped="${p.id}">&#128279; Agrupar equipamentos/pecas</button></div>`;
+    const gruposPed = (DB.gruposItensAcomp||[]).filter(g=>g.pedidoId===p.id && new Set(g.membros.map(m=>m.loteId)).size > 1);
     corpo += gruposPed.map(g=>gitemBlocoHtml(g,p,seta)).join("");
     corpo += unidades.join("") || '<p class="muted" style="margin-top:8px;">Este pedido ainda nao tem lotes.</p>';
     // historico: atividades, observacoes arquivadas, registros de status e movimentacoes do sistema (separados)
@@ -7358,11 +7356,11 @@ function renderAcompanhamento(){
     }
     if (acao==="agrupar-itens") {
       const pid = parseInt(el.dataset.ped); const linhas = [];
-      for (const l of DB.lotes.filter(x=>x.pedidoId===pid).sort((a,b)=>(a.ordem||1e9)-(b.ordem||1e9))) {
-        for (const id of (l.equipamentoIds||[])) if (!grupoItemDoAlvo(l.id,"equip",id)) { const e=getEquipamento(id); linhas.push({v:`${l.id}|equip|${id}`, t:`Lote ${l.noLote} - ${e?e.nome:"?"} (equipamento)`}); }
-        for (const x of DB.pecasAvulsas.filter(x=>x.loteId===l.id)) if (!grupoItemDoAlvo(l.id,"peca",x.id)) linhas.push({v:`${l.id}|peca|${x.id}`, t:`Lote ${l.noLote} - ${x.nome} (peca/conjunto)`});
+      for (const l of DB.lotes.filter(x=>x.id===parseInt(el.dataset.lote))) {
+        for (const id of (l.equipamentoIds||[])) if (!grupoItemDoAlvo(l.id,"equip",id)) { const e=getEquipamento(id); linhas.push({v:`${l.id}|equip|${id}`, t:`${e?e.nome:"?"} (equipamento)`}); }
+        for (const x of DB.pecasAvulsas.filter(x=>x.loteId===l.id)) if (!grupoItemDoAlvo(l.id,"peca",x.id)) linhas.push({v:`${l.id}|peca|${x.id}`, t:`${x.nome} (peca/conjunto)`});
       }
-      abrirModalAcomp("Agrupar equipamentos/pecas", `<div data-agrupar-itens="${pid}"><p class="muted" style="margin-top:0;">Marque 2 ou mais equipamentos/pecas (de qualquer lote deste pedido) que terao as mesmas atividades e observacoes. Da para desagrupar depois.</p>`+
+      abrirModalAcomp("Agrupar equipamentos/pecas do lote", `<div data-agrupar-itens="${pid}"><p class="muted" style="margin-top:0;">Marque 2 ou mais equipamentos/pecas deste lote que terao as mesmas atividades e observacoes. Da para desagrupar depois.</p>`+
         linhas.map(x=>`<label style="display:block; padding:4px 0;"><input type="checkbox" style="width:auto;" value="${x.v}"> ${escAttrAcomp(x.t)}</label>`).join("")+
         `<button type="button" class="btn btn-sm" data-acao="agrupar-itens-ok" style="margin-top:10px;">Agrupar</button> <span class="muted" data-agmsg style="font-size:12px;"></span></div>`);
       return;
